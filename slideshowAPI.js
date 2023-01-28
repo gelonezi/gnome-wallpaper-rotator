@@ -6,6 +6,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 const _ = Gettext.gettext;
 
+const Main = imports.ui.main;
 const Utils = Me.imports.utils;
 
 const FILE_TYPES = ['png', 'jpg', 'jpeg'];
