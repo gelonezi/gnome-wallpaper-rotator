@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <enum id='org.gnome.shell.extensions.azwallpaper.preserve-queue-type'>
+        <value value='0' nick='Session'/>
+        <value value='1' nick='Permanent'/>
+    </enum>
+    <schema id="org.gnome.shell.extensions.azwallpaper" path="/org/gnome/shell/extensions/azwallpaper/">
+        <key type="b" name="bing-wallpaper-download">
+            <default>true</default>
+            <summary>Download the BING wallpaper of the day. Queries BING on 12hour interval.</summary>
+            <description>Download the BING wallpaper of the day. Queries BING on 12hour interval.</description>
+        </key>
+        <key type="s" name="bing-download-directory">
+            <default>''</default>
+            <summary>The directory of the downloaded BING wallpapers.</summary>
+            <description>The directory of the downloaded BING wallpapers.</description>
+        </key>
+        <key type="t" name="bing-last-data-fetch">
+            <default>0</default>
+            <summary>The JS Date.Now() time of last BING data fetch.</summary>
+            <description>The JS Date.Now() time of last BING data fetch.</description>
+        </key>
+
+        <key type="s" name="slideshow-directory">
+            <default>''</default>
+            <summary>The directory of the slideshow wallpapers.</summary>
+            <description>The directory of the slideshow wallpapers.</description>
+        </key>
+        <key type="i" name="slideshow-image-duration">
+            <default>60</default>
+            <summary>Duration of each image in the slideshow (seconds).</summary>
+            <description>Duration of each image in the slideshow (seconds).</description>
+        </key>
+        <key type="i" name="slideshow-timer-remaining">
+            <default>0</default>
+            <summary>When (in seconds) to change to the next background image.</summary>
+            <description>When (in seconds) to change to the next background image.</description>
+        </key>
+        <key type="as" name="slideshow-wallpaper-queue">
+            <default>[]</default>
+            <summary>Permanent storage of the slideshow queue</summary>
+            <description>Permanent storage of the slideshow queue.</description>
+        </key>
+        <key enum="org.gnome.shell.extensions.azwallpaper.preserve-queue-type" name="slideshow-preserve-queue">
+            <default>'Permanent'</default>
+            <summary>How to preserve the slideshow queue order and slideshow timer to next slide. Permanent or Session.</summary>
+            <description>How to preserve the slideshow queue order and slideshow timer to next slide. Permanent or Session.</description>
+        </key>
+
+        <key type="b" name="debug-logs">
+            <default>false</default>
+            <summary>Show/Hide Debug Logs.</summary>
+            <description>Show/Hide Debug Logs.</description>
+        </key>
+    </schema>
+</schemalist>

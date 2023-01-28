@@ -1,0 +1,11 @@
+{
+    "name": "Wallpaper Slideshow",
+    "description": "Wallpaper Slideshow",
+    "uuid": "azwallpaper@azwallpaper.gitlab.com",
+    "gettext-domain": "azwallpaper",
+    "settings-schema": "org.gnome.shell.extensions.azwallpaper",
+    "version": 1,
+    "shell-version": ["43"],
+    "url": "https://gitlab.com/AndrewZaech/azwallpaper"
+  }
+  
