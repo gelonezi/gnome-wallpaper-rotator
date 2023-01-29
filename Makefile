@@ -1,8 +1,8 @@
 # Basic Makefile
 
 UUID = azwallpaper@azwallpaper.gitlab.com
-BASE_MODULES = bingWallpaperAPI.js LICENSE metadata.json README.md slideshowAPI.js utils.js
-TRANSLATABLE_MODULES = extension.js prefs.js
+BASE_MODULES = LICENSE metadata.json README.md utils.js
+TRANSLATABLE_MODULES = bingWallpaperAPI.js extension.js prefs.js slideshowAPI.js
 
 TOLOCALIZE = $(TRANSLATABLE_MODULES)
 EXTRA_DIRECTORIES = media
