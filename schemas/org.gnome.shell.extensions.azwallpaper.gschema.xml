@@ -6,7 +6,7 @@
     </enum>
     <schema id="org.gnome.shell.extensions.azwallpaper" path="/org/gnome/shell/extensions/azwallpaper/">
         <key type="b" name="bing-wallpaper-download">
-            <default>true</default>
+            <default>false</default>
             <summary>Download the BING wallpaper of the day. Queries BING on 12hour interval.</summary>
             <description>Download the BING wallpaper of the day. Queries BING on 12hour interval.</description>
         </key>
@@ -20,7 +20,6 @@
             <summary>The JS Date.Now() time of last BING data fetch.</summary>
             <description>The JS Date.Now() time of last BING data fetch.</description>
         </key>
-
         <key type="s" name="slideshow-directory">
             <default>''</default>
             <summary>The directory of the slideshow wallpapers.</summary>
@@ -41,12 +40,16 @@
             <summary>Permanent storage of the slideshow queue</summary>
             <description>Permanent storage of the slideshow queue.</description>
         </key>
+        <key type="s" name="slideshow-current-wallpapper">
+            <default>''</default>
+            <summary>The current wallpaper of the slideshow.</summary>
+            <description>The current wallpaper of the slideshow.</description>
+        </key>
         <key enum="org.gnome.shell.extensions.azwallpaper.preserve-queue-type" name="slideshow-preserve-queue">
             <default>'Permanent'</default>
             <summary>How to preserve the slideshow queue order and slideshow timer to next slide. Permanent or Session.</summary>
             <description>How to preserve the slideshow queue order and slideshow timer to next slide. Permanent or Session.</description>
         </key>
-
         <key type="b" name="debug-logs">
             <default>false</default>
             <summary>Show/Hide Debug Logs.</summary>

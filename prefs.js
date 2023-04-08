@@ -135,7 +135,6 @@ class azWallpaper_HomePage extends Adw.PreferencesPage {
             let dialog = new Gtk.FileChooserDialog({
                 title: _('Select a directory'),
                 transient_for: this.get_root(),
-                modal: true,
                 action: Gtk.FileChooserAction.SELECT_FOLDER,
             });
             dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL);

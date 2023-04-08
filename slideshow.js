@@ -14,12 +14,6 @@ const STARTUP_DELAY = 3;
 
 let slideshowId, fileMonitor, fileMonitorChangedId, backgroundSettings, timeOfLastSlideTick, timeOfSlideshowInit;
 
-const ColorScheme = {
-    DEFAULT: 0,
-    DARK: 1,
-    LIGHT: 2,
-}
-
 const PreserveQueueType = {
     SESSION: 0,
     PERMANENT: 1,
@@ -68,9 +62,12 @@ function initiate() {
     if (!isValidDirectory())
         return;
 
-    createFileMonitor();
     Utils.debugLog('Initiate Wallpaper Slideshow');
-    backgroundSettings = new Gio.Settings({ schema: "org.gnome.desktop.background" });
+
+    createFileMonitor();
+
+    if (!backgroundSettings)
+        backgroundSettings = new Gio.Settings({ schema: "org.gnome.desktop.background" });
 
     if (!Me.persistentStorage['wallpapersQueue']) {
         loadSlideshowQueue();
@@ -143,7 +140,7 @@ function startSlideshow(delay = Me.settings.get_int('slideshow-image-duration'),
             }
 
             //Don't want to repeat wallpaper, push to end of queue.
-            if (Me.persistentStorage['wallpapersQueue'][0] === Me.persistentStorage['lastWallpaper']) {
+            if (Me.persistentStorage['wallpapersQueue'][0] === Me.settings.get_string('slideshow-current-wallpapper')) {
                 Utils.debugLog('Slideshow: Last Wallpaper == First Shuffled - Push to back');
                 let duplicate = Me.persistentStorage['wallpapersQueue'].shift();
                 Me.persistentStorage['wallpapersQueue'].push(duplicate);
@@ -152,13 +149,10 @@ function startSlideshow(delay = Me.settings.get_int('slideshow-image-duration'),
 
         const randomWallpaper = Me.persistentStorage['wallpapersQueue'].shift();
 
-        Me.persistentStorage['lastWallpaper'] = randomWallpaper;
+        Me.settings.set_string('slideshow-current-wallpapper', randomWallpaper);
 
-        const colorScheme = getCurrentColorScheme();
-        if (colorScheme === ColorScheme.DEFAULT || colorScheme === ColorScheme.LIGHT)
-            backgroundSettings.set_string('picture-uri', `file://${randomWallpaper}`);
-        else if (colorScheme === ColorScheme.DARK)
-            backgroundSettings.set_string('picture-uri-dark', `file://${randomWallpaper}`);
+        backgroundSettings.set_string('picture-uri', `file://${randomWallpaper}`);
+        backgroundSettings.set_string('picture-uri-dark', `file://${randomWallpaper}`);
 
         Utils.debugLog(`Slideshow: Set Background - ${randomWallpaper}`);
         Utils.debugLog(`Slideshow: WallPaper Queue Length - ${Me.persistentStorage['wallpapersQueue'].length}`);
@@ -234,11 +228,6 @@ function createFileMonitor() {
     });
 }
 
-function getCurrentColorScheme() {
-    const colorSchemeSetting = new Gio.Settings({ schema: "org.gnome.desktop.interface" });
-    return colorSchemeSetting.get_enum("color-scheme");
-}
-
 function getWallpaperList() {
     Utils.debugLog('Slideshow: Get Wallpaper List');
 
@@ -246,9 +235,9 @@ function getWallpaperList() {
 
     try {
         const slideshowDirectoryPath = Me.settings.get_string('slideshow-directory');
-        let dir = Gio.file_new_for_path(slideshowDirectoryPath);
+        const dir = Gio.file_new_for_path(slideshowDirectoryPath);
 
-        let fileEnum = dir.enumerate_children('standard::name,standard::type', Gio.FileQueryInfoFlags.NONE, null);
+        const fileEnum = dir.enumerate_children('standard::name,standard::type', Gio.FileQueryInfoFlags.NONE, null);
 
         let info;
         while ((info = fileEnum.next_file(null))) {
@@ -272,8 +261,7 @@ function getTimerDelay() {
 
     if (preserveQueueType === PreserveQueueType.SESSION) {
         remainingTimer = Me.persistentStorage['timerRemaining'] || 0;
-    }
-    else if (preserveQueueType === PreserveQueueType.PERMANENT) {
+    } else if (preserveQueueType === PreserveQueueType.PERMANENT) {
         remainingTimer = Me.settings.get_int('slideshow-timer-remaining');
     }
 
@@ -324,8 +312,7 @@ function destroy(clearAllStorage) {
         Me.persistentStorage = {};
         Me.settings.set_strv('slideshow-wallpaper-queue', []);
         Me.settings.set_int('slideshow-timer-remaining', 0);
-    }
-    else if (preserveQueueType === PreserveQueueType.SESSION) {
+    } else if (preserveQueueType === PreserveQueueType.SESSION) {
         remainingTimer = Me.persistentStorage['timerRemaining'] || imageDuration;
         timerRemaining = getElapsedTime(remainingTimer);
 
@@ -333,8 +320,7 @@ function destroy(clearAllStorage) {
         //clear out the permanent storage
         Me.settings.set_strv('slideshow-wallpaper-queue', []);
         Me.settings.set_int('slideshow-timer-remaining', 0);
-    }
-    else if (preserveQueueType === PreserveQueueType.PERMANENT) {
+    } else if (preserveQueueType === PreserveQueueType.PERMANENT) {
         remainingTimer = Me.settings.get_int('slideshow-timer-remaining');
         timerRemaining = getElapsedTime(remainingTimer);
 

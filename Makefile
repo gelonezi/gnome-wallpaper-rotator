@@ -2,7 +2,7 @@
 
 UUID = azwallpaper@azwallpaper.gitlab.com
 BASE_MODULES = LICENSE metadata.json README.md utils.js
-TRANSLATABLE_MODULES = bingWallpaperAPI.js extension.js prefs.js slideshowAPI.js
+TRANSLATABLE_MODULES = bingWallpaperDownloader.js extension.js prefs.js slideshow.js
 
 TOLOCALIZE = $(TRANSLATABLE_MODULES)
 EXTRA_DIRECTORIES = media

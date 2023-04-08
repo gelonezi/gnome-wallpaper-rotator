@@ -11,8 +11,10 @@ const _ = Gettext.gettext;
 
 const STARTUP_DELAY = 3;
 const TWELVE_HOURS_IN_SECONDS = 43200;
-const TWELVE_HOURS_IN_MILLISECONDS = 4.32e7
-const USER_AGENT = 'User-Agent: Mozilla/5.0 (X11; GNOME Shell/' + imports.misc.config.PACKAGE_VERSION + '; Linux x86_64; AzWallpaper Gnome Extension/' + Me.metadata.version;
+const TWELVE_HOURS_IN_MILLISECONDS = 4.32e7;
+const SESSION_TYPE = GLib.getenv('XDG_SESSION_TYPE');
+const PACKAGE_VERSION = imports.misc.config.PACKAGE_VERSION;
+const USER_AGENT = `User-Agent: Mozilla/5.0 (${SESSION_TYPE}; GNOME Shell/${PACKAGE_VERSION}; Linux ${GLib.getenv('CPU')};) AzWallpaper/${Me.metadata.version}`;
 
 Gio._promisify(Soup.Session.prototype, 'send_and_read_async');
 Gio._promisify(Gio.File.prototype, 'replace_contents_bytes_async', 'replace_contents_finish');

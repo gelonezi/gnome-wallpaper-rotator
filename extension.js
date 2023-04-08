@@ -2,18 +2,22 @@ const { GLib } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const BingWallpaperAPI = Me.imports.bingWallpaperAPI;
-const SlideshowAPI = Me.imports.slideshowAPI;
-const Utils = Me.imports.utils;
+const {
+    backgroundMenu: BackgroundMenu, 
+    main: Main, 
+    popupMenu: PopupMenu,
+} = imports.ui;
 
-const BackgroundMenu = imports.ui.backgroundMenu;
-const Main = imports.ui.main;
-const PopupMenu = imports.ui.popupMenu;
+const {
+    bingWallpaperDownloader: BingWallpaperDownloader, 
+    slideshow: Slideshow, 
+    utils: Utils,
+} = Me.imports;
 
 const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
 const _ = Gettext.gettext;
 
-let delayStartId, originalAddBgMenu, closingId;
+let delayStartId, originalAddBgMenu;
 
 function init() {
     ExtensionUtils.initTranslations(Me.metadata['gettext-domain']);
@@ -23,42 +27,38 @@ function init() {
 function enable() {
     Me.settings = ExtensionUtils.getSettings();
 
-    //disable() is not called on logout, shutdown, restart.
-    //Connect to 'closing' on global.display to trigger a disable();
-    closingId = global.display.connect('closing', () => disable());
-
     Me.settings.connect('changed::slideshow-image-duration', () => {
-        SlideshowAPI.startSlideshow();
+        Slideshow.startSlideshow();
     });
 
     Me.settings.connect('changed::slideshow-directory', () => {
         Main.notify(_('Slideshow directory changed.'),
             Me.settings.get_string('slideshow-directory'));
-        SlideshowAPI.destroy(true);
-        SlideshowAPI.initiate();
+        Slideshow.destroy(true);
+        Slideshow.initiate();
     });
 
     Me.settings.connect('changed::bing-wallpaper-download', () => {
-        BingWallpaperAPI.endDownloaderTimer();
+        BingWallpaperDownloader.endDownloaderTimer();
 
         if (Me.settings.get_boolean('bing-wallpaper-download'))
-            BingWallpaperAPI.initiate();
+            BingWallpaperDownloader.initiate();
     });
 
     Me.settings.connect('changed::bing-download-directory', () => {
         Main.notify(_('BING wallpaper download directory changed.'),
             Me.settings.get_string('bing-download-directory'));
-        BingWallpaperAPI.endDownloaderTimer();
+        BingWallpaperDownloader.endDownloaderTimer();
 
         if (Me.settings.get_boolean('bing-wallpaper-download'))
-            BingWallpaperAPI.initiate();
+            BingWallpaperDownloader.initiate();
     });
 
     delayStartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 3, () => {
         if (Me.settings.get_boolean('bing-wallpaper-download'))
-            BingWallpaperAPI.initiate();
+            BingWallpaperDownloader.initiate();
 
-        SlideshowAPI.initiate();
+        Slideshow.initiate();
 
         delayStartId = null;
         return GLib.SOURCE_REMOVE;
@@ -91,7 +91,7 @@ function modifyBackgroundMenu(menu) {
     let menuItem = new PopupMenu.PopupMenuItem(_('Next Background'));
     menuItem.connect('activate', () => {
         Utils.debugLog('AzWallpaper - "Next Background" clicked.')
-        SlideshowAPI.startSlideshow(0, true);
+        Slideshow.startSlideshow(0, true);
     });
     menu.addMenuItem(menuItem, 0);
 
@@ -103,17 +103,12 @@ function modifyBackgroundMenu(menu) {
 }
 
 function disable() {
-    if (closingId) {
-        global.display.disconnect(closingId);
-        closingId = null;
-    }
-
     Utils.debugLog('AzWallpaper - disabled()')
     BackgroundMenu.addBackgroundMenu = originalAddBgMenu;
     Main.layoutManager._updateBackgrounds();
 
-    BingWallpaperAPI.endDownloaderTimer();
-    SlideshowAPI.destroy();
+    BingWallpaperDownloader.endDownloaderTimer();
+    Slideshow.destroy();
 
     if (delayStartId) {
         GLib.source_remove(delayStartId);
