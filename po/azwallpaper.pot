@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-29 10:57-0500\n"
+"POT-Creation-Date: 2023-09-11 17:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,103 +17,151 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: bingWallpaperAPI.js:33
+#: bingWallpaperDownloader.js:37
 msgid "No directory found for BING wallpaper downloads."
 msgstr ""
 
-#: bingWallpaperAPI.js:34 bingWallpaperAPI.js:45
+#: bingWallpaperDownloader.js:38 bingWallpaperDownloader.js:48
 #, javascript-format
 msgid "Set directory to - %s"
 msgstr ""
 
-#: bingWallpaperAPI.js:44
+#: bingWallpaperDownloader.js:47
 msgid "Failed to create BING wallpaper downloads directory."
 msgstr ""
 
-#: extension.js:35
-msgid "Slideshow directory changed."
-msgstr ""
-
-#: extension.js:49
+#: extension.js:74
 msgid "BING wallpaper download directory changed."
 msgstr ""
 
-#: extension.js:91
+#: extension.js:81
+msgid "Slideshow directory changed."
+msgstr ""
+
+#: extension.js:97
 msgid "Next Background"
 msgstr ""
 
-#: extension.js:98
+#: extension.js:104
 msgid "Slideshow Settings..."
 msgstr ""
 
-#: prefs.js:29
+#: extension.js:110
+msgid "Display Settings"
+msgstr ""
+
+#: extension.js:111 prefs.js:34
 msgid "Settings"
 msgstr ""
 
-#: prefs.js:37
+#: prefs.js:42
 msgid "Slideshow Options"
 msgstr ""
 
-#: prefs.js:42
+#: prefs.js:47
 msgid "Slideshow Directory"
 msgstr ""
 
-#: prefs.js:51
+#: prefs.js:56
 msgid "Image Duration (seconds)"
 msgstr ""
 
-#: prefs.js:55
-msgid "Session"
-msgstr ""
-
-#: prefs.js:56
-msgid "Permanent"
-msgstr ""
-
-#: prefs.js:58
-msgid "Preserve Slideshow Queue"
-msgstr ""
-
-#: prefs.js:76
+#: prefs.js:68
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: prefs.js:82
+#: prefs.js:74
 msgid "BING Download Directory"
 msgstr ""
 
-#: prefs.js:92
+#: prefs.js:84
 msgid "Debug Mode"
 msgstr ""
 
-#: prefs.js:104
+#: prefs.js:96
 msgid "Enable Logs"
 msgstr ""
 
-#: prefs.js:116
+#: prefs.js:108
 msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:130
+#: prefs.js:122
 msgid "Choose new directory..."
 msgstr ""
 
-#: prefs.js:136
+#: prefs.js:128
 msgid "Select a directory"
 msgstr ""
 
-#: slideshowAPI.js:54
+#: prefs.js:185
+msgid "About"
+msgstr ""
+
+#: prefs.js:209
+msgid "Wallpaper Slideshow"
+msgstr ""
+
+#: prefs.js:226
+msgid "Wallpaper Slideshow Version"
+msgstr ""
+
+#: prefs.js:236
+msgid "Git Commit"
+msgstr ""
+
+#: prefs.js:246
+msgid "GNOME Version"
+msgstr ""
+
+#: prefs.js:255
+msgid "OS Name"
+msgstr ""
+
+#: prefs.js:268
+msgid "Windowing System"
+msgstr ""
+
+#: prefs.js:276
+msgid "Wallpaper Slideshow GitLab"
+msgstr ""
+
+#: prefs.js:279
+msgid "Donate via PayPal"
+msgstr ""
+
+#: prefs.js:288
+msgid "Wallpaper Slideshow Settings"
+msgstr ""
+
+#: prefs.js:291
+msgid "Load"
+msgstr ""
+
+#: prefs.js:296
+msgid "Load Settings"
+msgstr ""
+
+#: prefs.js:324
+msgid "Save"
+msgstr ""
+
+#: prefs.js:329
+msgid "Save Settings"
+msgstr ""
+
+#: slideshow.js:29
 msgid "Slideshow directory not found."
 msgstr ""
 
-#: slideshowAPI.js:55
+#: slideshow.js:30
 msgid "Set a directory in settings to begin slideshow"
 msgstr ""
 
-#: slideshowAPI.js:59
+#: slideshow.js:33
 msgid "Slideshow directory doesn't exist."
 msgstr ""
 
-#: slideshowAPI.js:60
+#: slideshow.js:34
 msgid "Change directory in settings to begin slideshow"
 msgstr ""
