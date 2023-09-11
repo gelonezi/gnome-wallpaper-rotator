@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-    <enum id='org.gnome.shell.extensions.azwallpaper.preserve-queue-type'>
-        <value value='0' nick='Session'/>
-        <value value='1' nick='Permanent'/>
-    </enum>
     <schema id="org.gnome.shell.extensions.azwallpaper" path="/org/gnome/shell/extensions/azwallpaper/">
         <key type="b" name="bing-wallpaper-download">
             <default>false</default>
@@ -44,11 +40,6 @@
             <default>''</default>
             <summary>The current wallpaper of the slideshow.</summary>
             <description>The current wallpaper of the slideshow.</description>
-        </key>
-        <key enum="org.gnome.shell.extensions.azwallpaper.preserve-queue-type" name="slideshow-preserve-queue">
-            <default>'Permanent'</default>
-            <summary>How to preserve the slideshow queue order and slideshow timer to next slide. Permanent or Session.</summary>
-            <description>How to preserve the slideshow queue order and slideshow timer to next slide. Permanent or Session.</description>
         </key>
         <key type="b" name="debug-logs">
             <default>false</default>

@@ -1,24 +1,28 @@
 import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
+
+import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
 import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 export default class AzWallpaperPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
-        const iconPath = `${this.path}/icons`;
+        const iconPath = `${this.path}/media`;
 
-        let iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
+        const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
         if (!iconTheme.get_search_path().includes(iconPath))
             iconTheme.add_search_path(iconPath);
 
-        window.can_navigate_back = true;
-
         const homePage = new HomePage(settings);
         window.add(homePage);
+
+        const aboutPage = new AboutPage(this.metadata);
+        window.add(aboutPage);
     }
 }
 
@@ -33,12 +37,12 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
 
         this._settings = settings;
 
-        let slideShowGroup = new Adw.PreferencesGroup({
+        const slideShowGroup = new Adw.PreferencesGroup({
             title: _('Slideshow Options'),
         });
         this.add(slideShowGroup);
 
-        let slideShowDirRow = new Adw.ActionRow({
+        const slideShowDirRow = new Adw.ActionRow({
             title: _('Slideshow Directory'),
             subtitle: this._settings.get_string('slideshow-directory'),
         });
@@ -48,23 +52,10 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         slideShowDirRow.add_suffix(fileChooserButton);
         slideShowGroup.add(slideShowDirRow);
 
-        let imageDurationRow = this.createSpinRow(_('Image Duration (seconds)'), 'slideshow-image-duration', 5, 600);
+        const imageDurationRow = this.createSpinRow(_('Image Duration (seconds)'), 'slideshow-image-duration', 5, 600);
         slideShowGroup.add(imageDurationRow);
 
-        let preserveQueueTypes = new Gtk.StringList();
-        preserveQueueTypes.append(_('Session'));
-        preserveQueueTypes.append(_('Permanent'));
-        let slideShowPreserveQueueRow = new Adw.ComboRow({
-            title: _('Preserve Slideshow Queue'),
-            model: preserveQueueTypes,
-            selected: this._settings.get_enum('slideshow-preserve-queue'),
-        });
-        slideShowPreserveQueueRow.connect('notify::selected', widget => {
-            this._settings.set_enum('slideshow-preserve-queue', widget.selected);
-        });
-        slideShowGroup.add(slideShowPreserveQueueRow);
-
-        let bingDlSwitch = new Gtk.Switch({
+        const bingDlSwitch = new Gtk.Switch({
             valign: Gtk.Align.CENTER,
             active: this._settings.get_boolean('bing-wallpaper-download'),
         });
@@ -72,13 +63,13 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             this._settings.set_boolean('bing-wallpaper-download', widget.get_active());
         });
 
-        let bingDLGroup = new Adw.PreferencesGroup({
+        const bingDLGroup = new Adw.PreferencesGroup({
             title: _('Download BING wallpaper of the day'),
             header_suffix: bingDlSwitch,
         });
         this.add(bingDLGroup);
 
-        let bingDlRow = new Adw.ActionRow({
+        const bingDlRow = new Adw.ActionRow({
             title: _('BING Download Directory'),
             subtitle: this._settings.get_string('bing-download-directory'),
         });
@@ -88,19 +79,19 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         bingDlRow.add_prefix(openDirectoryButton);
         bingDLGroup.add(bingDlRow);
 
-        let debugLogsGroup = new Adw.PreferencesGroup({
+        const debugLogsGroup = new Adw.PreferencesGroup({
             title: _('Debug Mode'),
         });
         this.add(debugLogsGroup);
 
-        let debugLogsSwitch = new Gtk.Switch({
+        const debugLogsSwitch = new Gtk.Switch({
             valign: Gtk.Align.CENTER,
             active: this._settings.get_boolean('debug-logs'),
         });
         debugLogsSwitch.connect('notify::active', widget => {
             this._settings.set_boolean('debug-logs', widget.get_active());
         });
-        let debugLogsRow = new Adw.ActionRow({
+        const debugLogsRow = new Adw.ActionRow({
             title: _('Enable Logs'),
             activatable_widget: debugLogsSwitch,
         });
@@ -111,7 +102,7 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
     createOpenDirectoyButton(directory) {
         const file = Gio.file_new_for_path(directory);
         const fileUri = file.get_uri();
-        let button = new Gtk.Button({
+        const button = new Gtk.Button({
             icon_name: 'folder-open-symbolic',
             tooltip_text: _('Open directory...'),
             valign: Gtk.Align.CENTER,
@@ -125,14 +116,14 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
     }
 
     createFileChooserButton(setting, parentRow) {
-        let fileChooserButton = new Gtk.Button({
+        const fileChooserButton = new Gtk.Button({
             icon_name: 'folder-new-symbolic',
             tooltip_text: _('Choose new directory...'),
             valign: Gtk.Align.CENTER,
         });
 
         fileChooserButton.connect('clicked', () => {
-            let dialog = new Gtk.FileChooserDialog({
+            const dialog = new Gtk.FileChooserDialog({
                 title: _('Select a directory'),
                 transient_for: this.get_root(),
                 action: Gtk.FileChooserAction.SELECT_FOLDER,
@@ -159,7 +150,7 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
 
     createSpinRow(title, setting, lower, upper) {
         const value = this._settings.get_int(setting);
-        let spinButton = new Gtk.SpinButton({
+        const spinButton = new Gtk.SpinButton({
             adjustment: new Gtk.Adjustment({
                 lower, upper, step_increment: 1, page_increment: 1, page_size: 0,
             }),
@@ -172,16 +163,248 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         spinButton.connect('value-changed', widget => {
             this._settings.set_int(setting, widget.get_value());
         });
-        let spinRow = new Adw.ActionRow({
+        const spinRow = new Adw.ActionRow({
             title: _(title),
             activatable_widget: spinButton,
         });
 
-        spinRow.setValue = spinValue => {
-            spinButton.set_value(spinValue);
+        spinRow.setValue = value => {
+            spinButton.set_value(value);
         };
 
         spinRow.add_suffix(spinButton);
         return spinRow;
     }
 });
+
+var AboutPage = GObject.registerClass(
+class AzWallpaperAboutPage extends Adw.PreferencesPage {
+    _init(metadata) {
+        super._init({
+            title: _('About'),
+            icon_name: 'help-about-symbolic',
+            name: 'AboutPage',
+        });
+
+        const PAYPAL_LINK = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+${metadata.name}&source=url`;
+        const PROJECT_IMAGE = 'azwallpaper-logo';
+        const SCHEMA_PATH = '/org/gnome/shell/extensions/azwallpaper/';
+
+        // Project Logo, title, description-------------------------------------
+        const projectHeaderGroup = new Adw.PreferencesGroup();
+        const projectHeaderBox = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            hexpand: false,
+            vexpand: false,
+        });
+
+        const projectImage = new Gtk.Image({
+            margin_bottom: 5,
+            icon_name: PROJECT_IMAGE,
+            pixel_size: 100,
+        });
+
+        const projectTitleLabel = new Gtk.Label({
+            label: _('Wallpaper Slideshow'),
+            css_classes: ['title-1'],
+            vexpand: true,
+            valign: Gtk.Align.FILL,
+        });
+
+        projectHeaderBox.append(projectImage);
+        projectHeaderBox.append(projectTitleLabel);
+        projectHeaderGroup.add(projectHeaderBox);
+
+        this.add(projectHeaderGroup);
+        // -----------------------------------------------------------------------
+
+        // Extension/OS Info and Links Group------------------------------------------------
+        const infoGroup = new Adw.PreferencesGroup();
+
+        const projectVersionRow = new Adw.ActionRow({
+            title: _('Wallpaper Slideshow Version'),
+        });
+        projectVersionRow.add_suffix(new Gtk.Label({
+            label: metadata.version.toString(),
+            css_classes: ['dim-label'],
+        }));
+        infoGroup.add(projectVersionRow);
+
+        if (metadata.commit) {
+            const commitRow = new Adw.ActionRow({
+                title: _('Git Commit'),
+            });
+            commitRow.add_suffix(new Gtk.Label({
+                label: metadata.commit.toString(),
+                css_classes: ['dim-label'],
+            }));
+            infoGroup.add(commitRow);
+        }
+
+        const gnomeVersionRow = new Adw.ActionRow({
+            title: _('GNOME Version'),
+        });
+        gnomeVersionRow.add_suffix(new Gtk.Label({
+            label: Config.PACKAGE_VERSION.toString(),
+            css_classes: ['dim-label'],
+        }));
+        infoGroup.add(gnomeVersionRow);
+
+        const osRow = new Adw.ActionRow({
+            title: _('OS Name'),
+        });
+
+        const name = GLib.get_os_info('NAME');
+        const prettyName = GLib.get_os_info('PRETTY_NAME');
+
+        osRow.add_suffix(new Gtk.Label({
+            label: prettyName ? prettyName : name,
+            css_classes: ['dim-label'],
+        }));
+        infoGroup.add(osRow);
+
+        const sessionTypeRow = new Adw.ActionRow({
+            title: _('Windowing System'),
+        });
+        sessionTypeRow.add_suffix(new Gtk.Label({
+            label: GLib.getenv('XDG_SESSION_TYPE') === 'wayland' ? 'Wayland' : 'X11',
+            css_classes: ['dim-label'],
+        }));
+        infoGroup.add(sessionTypeRow);
+
+        const gitlabRow = this._createLinkRow(_('Wallpaper Slideshow GitLab'), metadata.url);
+        infoGroup.add(gitlabRow);
+
+        const donateRow = this._createLinkRow(_('Donate via PayPal'), PAYPAL_LINK);
+        infoGroup.add(donateRow);
+
+        this.add(infoGroup);
+        // -----------------------------------------------------------------------
+
+        // Save/Load Settings----------------------------------------------------------
+        const settingsGroup = new Adw.PreferencesGroup();
+        const settingsRow = new Adw.ActionRow({
+            title: _('Wallpaper Slideshow Settings'),
+        });
+        const loadButton = new Gtk.Button({
+            label: _('Load'),
+            valign: Gtk.Align.CENTER,
+        });
+        loadButton.connect('clicked', () => {
+            this._showFileChooser(
+                _('Load Settings'),
+                {action: Gtk.FileChooserAction.OPEN},
+                '_Open',
+                filename => {
+                    if (filename && GLib.file_test(filename, GLib.FileTest.EXISTS)) {
+                        const settingsFile = Gio.File.new_for_path(filename);
+                        const [success_, pid_, stdin, stdout, stderr] =
+                            GLib.spawn_async_with_pipes(
+                                null,
+                                ['dconf', 'load', SCHEMA_PATH],
+                                null,
+                                GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                null
+                            );
+
+                        const outputStream = new Gio.UnixOutputStream({fd: stdin, close_fd: true});
+                        GLib.close(stdout);
+                        GLib.close(stderr);
+
+                        outputStream.splice(settingsFile.read(null),
+                            Gio.OutputStreamSpliceFlags.CLOSE_SOURCE |
+                            Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
+                            null);
+                    }
+                }
+            );
+        });
+        const saveButton = new Gtk.Button({
+            label: _('Save'),
+            valign: Gtk.Align.CENTER,
+        });
+        saveButton.connect('clicked', () => {
+            this._showFileChooser(
+                _('Save Settings'),
+                {action: Gtk.FileChooserAction.SAVE},
+                '_Save',
+                filename => {
+                    const file = Gio.file_new_for_path(filename);
+                    const raw = file.replace(null, false, Gio.FileCreateFlags.NONE, null);
+                    const out = Gio.BufferedOutputStream.new_sized(raw, 4096);
+
+                    out.write_all(GLib.spawn_command_line_sync(`dconf dump ${SCHEMA_PATH}`)[1], null);
+                    out.close(null);
+                }
+            );
+        });
+        settingsRow.add_suffix(saveButton);
+        settingsRow.add_suffix(loadButton);
+        settingsGroup.add(settingsRow);
+        this.add(settingsGroup);
+        // -----------------------------------------------------------------------
+
+        const gnuSoftwareGroup = new Adw.PreferencesGroup();
+        const gnuSofwareLabel = new Gtk.Label({
+            label: _(GNU_SOFTWARE),
+            use_markup: true,
+            justify: Gtk.Justification.CENTER,
+        });
+        const gnuSofwareLabelBox = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            valign: Gtk.Align.END,
+            vexpand: true,
+        });
+        gnuSofwareLabelBox.append(gnuSofwareLabel);
+        gnuSoftwareGroup.add(gnuSofwareLabelBox);
+        this.add(gnuSoftwareGroup);
+    }
+
+    _createLinkRow(title, uri) {
+        const image = new Gtk.Image({
+            icon_name: 'adw-external-link-symbolic',
+            valign: Gtk.Align.CENTER,
+        });
+        const linkRow = new Adw.ActionRow({
+            title: _(title),
+            activatable: true,
+        });
+        linkRow.connect('activated', () => {
+            Gtk.show_uri(this.get_root(), uri, Gdk.CURRENT_TIME);
+        });
+        linkRow.add_suffix(image);
+
+        return linkRow;
+    }
+
+    _showFileChooser(title, params, acceptBtn, acceptHandler) {
+        const dialog = new Gtk.FileChooserDialog({
+            title: _(title),
+            transient_for: this.get_root(),
+            modal: true,
+            action: params.action,
+        });
+        dialog.add_button('_Cancel', Gtk.ResponseType.CANCEL);
+        dialog.add_button(acceptBtn, Gtk.ResponseType.ACCEPT);
+
+        dialog.connect('response', (self, response) => {
+            if (response === Gtk.ResponseType.ACCEPT) {
+                try {
+                    acceptHandler(dialog.get_file().get_path());
+                } catch (e) {
+                    log(`AppsIconTaskbar - Filechooser error: ${e}`);
+                }
+            }
+            dialog.destroy();
+        });
+
+        dialog.show();
+    }
+});
+
+var GNU_SOFTWARE = '<span size="small">' +
+        'This program comes with absolutely no warranty.\n' +
+        'See the <a href="https://gnu.org/licenses/old-licenses/gpl-2.0.html">' +
+        'GNU General Public License, version 2 or later</a> for details.' +
+        '</span>';
+

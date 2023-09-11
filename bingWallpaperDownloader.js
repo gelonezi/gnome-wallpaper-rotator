@@ -2,7 +2,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Soup from 'gi://Soup';
 
-import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -23,10 +23,9 @@ const BingParams = {
 };
 
 export const BingWallpaperDownloader = class {
-    constructor() {
-        this._extension = Extension.lookupByURL(import.meta.url);
-        this._settings = this._extension.getSettings();
-        this._userAgent = `User-Agent: Mozilla/5.0 (${SESSION_TYPE}; GNOME Shell/${PACKAGE_VERSION}; Linux ${GLib.getenv('CPU')};) AzWallpaper/${this._extension.metadata.version}`;
+    constructor(settings, metadata) {
+        this._settings = settings;
+        this._userAgent = `User-Agent: Mozilla/5.0 (${SESSION_TYPE}; GNOME Shell/${PACKAGE_VERSION}; Linux ${GLib.getenv('CPU')};) AzWallpaper/${metadata.version}`;
     }
 
     initiate() {
@@ -39,7 +38,7 @@ export const BingWallpaperDownloader = class {
             Main.notify(_('No directory found for BING wallpaper downloads.'),
                 _('Set directory to - %s').format(this._bingWallpapersDirectory));
         } else {
-            let dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
+            const dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
             // attempt to make the directory if it doesn't exist
             if (!dir.query_exists(null)) {
                 const success = dir.make_directory(null);
@@ -59,21 +58,34 @@ export const BingWallpaperDownloader = class {
     }
 
     _setToDefaultDownloadDirectory() {
-        this._bingWallpapersDirectory = GLib.build_filenamev([GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES), 'Bing Wallpapers']);
+        const pictureDirectory = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES);
+        this._bingWallpapersDirectory = GLib.build_filenamev([pictureDirectory, 'Bing Wallpapers']);
         this._settings.set_string('bing-download-directory', this._bingWallpapersDirectory);
 
-        let dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
+        const dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
         // attempt to make the directory if it doesn't exist
         if (!dir.query_exists(null))
             dir.make_directory(null);
     }
 
+    _getPrettyTime(timespan) {
+        const minutesAgo = timespan / 60;
+        const hoursAgo = timespan / 3600;
+
+        if (timespan <= 60)
+            return `${timespan} seconds`;
+        if (minutesAgo <= 60)
+            return `${minutesAgo.toFixed(1)} minutes`;
+
+        return `${hoursAgo.toFixed(1)} hours`;
+    }
+
     _startDownloaderTimer(delay, runOnce) {
         this.endDownloaderTimer();
 
-        debugLog(`BING Wallpaper: Set Download Timer: ${delay}`);
+        debugLog(`BING Downloader - Next download attempt in ${this._getPrettyTime(delay)}`);
         this._fetchBingWallpaperId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, delay, () => {
-            this._queueDownload().catch(e => debugLog(e));
+            this._queueDownload().catch(e => debugLog(`BING Downloader - Error downloading: ${e}`));
             this._setLastDataFetch();
             if (runOnce) {
                 // Set a 12 hour timer for next data fetch.
@@ -93,28 +105,29 @@ export const BingWallpaperDownloader = class {
     }
 
     async _queueDownload() {
-        debugLog('BING Wallpaper: Queue Download');
+        debugLog('BING Downloader - Starting download...');
         const {jsonData, error} = await this._getJsonData();
 
         if (!jsonData || error) {
             if (error)
-                debugLog(error);
+                debugLog(`BING Downloader - ${error}`);
             else
-                debugLog('JSON data null');
+                debugLog('BING Downloader - JSON data null');
+            debugLog('BING Downloader - Download Failed!');
             return;
         }
 
         const results = [];
-        for (let image of jsonData.images)
+        for (const image of jsonData.images)
             results.push(this._downloadAndSaveImage(image));
 
-        await Promise.all(results).then(value => {
-            const {success, err} = value;
-            if (success)
-                debugLog(success);
-            else
-                debugLog(err);
+        await Promise.all(results).then(values => {
+            for (const value of values) {
+                const {msg} = value;
+                debugLog(msg);
+            }
         });
+        debugLog('BING Downloader - Download Finished!');
     }
 
     _getElapsedTime() {
@@ -122,8 +135,6 @@ export const BingWallpaperDownloader = class {
         const dateNow = Date.now();
 
         const elapsedTime = dateNow - lastDataFetch;
-
-        debugLog(`BING Wallpaper: ElapsedTime: ${elapsedTime}`);
 
         return elapsedTime;
     }
@@ -134,7 +145,7 @@ export const BingWallpaperDownloader = class {
         const has12HoursPassed = elapsedTime >= TWELVE_HOURS_IN_MILLISECONDS;
 
         if (lastDataFetch === 0 || has12HoursPassed) {
-            debugLog('BING Wallpaper: 12 hours passed. Get New Data');
+            debugLog('BING Downloader - 12 hours passed. Queue download...');
             return STARTUP_DELAY;
         }
 
@@ -145,12 +156,10 @@ export const BingWallpaperDownloader = class {
     _setLastDataFetch() {
         const dateNow = Date.now();
         this._settings.set_uint64('bing-last-data-fetch', dateNow);
-
-        debugLog(`BING Wallpaper: Set data-fetch-time ${dateNow}`);
     }
 
     async _getJsonData() {
-        let message = Soup.Message.new_from_encoded_form(
+        const message = Soup.Message.new_from_encoded_form(
             'GET',
             'https://www.bing.com/HPImageArchive.aspx',
             Soup.form_encode_hash(BingParams)
@@ -166,9 +175,9 @@ export const BingWallpaperDownloader = class {
             if (message.statusCode === Soup.Status.OK)
                 return {jsonData: info};
             else
-                return {error: `BING Wallpaper: getJsonData() failed with status code - ${message.statusCode}`};
+                return {error: `getJsonData() failed with status code - ${message.statusCode}`};
         } catch (e) {
-            return {error: `BING Wallpaper: getJsonData() error - ${e}`};
+            return {error: `getJsonData() error - ${e}`};
         }
     }
 
@@ -182,12 +191,11 @@ export const BingWallpaperDownloader = class {
         const file = Gio.file_new_for_path(filePath);
 
         if (file.query_exists(null))
-            return {error: `BING Wallpaper: "${fileName}" already downloaded!`};
+            return {msg: `BING Downloader - "${fileName}" already downloaded!`};
 
+        debugLog(`BING Downloader - Retrieving "${fileName}" from BING`);
 
-        debugLog(`BING Wallpaper: Retrieving "${fileName}" from BING`);
-
-        let message = Soup.Message.new('GET', url);
+        const message = Soup.Message.new('GET', url);
 
         let info;
         try {
@@ -195,13 +203,17 @@ export const BingWallpaperDownloader = class {
 
             if (message.statusCode === Soup.Status.OK) {
                 info = bytes.get_data();
-                const [success, etag_] = await file.replace_contents_bytes_async(info, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-                return success ? {success: 'BING Wallpaper: Download Complete!'} : {error: 'BING Wallpaper: Error saving file!"'};
+                const [success] = await file.replace_contents_bytes_async(info, null, false,
+                    Gio.FileCreateFlags.REPLACE_DESTINATION, null);
+                if (success)
+                    return {msg: 'BING Downloader - Image download complete!'};
+                else
+                    return {msg: 'BING Downloader - Error saving file!"'};
             } else {
-                return {error: `BING Wallpaper: Download failed with status code - ${message.statusCode}`};
+                return {msg: `BING Downloader - Image download failed with status code - ${message.statusCode}`};
             }
         } catch (e) {
-            return {error: `BING Wallpaper: Download failed - ${e}`};
+            return {msg: `BING Downloader - Image download failed - ${e}`};
         }
     }
 };
