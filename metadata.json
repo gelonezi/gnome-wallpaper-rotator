@@ -6,5 +6,8 @@
   "settings-schema": "org.gnome.shell.extensions.azwallpaper",
   "version": 2,
   "shell-version": ["45"],
-  "url": "https://gitlab.com/AndrewZaech/azwallpaper"
+  "url": "https://gitlab.com/AndrewZaech/azwallpaper",
+  "donations": {
+    "paypal": "azaech"
+  }
 }
