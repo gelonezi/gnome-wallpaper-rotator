@@ -13,8 +13,8 @@ export default class AzWallpaper extends Extension {
     enable() {
         this._settings = this.getSettings();
 
-        this._slideshow = new Slideshow(this._settings);
-        this._bingWallpaperDownloader = new BingWallpaperDownloader(this._settings, this.metadata);
+        this._slideshow = new Slideshow(this);
+        this._bingWallpaperDownloader = new BingWallpaperDownloader(this);
         this._injectionManager = new InjectionManager();
 
         this._injectionManager.overrideMethod(Main.layoutManager, '_addBackgroundMenu', originalMethod => {
@@ -30,7 +30,7 @@ export default class AzWallpaper extends Extension {
         this._settings.connectObject('changed::slideshow-image-duration', () => this._slideshow.startSlideshow(), this);
         this._settings.connectObject('changed::slideshow-directory', () => this._slideshowDirectoryChanged(), this);
         this._settings.connectObject('changed::bing-wallpaper-download', () => this._startBingWallpaperDownloader(), this);
-        this._settings.connectObject('changed::bing-download-directory', () => this._bingWallpaperDirectoryChanged(), this);
+        this._settings.connectObject('changed::bing-download-directory', () => this._startBingWallpaperDownloader(), this);
 
         this._delayStartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
             this._startBingWallpaperDownloader();
@@ -40,6 +40,10 @@ export default class AzWallpaper extends Extension {
             this._delayStartId = null;
             return GLib.SOURCE_REMOVE;
         });
+    }
+
+    get settings() {
+        return this._settings;
     }
 
     disable() {
@@ -63,18 +67,8 @@ export default class AzWallpaper extends Extension {
     }
 
     _slideshowDirectoryChanged() {
-        Main.notify(_('Slideshow directory changed.'),
-            this._settings.get_string('slideshow-directory'));
-
         this._slideshow.reset();
         this._slideshow.initiate();
-    }
-
-    _bingWallpaperDirectoryChanged() {
-        Main.notify(_('BING wallpaper download directory changed.'),
-            this._settings.get_string('bing-download-directory'));
-
-        this._startBingWallpaperDownloader();
     }
 
     _startBingWallpaperDownloader() {

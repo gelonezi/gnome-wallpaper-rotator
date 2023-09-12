@@ -5,9 +5,8 @@ import Soup from 'gi://Soup';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-import {debugLog} from './utils.js';
+import {debugLog, notify} from './utils.js';
 
 const STARTUP_DELAY = 3;
 const TWELVE_HOURS_IN_SECONDS = 43200;
@@ -23,9 +22,9 @@ const BingParams = {
 };
 
 export const BingWallpaperDownloader = class {
-    constructor(settings, metadata) {
-        this._settings = settings;
-        this._userAgent = `User-Agent: Mozilla/5.0 (${SESSION_TYPE}; GNOME Shell/${PACKAGE_VERSION}; Linux ${GLib.getenv('CPU')};) AzWallpaper/${metadata.version}`;
+    constructor(extension) {
+        this._settings = extension.settings;
+        this._userAgent = `User-Agent: Mozilla/5.0 (${SESSION_TYPE}; GNOME Shell/${PACKAGE_VERSION}; Linux ${GLib.getenv('CPU')};) AzWallpaper/${extension.metadata.version}`;
     }
 
     initiate() {
@@ -35,18 +34,16 @@ export const BingWallpaperDownloader = class {
 
         if (!this._bingWallpapersDirectory) {
             this._setToDefaultDownloadDirectory();
-            Main.notify(_('No directory found for BING wallpaper downloads.'),
-                _('Set directory to - %s').format(this._bingWallpapersDirectory));
+            notify(_('No user defined directory found for BING wallpaper downloads'),
+                _('Directory set to - %s').format(this._bingWallpapersDirectory));
         } else {
             const dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
-            // attempt to make the directory if it doesn't exist
             if (!dir.query_exists(null)) {
                 const success = dir.make_directory(null);
-                // If making the directory failed, set to default directory
                 if (!success) {
                     this._setToDefaultDownloadDirectory();
-                    Main.notify(_('Failed to create BING wallpaper downloads directory.'),
-                        _('Set directory to - %s').format(this._bingWallpapersDirectory));
+                    notify(_('Failed to create user defined directory for BING wallpaper downloads'),
+                        _('Directory set to - %s').format(this._bingWallpapersDirectory));
                 }
             }
         }
@@ -63,7 +60,6 @@ export const BingWallpaperDownloader = class {
         this._settings.set_string('bing-download-directory', this._bingWallpapersDirectory);
 
         const dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
-        // attempt to make the directory if it doesn't exist
         if (!dir.query_exists(null))
             dir.make_directory(null);
     }

@@ -1,11 +1,9 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import {debugLog} from './utils.js';
+import {debugLog, notify} from './utils.js';
 
 const FILE_TYPES = ['png', 'jpg', 'jpeg'];
 
@@ -18,16 +16,12 @@ function fisherYatesShuffle(array) {
     }
 }
 
-function isValidDirectory(slideshowDirectory) {
+function isValidDirectory(extension, slideshowDirectory) {
     const directory = Gio.file_new_for_path(slideshowDirectory);
 
-    if (!slideshowDirectory) {
-        Main.notify(_('Slideshow directory not found.'),
-            _('Set a directory in settings to begin slideshow'));
-        return false;
-    } else if (!directory.query_exists(null)) {
-        Main.notify(_("Slideshow directory doesn't exist."),
-            _('Change directory in settings to begin slideshow'));
+    if (!slideshowDirectory || !directory.query_exists(null)) {
+        notify(_('Slideshow directory not found'), _('Change directory in settings to begin slideshow'),
+            _('Open Settings'), () => extension.openPreferences());
         return false;
     }
 
@@ -35,8 +29,9 @@ function isValidDirectory(slideshowDirectory) {
 }
 
 export const Slideshow = class AzSlideShow {
-    constructor(settings) {
-        this._settings = settings;
+    constructor(extension) {
+        this._extension = extension;
+        this._settings = this._extension.settings;
         this._wallpaperQueue = null;
         this._backgroundSettings = new Gio.Settings({schema: 'org.gnome.desktop.background'});
         this._loadSlideshowQueue();
@@ -44,7 +39,7 @@ export const Slideshow = class AzSlideShow {
 
     initiate() {
         const slideshowDirectory = this._settings.get_string('slideshow-directory');
-        if (!isValidDirectory(slideshowDirectory))
+        if (!isValidDirectory(this._extension, slideshowDirectory))
             return;
 
         debugLog('Initiate slideshow.');
@@ -62,11 +57,13 @@ export const Slideshow = class AzSlideShow {
 
     _queryWallpapersExist(wallpaperList) {
         debugLog('Checking if wallpapers exist...');
+        const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
         for (let i = wallpaperList.length - 1; i >= 0; i--) {
-            const imagePath = wallpaperList[i];
-            const file = Gio.file_new_for_path(imagePath);
+            const imageName = wallpaperList[i];
+            const filePath = GLib.build_filenamev([slideshowDirectoryPath, imageName]);
+            const file = Gio.file_new_for_path(filePath);
             if (!file.query_exists(null)) {
-                debugLog(`File not found. Removing ${imagePath}`);
+                debugLog(`File not found. Removing ${filePath}`);
                 wallpaperList.splice(i, 1);
             }
         }
@@ -95,6 +92,8 @@ export const Slideshow = class AzSlideShow {
     startSlideshow(delay = this._settings.get_int('slideshow-image-duration'), runOnce = false) {
         this._endSlideshow();
 
+        const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
+
         if (!runOnce)
             debugLog(`Next slide in ${delay} seconds.`);
 
@@ -110,8 +109,8 @@ export const Slideshow = class AzSlideShow {
 
                 // if 'slideshow-wallpaper-queue still empty, cancel slideshow
                 if (newSlideshowStatus.isEmpty) {
-                    debugLog('Slideshow Error - No wallpapers in queue after' +
-                        'trying to create new slideshow. Canceling slideshow.');
+                    notify(_('Slideshow contains no slides'), _('Change directory in settings to begin slideshow'),
+                        _('Open Settings'), () => this._extension.openPreferences());
                     this._slideshowId = null;
                     return GLib.SOURCE_REMOVE;
                 }
@@ -132,8 +131,10 @@ export const Slideshow = class AzSlideShow {
 
             debugLog('Changing wallpaper...');
 
-            this._backgroundSettings.set_string('picture-uri', `file://${randomWallpaper}`);
-            this._backgroundSettings.set_string('picture-uri-dark', `file://${randomWallpaper}`);
+            const filePath = GLib.build_filenamev([slideshowDirectoryPath, randomWallpaper]);
+
+            this._backgroundSettings.set_string('picture-uri', `file://${filePath}`);
+            this._backgroundSettings.set_string('picture-uri-dark', `file://${filePath}`);
 
             debugLog(`Current wallpaper "${randomWallpaper}"`);
             debugLog(`Wallpapers in queue: ${this._wallpaperQueue.length}`);
@@ -249,10 +250,8 @@ export const Slideshow = class AzSlideShow {
             while ((info = fileEnum.next_file(null))) {
                 const name = info.get_name();
                 const ext = name.split('.').pop();
-                if (FILE_TYPES.includes(ext)) {
-                    const filePath = GLib.build_filenamev([slideshowDirectoryPath, name]);
-                    wallpaperPaths.push(filePath);
-                }
+                if (FILE_TYPES.includes(ext))
+                    wallpaperPaths.push(name);
             }
         } catch (e) {
             debugLog(e);
@@ -279,6 +278,7 @@ export const Slideshow = class AzSlideShow {
         this._endSlideTimer();
         this._endSlideshow();
         this._clearFileMonitor();
+        this._loadSlideshowQueue();
     }
 
     destroy() {
