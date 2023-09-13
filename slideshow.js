@@ -200,8 +200,8 @@ export const Slideshow = class AzSlideShow {
         this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, null);
         this._fileMonitor.set_rate_limit(1000);
         this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
-            const fileName = file.get_path();
-            const newFileName = otherFile?.get_path();
+            const fileName = file.get_basename();
+            const newFileName = otherFile?.get_basename();
             const index = this._wallpaperQueue.indexOf(fileName);
 
             switch (eventType) {
