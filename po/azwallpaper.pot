@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-13 12:07-0400\n"
+"POT-Creation-Date: 2023-10-13 12:29-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -58,43 +58,43 @@ msgstr ""
 msgid "Slide Duration"
 msgstr ""
 
-#: prefs.js:87
+#: prefs.js:57
 msgid "Hours"
 msgstr ""
 
-#: prefs.js:96
+#: prefs.js:57
 msgid "Minutes"
 msgstr ""
 
-#: prefs.js:105
+#: prefs.js:57
 msgid "Seconds"
 msgstr ""
 
-#: prefs.js:125
+#: prefs.js:123
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: prefs.js:131
+#: prefs.js:129
 msgid "BING Download Directory"
 msgstr ""
 
-#: prefs.js:141
+#: prefs.js:139
 msgid "Debug Mode"
 msgstr ""
 
-#: prefs.js:153
+#: prefs.js:151
 msgid "Enable Logs"
 msgstr ""
 
-#: prefs.js:165
+#: prefs.js:163
 msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:179
+#: prefs.js:177
 msgid "Choose new directory..."
 msgstr ""
 
-#: prefs.js:185
+#: prefs.js:183
 msgid "Select a directory"
 msgstr ""
 

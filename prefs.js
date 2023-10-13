@@ -54,6 +54,7 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
 
         const slideDurationRow = new Adw.ActionRow({
             title: _('Slide Duration'),
+            subtitle: `${_('Hours')}:${_('Minutes')}:${_('Seconds')}`,
         });
         slideShowGroup.add(slideDurationRow);
 
@@ -84,7 +85,8 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             updateSlideDuration();
         });
         const hoursLabel = new Gtk.Label({
-            label: _('Hours'),
+            label: '∶',
+            css_classes: ['title-3'],
             halign: Gtk.Align.START,
         });
 
@@ -93,7 +95,8 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             updateSlideDuration();
         });
         const minutesLabel = new Gtk.Label({
-            label: _('Minutes'),
+            label: '∶',
+            css_classes: ['title-3'],
             halign: Gtk.Align.START,
         });
 
@@ -101,17 +104,12 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         secondsSpinButton.connect('value-changed', () => {
             updateSlideDuration();
         });
-        const secondsLabel = new Gtk.Label({
-            label: _('Seconds'),
-            halign: Gtk.Align.START,
-        });
 
         slideDurationGrid.attach(hoursSpinButton, 0, 0, 1, 1);
         slideDurationGrid.attach(hoursLabel, 1, 0, 1, 1);
-        slideDurationGrid.attach(minutesSpinButton, 0, 1, 1, 1);
-        slideDurationGrid.attach(minutesLabel, 1, 1, 1, 1);
-        slideDurationGrid.attach(secondsSpinButton, 0, 2, 1, 1);
-        slideDurationGrid.attach(secondsLabel, 1, 2, 1, 1);
+        slideDurationGrid.attach(minutesSpinButton, 2, 0, 1, 1);
+        slideDurationGrid.attach(minutesLabel, 3, 0, 1, 1);
+        slideDurationGrid.attach(secondsSpinButton, 4, 0, 1, 1);
 
         const bingDlSwitch = new Gtk.Switch({
             valign: Gtk.Align.CENTER,
@@ -217,6 +215,8 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             valign: Gtk.Align.CENTER,
             wrap: true,
             value,
+            orientation: Gtk.Orientation.VERTICAL,
+            width_request: 40,
         });
         return spinButton;
     }
