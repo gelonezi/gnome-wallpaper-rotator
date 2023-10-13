@@ -21,8 +21,8 @@
             <summary>The directory of the slideshow wallpapers.</summary>
             <description>The directory of the slideshow wallpapers.</description>
         </key>
-        <key type="i" name="slideshow-image-duration">
-            <default>60</default>
+        <key type="(iii)" name="slideshow-slide-duration">
+            <default>(0, 0, 60)</default>
             <summary>Duration of each image in the slideshow (seconds).</summary>
             <description>Duration of each image in the slideshow (seconds).</description>
         </key>

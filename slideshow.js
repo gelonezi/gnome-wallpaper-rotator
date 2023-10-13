@@ -89,7 +89,7 @@ export const Slideshow = class AzSlideShow {
         return status;
     }
 
-    startSlideshow(delay = this._settings.get_int('slideshow-image-duration'), runOnce = false) {
+    startSlideshow(delay = this._getSlideDuration(), runOnce = false) {
         this._endSlideshow();
 
         const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
@@ -144,7 +144,7 @@ export const Slideshow = class AzSlideShow {
             this._startSlideTimer();
 
             if (runOnce) {
-                this.startSlideshow(this._settings.get_int('slideshow-image-duration'));
+                this.startSlideshow(this._getSlideDuration());
                 return GLib.SOURCE_REMOVE;
             }
 
@@ -164,7 +164,7 @@ export const Slideshow = class AzSlideShow {
     _startSlideTimer() {
         this._slideTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
             const dateNow = Date.now();
-            const imageDuration = this._settings.get_int('slideshow-image-duration');
+            const imageDuration = this._getSlideDuration();
             const elapsedTime = Math.floor((dateNow - this._currentSlideTime) / 1000);
             const remainingTime = Math.max(imageDuration - elapsedTime, 0);
             this._settings.set_int('slideshow-timer-remaining', remainingTime);
@@ -262,12 +262,20 @@ export const Slideshow = class AzSlideShow {
 
     _getTimerDelay() {
         const remainingTimer = this._settings.get_int('slideshow-timer-remaining');
-        const imageDuration = this._settings.get_int('slideshow-image-duration');
+        const imageDuration = this._getSlideDuration();
 
         if (remainingTimer === 0 || remainingTimer <= imageDuration)
             return Math.max(remainingTimer, 0);
 
         return imageDuration;
+    }
+
+    _getSlideDuration() {
+        const [hours, minutes, seconds] = this._settings.get_value('slideshow-slide-duration').deep_unpack();
+        const durationInSeconds = (hours * 3600) + (minutes * 60) + seconds;
+
+        // Cap slide duration minimum to 5 seconds
+        return Math.max(durationInSeconds, 5);
     }
 
     reset() {

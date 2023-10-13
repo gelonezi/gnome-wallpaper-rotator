@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-12 11:04-0400\n"
+"POT-Creation-Date: 2023-10-13 12:07-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,19 +30,19 @@ msgstr ""
 msgid "Failed to create user defined directory for BING wallpaper downloads"
 msgstr ""
 
-#: extension.js:83
-msgid "Next Background"
+#: extension.js:85
+msgid "Next Wallpaper"
 msgstr ""
 
-#: extension.js:90
-msgid "Slideshow Settings..."
+#: extension.js:92
+msgid "Slideshow Settings"
 msgstr ""
 
-#: extension.js:96
+#: extension.js:98
 msgid "Display Settings"
 msgstr ""
 
-#: extension.js:97 prefs.js:33
+#: extension.js:99 prefs.js:33
 msgid "Settings"
 msgstr ""
 
@@ -54,91 +54,103 @@ msgstr ""
 msgid "Slideshow Directory"
 msgstr ""
 
-#: prefs.js:55
-msgid "Image Duration (seconds)"
+#: prefs.js:56
+msgid "Slide Duration"
 msgstr ""
 
-#: prefs.js:67
+#: prefs.js:87
+msgid "Hours"
+msgstr ""
+
+#: prefs.js:96
+msgid "Minutes"
+msgstr ""
+
+#: prefs.js:105
+msgid "Seconds"
+msgstr ""
+
+#: prefs.js:125
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: prefs.js:73
+#: prefs.js:131
 msgid "BING Download Directory"
 msgstr ""
 
-#: prefs.js:83
+#: prefs.js:141
 msgid "Debug Mode"
 msgstr ""
 
-#: prefs.js:95
+#: prefs.js:153
 msgid "Enable Logs"
 msgstr ""
 
-#: prefs.js:107
+#: prefs.js:165
 msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:121
+#: prefs.js:179
 msgid "Choose new directory..."
 msgstr ""
 
-#: prefs.js:127
+#: prefs.js:185
 msgid "Select a directory"
 msgstr ""
 
-#: prefs.js:184
+#: prefs.js:229
 msgid "About"
 msgstr ""
 
-#: prefs.js:208 utils.js:31
+#: prefs.js:253 utils.js:34
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: prefs.js:225
+#: prefs.js:270
 msgid "Wallpaper Slideshow Version"
 msgstr ""
 
-#: prefs.js:235
+#: prefs.js:280
 msgid "Git Commit"
 msgstr ""
 
-#: prefs.js:245
+#: prefs.js:290
 msgid "GNOME Version"
 msgstr ""
 
-#: prefs.js:254
+#: prefs.js:299
 msgid "OS Name"
 msgstr ""
 
-#: prefs.js:267
+#: prefs.js:312
 msgid "Windowing System"
 msgstr ""
 
-#: prefs.js:275
+#: prefs.js:320
 msgid "Wallpaper Slideshow GitLab"
 msgstr ""
 
-#: prefs.js:278
+#: prefs.js:323
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:287
+#: prefs.js:332
 msgid "Wallpaper Slideshow Settings"
 msgstr ""
 
-#: prefs.js:290
+#: prefs.js:335
 msgid "Load"
 msgstr ""
 
-#: prefs.js:295
+#: prefs.js:340
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:323
+#: prefs.js:368
 msgid "Save"
 msgstr ""
 
-#: prefs.js:328
+#: prefs.js:373
 msgid "Save Settings"
 msgstr ""
 

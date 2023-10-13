@@ -52,8 +52,66 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         slideShowDirRow.add_suffix(fileChooserButton);
         slideShowGroup.add(slideShowDirRow);
 
-        const imageDurationRow = this.createSpinRow(_('Image Duration (seconds)'), 'slideshow-image-duration', 5, 600);
-        slideShowGroup.add(imageDurationRow);
+        const slideDurationRow = new Adw.ActionRow({
+            title: _('Slide Duration'),
+        });
+        slideShowGroup.add(slideDurationRow);
+
+        const updateSlideDuration = () => {
+            if (this._updateTimeoutId)
+                GLib.source_remove(this._updateTimeoutId);
+
+            const hours = hoursSpinButton.get_value();
+            const minutes = minutesSpinButton.get_value();
+            const seconds = secondsSpinButton.get_value();
+
+            this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                this._settings.set_value('slideshow-slide-duration', new GLib.Variant('(iii)', [hours, minutes, seconds]));
+                this._updateTimeoutId = null;
+                return GLib.SOURCE_REMOVE;
+            });
+        };
+
+        const slideDurationGrid = new Gtk.Grid({
+            row_spacing: 2,
+            column_spacing: 4,
+        });
+        slideDurationRow.add_suffix(slideDurationGrid);
+
+        const [hours, minutes, seconds] = this._settings.get_value('slideshow-slide-duration').deep_unpack();
+        const hoursSpinButton = this._createSpinButton(hours, 0, 24);
+        hoursSpinButton.connect('value-changed', () => {
+            updateSlideDuration();
+        });
+        const hoursLabel = new Gtk.Label({
+            label: _('Hours'),
+            halign: Gtk.Align.START,
+        });
+
+        const minutesSpinButton = this._createSpinButton(minutes, 0, 60);
+        minutesSpinButton.connect('value-changed', () => {
+            updateSlideDuration();
+        });
+        const minutesLabel = new Gtk.Label({
+            label: _('Minutes'),
+            halign: Gtk.Align.START,
+        });
+
+        const secondsSpinButton = this._createSpinButton(seconds, 0, 60);
+        secondsSpinButton.connect('value-changed', () => {
+            updateSlideDuration();
+        });
+        const secondsLabel = new Gtk.Label({
+            label: _('Seconds'),
+            halign: Gtk.Align.START,
+        });
+
+        slideDurationGrid.attach(hoursSpinButton, 0, 0, 1, 1);
+        slideDurationGrid.attach(hoursLabel, 1, 0, 1, 1);
+        slideDurationGrid.attach(minutesSpinButton, 0, 1, 1, 1);
+        slideDurationGrid.attach(minutesLabel, 1, 1, 1, 1);
+        slideDurationGrid.attach(secondsSpinButton, 0, 2, 1, 1);
+        slideDurationGrid.attach(secondsLabel, 1, 2, 1, 1);
 
         const bingDlSwitch = new Gtk.Switch({
             valign: Gtk.Align.CENTER,
@@ -148,8 +206,7 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         return fileChooserButton;
     }
 
-    createSpinRow(title, setting, lower, upper) {
-        const value = this._settings.get_int(setting);
+    _createSpinButton(value, lower, upper) {
         const spinButton = new Gtk.SpinButton({
             adjustment: new Gtk.Adjustment({
                 lower, upper, step_increment: 1, page_increment: 1, page_size: 0,
@@ -158,22 +215,10 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             digits: 0,
             numeric: true,
             valign: Gtk.Align.CENTER,
+            wrap: true,
+            value,
         });
-        spinButton.set_value(value);
-        spinButton.connect('value-changed', widget => {
-            this._settings.set_int(setting, widget.get_value());
-        });
-        const spinRow = new Adw.ActionRow({
-            title: _(title),
-            activatable_widget: spinButton,
-        });
-
-        spinRow.setValue = value => {
-            spinButton.set_value(value);
-        };
-
-        spinRow.add_suffix(spinButton);
-        return spinRow;
+        return spinButton;
     }
 });
 

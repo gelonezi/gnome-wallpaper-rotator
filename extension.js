@@ -27,7 +27,7 @@ export default class AzWallpaper extends Extension {
             };
         });
 
-        this._settings.connectObject('changed::slideshow-image-duration', () => this._slideshow.startSlideshow(), this);
+        this._settings.connectObject('changed::slideshow-slide-duration', () => this._slideshow.startSlideshow(), this);
         this._settings.connectObject('changed::slideshow-directory', () => this._slideshowDirectoryChanged(), this);
         this._settings.connectObject('changed::bing-wallpaper-download', () => this._startBingWallpaperDownloader(), this);
         this._settings.connectObject('changed::bing-download-directory', () => this._startBingWallpaperDownloader(), this);
@@ -56,6 +56,7 @@ export default class AzWallpaper extends Extension {
 
         this._injectionManager.clear();
         this._injectionManager = null;
+
         Main.layoutManager._updateBackgrounds();
 
         this._bingWallpaperDownloader.endDownloaderTimer();
@@ -79,15 +80,16 @@ export default class AzWallpaper extends Extension {
 
     _modifyBackgroundMenu(menu) {
         menu.removeAll();
+        menu._settingsActions = {};
 
-        let menuItem = new PopupMenu.PopupMenuItem(_('Next Background'));
+        let menuItem = new PopupMenu.PopupMenuItem(_('Next Wallpaper'));
         menuItem.connect('activate', () => {
-            debugLog('\'Next Background\' clicked.');
+            debugLog('\'Next Wallpaper\' clicked.');
             this._slideshow.startSlideshow(0, true);
         });
         menu.addMenuItem(menuItem);
 
-        menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings...'));
+        menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         menuItem.connect('activate', () => this.openPreferences());
         menu.addMenuItem(menuItem);
 
