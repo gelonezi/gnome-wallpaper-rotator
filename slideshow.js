@@ -201,22 +201,18 @@ export const Slideshow = class AzSlideShow {
         this._fileMonitor.set_rate_limit(1000);
         this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
             const fileName = file.get_basename();
-            const newFileName = otherFile?.get_basename();
-            const index = this._wallpaperQueue.indexOf(fileName);
-
-            // Ignore files that aren't part of FILE_TYPES
             const fileType = fileName.split('.').pop();
-            if (!FILE_TYPES.includes(fileType))
-                return;
+            const validFile = FILE_TYPES.includes(fileType);
 
-            const newFileType = newFileName ? newFileName.split('.').pop() : null;
-            if (newFileType && !FILE_TYPES.includes(newFileType))
-                return;
+            const index = this._wallpaperQueue.indexOf(fileName);
+            const fileInQueue = index >= 0;
+
+            const newFileName = otherFile?.get_basename();
 
             switch (eventType) {
             case Gio.FileMonitorEvent.DELETED:
             case Gio.FileMonitorEvent.MOVED_OUT:
-                if (index >= 0) {
+                if (fileInQueue && validFile) {
                     this._wallpaperQueue.splice(index, 1);
                     this._settings.set_strv('slideshow-wallpaper-queue', this._wallpaperQueue);
                     debugLog(`Remove "${fileName}" from index:${index}`);
@@ -224,6 +220,11 @@ export const Slideshow = class AzSlideShow {
                 break;
             case Gio.FileMonitorEvent.CREATED:
             case Gio.FileMonitorEvent.MOVED_IN: {
+                if (!validFile) {
+                    debugLog(`"${fileName}" is not a valid image.`);
+                    break;
+                }
+
                 // insert new files randomly into wallpapers queue
                 const randomIndex = Math.floor(Math.random() * this._wallpaperQueue.length);
                 this._wallpaperQueue.splice(randomIndex, 0, fileName);
@@ -231,13 +232,33 @@ export const Slideshow = class AzSlideShow {
                 debugLog(`Insert "${fileName}" at index:${randomIndex}`);
                 break;
             }
-            case Gio.FileMonitorEvent.RENAMED:
-                if (index >= 0) {
+            case Gio.FileMonitorEvent.RENAMED: {
+                const newFileType = newFileName.split('.').pop();
+                const validNewFile = FILE_TYPES.includes(newFileType);
+
+                if (fileInQueue && validNewFile) {
+                    // Replace the old file with the new file
                     this._wallpaperQueue.splice(index, 1, newFileName);
-                    this._settings.set_strv('slideshow-wallpaper-queue', this._wallpaperQueue);
                     debugLog(`Rename "${fileName}" at index:${index} to "${newFileName}"`);
+                } else if (fileInQueue && !validNewFile) {
+                    // Remove the old file from the queue
+                    this._wallpaperQueue.splice(index, 1);
+                    debugLog(`Remove "${fileName}" from index:${index}`);
+                    debugLog(`"${newFileName}" is not a valid image.`);
+                } else if (validNewFile) {
+                    // The old file wasn't in queue, but the renamed file's type is valid.
+                    // Add it to queue.
+                    const randomIndex = Math.floor(Math.random() * this._wallpaperQueue.length);
+                    this._wallpaperQueue.splice(randomIndex, 0, newFileName);
+                    debugLog(`Insert "${newFileName}" at index:${randomIndex}`);
+                } else {
+                    debugLog(`"${newFileName}" is not a valid image.`);
+                    break;
                 }
+
+                this._settings.set_strv('slideshow-wallpaper-queue', this._wallpaperQueue);
                 break;
+            }
             default:
                 break;
             }
