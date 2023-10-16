@@ -204,6 +204,15 @@ export const Slideshow = class AzSlideShow {
             const newFileName = otherFile?.get_basename();
             const index = this._wallpaperQueue.indexOf(fileName);
 
+            // Ignore files that aren't part of FILE_TYPES
+            const fileType = fileName.split('.').pop();
+            if (!FILE_TYPES.includes(fileType))
+                return;
+
+            const newFileType = newFileName ? newFileName.split('.').pop() : null;
+            if (newFileType && !FILE_TYPES.includes(newFileType))
+                return;
+
             switch (eventType) {
             case Gio.FileMonitorEvent.DELETED:
             case Gio.FileMonitorEvent.MOVED_OUT:
