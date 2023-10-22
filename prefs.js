@@ -7,7 +7,9 @@ import Gtk from 'gi://Gtk';
 
 import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
-import {ExtensionPreferences, gettext as _} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import * as Constants from './constants.js';
+
+import {ExtensionPreferences, gettext as _, ngettext} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 export default class AzWallpaperPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
@@ -126,7 +128,7 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         this.add(bingDLGroup);
 
         const bingDlRow = new Adw.ActionRow({
-            title: _('BING Download Directory'),
+            title: _('Download Directory'),
             subtitle: this._settings.get_string('bing-download-directory'),
         });
         fileChooserButton = this.createFileChooserButton('bing-download-directory', bingDlRow);
@@ -134,6 +136,133 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         bingDlRow.add_suffix(fileChooserButton);
         bingDlRow.add_prefix(openDirectoryButton);
         bingDLGroup.add(bingDlRow);
+
+        const notifyOnErrorRow = new Adw.SwitchRow({
+            title: _('Notify on Download Error'),
+            subtitle: _('Displays a notification with error message and option to retry download.'),
+            active: this._settings.get_boolean('bing-wallpaper-notify-on-error'),
+        });
+        notifyOnErrorRow.connect('notify::active', widget => {
+            this._settings.set_boolean('bing-wallpaper-notify-on-error', widget.get_active());
+        });
+        bingDLGroup.add(notifyOnErrorRow);
+
+        const resolutionsList = new Gtk.StringList();
+        for (let i = 0; i < Constants.Resolutions.length; i++)
+            resolutionsList.append(Constants.Resolutions[i]);
+
+        const selectedResolution = this._settings.get_string('bing-wallpaper-resolution');
+        const selectedResolutionIndex = Constants.Resolutions.indexOf(selectedResolution);
+
+        const imageResolutionRow = new Adw.ComboRow({
+            title: _('Image Resolution'),
+            model: resolutionsList,
+            selected: selectedResolutionIndex,
+        });
+        imageResolutionRow.connect('notify::selected', widget => {
+            this._settings.set_string('bing-wallpaper-resolution', widget.selected_item.string);
+        });
+        bingDLGroup.add(imageResolutionRow);
+
+        const locale = Intl.DateTimeFormat().resolvedOptions().locale;
+        const regionNameInLocale = new Intl.DisplayNames([locale], {type: 'region'});
+        const languageInLocale = new Intl.DisplayNames([locale], {type: 'language'});
+
+        const marketsList = new Gtk.StringList();
+        marketsList.append('Automatic');
+        for (let i = 1; i < Constants.Markets.length; i++) {
+            const regionName = regionNameInLocale.of(Constants.Markets[i].split('-')[1]);
+            const regionLanguage = languageInLocale.of(Constants.Markets[i].split('-')[0]);
+            marketsList.append(`${regionName}: ${regionLanguage}`);
+        }
+
+        const market = this._settings.get_string('bing-wallpaper-market');
+        const selectedMarket = Constants.Markets.indexOf(market);
+
+        const marketsRow = new Adw.ComboRow({
+            title: _('Market Location'),
+            subtitle: _('The market where the BING wallpaper comes from. Wallpapers may vary in different markets.'),
+            model: marketsList,
+            selected: selectedMarket,
+        });
+        marketsRow.connect('notify::selected', widget => {
+            this._settings.set_string('bing-wallpaper-market', Constants.Markets[widget.selected]);
+        });
+        bingDLGroup.add(marketsRow);
+
+        const downloadsCountSpinButton = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 1, upper: 8, step_increment: 1, page_increment: 1, page_size: 0,
+            }),
+            climb_rate: 1,
+            digits: 0,
+            numeric: true,
+            valign: Gtk.Align.CENTER,
+            wrap: true,
+            value: this._settings.get_int('bing-wallpaper-download-count'),
+        });
+        downloadsCountSpinButton.connect('value-changed', widget => {
+            if (this._updateTimeoutId)
+                GLib.source_remove(this._updateTimeoutId);
+
+            this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                this._settings.set_int('bing-wallpaper-download-count', widget.get_value());
+                this._updateTimeoutId = null;
+                return GLib.SOURCE_REMOVE;
+            });
+        });
+        const downloadsCountRow = new Adw.ActionRow({
+            title: _('Images to Download'),
+            subtitle: _('You can download up to 7 previous wallpapers plus the current wallpaper of the day.'),
+        });
+        downloadsCountRow.add_suffix(downloadsCountSpinButton);
+        bingDLGroup.add(downloadsCountRow);
+
+        const [deletionEnabled, daysToDeletion] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+        const deleteImagesExpanderRow = new Adw.ExpanderRow({
+            title: _('Delete Previously Downloaded Wallpapers'),
+            show_enable_switch: true,
+            expanded: deletionEnabled,
+            enable_expansion: deletionEnabled,
+        });
+        deleteImagesExpanderRow.connect('notify::enable-expansion', widget => {
+            const [oldEnabled_, oldValue] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+            this._settings.set_value('bing-wallpaper-delete-old', new GLib.Variant('(bi)', [widget.enable_expansion, oldValue]));
+        });
+        bingDLGroup.add(deleteImagesExpanderRow);
+
+        const daysToDeletionRow = new Adw.ActionRow({
+            title: ngettext('Wallpaper files will be deleted after %s day',
+                'Wallpaper files will be deleted after %s days', daysToDeletion).format(daysToDeletion),
+        });
+        deleteImagesExpanderRow.add_row(daysToDeletionRow);
+
+        const daysToDeletionSpinButton = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower: 1, upper: 60, step_increment: 1, page_increment: 1, page_size: 0,
+            }),
+            climb_rate: 1,
+            digits: 0,
+            numeric: true,
+            valign: Gtk.Align.CENTER,
+            wrap: true,
+            value: daysToDeletion,
+        });
+        daysToDeletionSpinButton.connect('value-changed', widget => {
+            if (this._updateTimeoutId)
+                GLib.source_remove(this._updateTimeoutId);
+
+            const newValue = widget.get_value();
+            this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+                const [oldEnabled, oldValue_] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+                this._settings.set_value('bing-wallpaper-delete-old', new GLib.Variant('(bi)', [oldEnabled, widget.get_value()]));
+                this._updateTimeoutId = null;
+                return GLib.SOURCE_REMOVE;
+            });
+            daysToDeletionRow.title = ngettext('Wallpaper files will be deleted after %s day',
+                'Wallpaper files will be deleted after %s days', newValue).format(newValue);
+        });
+        daysToDeletionRow.add_suffix(daysToDeletionSpinButton);
 
         const debugLogsGroup = new Adw.PreferencesGroup({
             title: _('Debug Mode'),

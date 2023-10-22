@@ -29,11 +29,17 @@ export default class AzWallpaper extends Extension {
 
         this._settings.connectObject('changed::slideshow-slide-duration', () => this._slideshow.startSlideshow(), this);
         this._settings.connectObject('changed::slideshow-directory', () => this._slideshowDirectoryChanged(), this);
-        this._settings.connectObject('changed::bing-wallpaper-download', () => this._startBingWallpaperDownloader(), this);
-        this._settings.connectObject('changed::bing-download-directory', () => this._startBingWallpaperDownloader(), this);
+
+        this._settings.connectObject('changed::bing-wallpaper-download', () => this._bingWallpaperDownloadChanged(), this);
+        this._settings.connectObject('changed::bing-download-directory', () => this._restartBingWallpaperDownloader(), this);
+        this._settings.connectObject('changed::bing-wallpaper-market', () => this._restartBingWallpaperDownloader(), this);
+        this._settings.connectObject('changed::bing-wallpaper-download-count', () => this._restartBingWallpaperDownloader(), this);
+        this._settings.connectObject('changed::bing-wallpaper-resolution', () => this._restartBingWallpaperDownloader(), this);
+        this._settings.connectObject('changed::bing-wallpaper-delete-old', () => this._bingWallpaperDownloader.maybeDeleteOldWallpapers(), this);
 
         this._delayStartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
-            this._startBingWallpaperDownloader();
+            if (this._settings.get_boolean('bing-wallpaper-download'))
+                this._bingWallpaperDownloader.initiate();
             this._slideshow.initiate();
             Main.layoutManager._updateBackgrounds();
 
@@ -59,7 +65,7 @@ export default class AzWallpaper extends Extension {
 
         Main.layoutManager._updateBackgrounds();
 
-        this._bingWallpaperDownloader.endDownloaderTimer();
+        this._bingWallpaperDownloader.destroy();
         this._bingWallpaperDownloader = null;
         this._slideshow.destroy();
         this._slideshow = null;
@@ -72,10 +78,20 @@ export default class AzWallpaper extends Extension {
         this._slideshow.initiate();
     }
 
-    _startBingWallpaperDownloader() {
-        this._bingWallpaperDownloader.endDownloaderTimer();
+    _bingWallpaperDownloadChanged() {
+        this._bingWallpaperDownloader.destroy();
         if (this._settings.get_boolean('bing-wallpaper-download'))
             this._bingWallpaperDownloader.initiate();
+    }
+
+    _restartBingWallpaperDownloader() {
+        this._bingWallpaperDownloader.endSingleDownload();
+        this._bingWallpaperDownloader.endDownloadTimer();
+        if (this._settings.get_boolean('bing-wallpaper-download')) {
+            this._bingWallpaperDownloader.setBingParams();
+            this._bingWallpaperDownloader.setDownloadDirectory();
+            this._bingWallpaperDownloader.downloadOnceWithDelay();
+        }
     }
 
     _modifyBackgroundMenu(menu) {
