@@ -1,0 +1,171 @@
+# Occitan translation file.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Quentin PAGÈS, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-13 12:29-0400\n"
+"PO-Revision-Date: 2023-10-28 17:20+0200\n"
+"Last-Translator: Quentin PAGÈS\n"
+"Language-Team: \n"
+"Language: oc\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4\n"
+
+#: bingWallpaperDownloader.js:37
+msgid "No user defined directory found for BING wallpaper downloads"
+msgstr "Cap de repertòri pas definit per l’utilizaire pels telecargaments de rèireplans de BING"
+
+#: bingWallpaperDownloader.js:38 bingWallpaperDownloader.js:46
+#, javascript-format
+msgid "Directory set to - %s"
+msgstr "Repertòri definit sus - %s"
+
+#: bingWallpaperDownloader.js:45
+msgid "Failed to create user defined directory for BING wallpaper downloads"
+msgstr "Fracàs de la creacion del repertòri definit per l’utilizaire pels telecargament de rèireplans de BING"
+
+#: extension.js:85
+msgid "Next Wallpaper"
+msgstr "Rèireplan seguent"
+
+#: extension.js:92
+msgid "Slideshow Settings"
+msgstr "Paramètres del diaporama"
+
+#: extension.js:98
+msgid "Display Settings"
+msgstr "Paramètres d'afichatge"
+
+#: extension.js:99 prefs.js:33
+msgid "Settings"
+msgstr "Paramètres"
+
+#: prefs.js:41
+msgid "Slideshow Options"
+msgstr "Opcion del diaporama"
+
+#: prefs.js:46
+msgid "Slideshow Directory"
+msgstr "Repertòri del diaporama"
+
+#: prefs.js:56
+msgid "Slide Duration"
+msgstr "Durada del diaporama"
+
+#: prefs.js:57
+msgid "Hours"
+msgstr "Oras"
+
+#: prefs.js:57
+msgid "Minutes"
+msgstr "Minutas"
+
+#: prefs.js:57
+msgid "Seconds"
+msgstr "Segondas"
+
+#: prefs.js:123
+msgid "Download BING wallpaper of the day"
+msgstr "Telecargar lo rèireplan del jorn de BING"
+
+#: prefs.js:129
+msgid "BING Download Directory"
+msgstr "Repertòri de telecargament per BING"
+
+#: prefs.js:139
+msgid "Debug Mode"
+msgstr "Mòde desbugatge"
+
+#: prefs.js:151
+msgid "Enable Logs"
+msgstr "Activar los logs"
+
+#: prefs.js:163
+msgid "Open directory..."
+msgstr "Dobrir repertòri..."
+
+#: prefs.js:177
+msgid "Choose new directory..."
+msgstr "Causir un repertòri novèl..."
+
+#: prefs.js:183
+msgid "Select a directory"
+msgstr "Seleccionar un repertòri"
+
+#: prefs.js:229
+msgid "About"
+msgstr "A prepaus"
+
+#: prefs.js:253 utils.js:34
+msgid "Wallpaper Slideshow"
+msgstr "Wallpaper Slideshow"
+
+#: prefs.js:270
+msgid "Wallpaper Slideshow Version"
+msgstr "Version de Wallpaper Slideshow"
+
+#: prefs.js:280
+msgid "Git Commit"
+msgstr "Git Commit"
+
+#: prefs.js:290
+msgid "GNOME Version"
+msgstr "Version de GNOME"
+
+#: prefs.js:299
+msgid "OS Name"
+msgstr "Nom de l’OS"
+
+#: prefs.js:312
+msgid "Windowing System"
+msgstr "Gestionari de fenèstras"
+
+#: prefs.js:320
+msgid "Wallpaper Slideshow GitLab"
+msgstr "GitLab de Wallpaper Slideshow"
+
+#: prefs.js:323
+msgid "Donate via PayPal"
+msgstr "Far un don via PayPal"
+
+#: prefs.js:332
+msgid "Wallpaper Slideshow Settings"
+msgstr "Paramètres de Wallpaper Slideshow"
+
+#: prefs.js:335
+msgid "Load"
+msgstr "Cargar"
+
+#: prefs.js:340
+msgid "Load Settings"
+msgstr "Paramètres del cargament"
+
+#: prefs.js:368
+msgid "Save"
+msgstr "Enregistrar"
+
+#: prefs.js:373
+msgid "Save Settings"
+msgstr "Enregistrar los paramètres"
+
+#: slideshow.js:23 slideshow.js:112
+msgid "Change directory in settings to begin slideshow"
+msgstr "Cambiar lo repertòri dins los paramètres per començar lo diaporama"
+
+#: slideshow.js:23
+msgid "Slideshow directory not found"
+msgstr "Repertòri del diaporama pas trobat"
+
+#: slideshow.js:24 slideshow.js:113
+msgid "Open Settings"
+msgstr "Dobrir los paramètres"
+
+#: slideshow.js:112
+msgid "Slideshow contains no slides"
+msgstr "Lo diaporama conten pas cap de diapositiva"
