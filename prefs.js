@@ -180,7 +180,11 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         const selectedMarket = Constants.Markets.indexOf(market);
 
         const marketsRow = new Adw.ComboRow({
+            /* TRANSLATORS: Markets are specific regions, defined by their language codes.
+            See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes */
             title: _('Market Location'),
+            /* TRANSLATORS: Markets are specific regions, defined by their language codes.
+            See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes */
             subtitle: _('The market where the BING wallpaper comes from. Wallpapers may vary in different markets.'),
             model: marketsList,
             selected: selectedMarket,
