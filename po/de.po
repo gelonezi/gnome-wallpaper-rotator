@@ -1,0 +1,244 @@
+# German translation  for azwallpaper.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the azwallpaper package.
+# Philipp Kiemle <philipp.kiemle@gmail.com>, 2023.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: azwallpaper\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-10-28 21:29+0200\n"
+"PO-Revision-Date: 2023-10-28 21:31+0200\n"
+"Last-Translator: Philipp Kiemle <philipp.kiemle@gmail.com>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.1\n"
+
+#: bingWallpaperDownloader.js:42
+msgid "No user defined directory found for BING wallpaper downloads"
+msgstr ""
+"Kein benutzerdefiniertes Verzeichnis für heruntergeladene Bing-"
+"Hintergrundbilder gefunden"
+
+#: bingWallpaperDownloader.js:43 bingWallpaperDownloader.js:51
+#, javascript-format
+msgid "Directory set to - %s"
+msgstr "Verzeichnis gesetzt auf - %s"
+
+#: bingWallpaperDownloader.js:50
+msgid "Failed to create user defined directory for BING wallpaper downloads"
+msgstr ""
+"Erstellen des benutzerdefinierten Verzeichnisses für heruntergeladene Bing-"
+"Hintergrundbilder fehlgeschlagen"
+
+#: bingWallpaperDownloader.js:140
+msgid "BING wallpaper download failed."
+msgstr "Herunterladen des Bing-Hintergrundbilds fehlgeschlagen."
+
+#: bingWallpaperDownloader.js:140
+#, javascript-format
+msgid "Error: %s"
+msgstr "Fehler: %s"
+
+#: bingWallpaperDownloader.js:140
+msgid "JSON data null"
+msgstr "JSON data null"
+
+#: bingWallpaperDownloader.js:141
+msgid "Try again?"
+msgstr "Erneut versuchen?"
+
+#: extension.js:101
+msgid "Next Wallpaper"
+msgstr "Nächster Hintergrund"
+
+#: extension.js:108
+msgid "Slideshow Settings"
+msgstr "Diaschau-Einstellungen"
+
+#: extension.js:114
+msgid "Display Settings"
+msgstr "Anzeigeeinstellungen"
+
+#: extension.js:115 prefs.js:35
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: prefs.js:43
+msgid "Slideshow Options"
+msgstr "Diaschau-Optionen"
+
+#: prefs.js:48
+msgid "Slideshow Directory"
+msgstr "Diaschau-Verzeichnis"
+
+#: prefs.js:58
+msgid "Slide Duration"
+msgstr "Bildanzeigedauer"
+
+#: prefs.js:59
+msgid "Hours"
+msgstr "Stunden"
+
+#: prefs.js:59
+msgid "Minutes"
+msgstr "Minuten"
+
+#: prefs.js:59
+msgid "Seconds"
+msgstr "Sekunden"
+
+#: prefs.js:125
+msgid "Download BING wallpaper of the day"
+msgstr "Hintergrundbild des Tages von Bing herunterladen"
+
+#: prefs.js:131
+msgid "Download Directory"
+msgstr "Download-Verzeichnis"
+
+#: prefs.js:141
+msgid "Notify on Download Error"
+msgstr "Bei Downloadfehler benachrichtigen"
+
+#: prefs.js:142
+msgid ""
+"Displays a notification with error message and option to retry download."
+msgstr ""
+"Zeigt eine Benachrichtigung mit der Fehlermeldung und der Option, das "
+"Herunterladen erneut zu versuchen, an."
+
+#: prefs.js:158
+msgid "Image Resolution"
+msgstr "Bildauflösung"
+
+#: prefs.js:183
+msgid "Market Location"
+msgstr "Region"
+
+#: prefs.js:184
+msgid ""
+"The market where the BING wallpaper comes from. Wallpapers may vary in "
+"different markets."
+msgstr ""
+"Die Region, aus der die Bing-Hintergrundbilder bezogen werden. Je nach "
+"Region können unterschiedliche Bilder verfügbar sein."
+
+#: prefs.js:215
+msgid "Images to Download"
+msgstr "Herunterzuladende Bilder"
+
+#: prefs.js:216
+msgid ""
+"You can download up to 7 previous wallpapers plus the current wallpaper of "
+"the day."
+msgstr ""
+"Sie können bis zu sieben vorherige Bilder herunterladen, zusätzlich zum "
+"aktuellen Hintergrundbild des Tages."
+
+#: prefs.js:223
+msgid "Delete Previously Downloaded Wallpapers"
+msgstr "Bereits heruntergeladene Hintergrundbilder löschen"
+
+#: prefs.js:235 prefs.js:262
+#, javascript-format
+msgid "Wallpaper files will be deleted after %s day"
+msgid_plural "Wallpaper files will be deleted after %s days"
+msgstr[0] "Hintergrundbild-Dateien werden nach %s Tag gelöscht"
+msgstr[1] "Hintergrundbild-Dateien werden nach %s Tagen gelöscht"
+
+#: prefs.js:268
+msgid "Debug Mode"
+msgstr "Debug-Modus"
+
+#: prefs.js:280
+msgid "Enable Logs"
+msgstr "Logs aktivieren"
+
+#: prefs.js:292
+msgid "Open directory..."
+msgstr "Verzeichnis öffnen …"
+
+#: prefs.js:306
+msgid "Choose new directory..."
+msgstr "Neues Verzeichnis auswählen …"
+
+#: prefs.js:312
+msgid "Select a directory"
+msgstr "Wählen Sie ein Verzeichnis aus"
+
+#: prefs.js:358
+msgid "About"
+msgstr "Info"
+
+#: prefs.js:382
+msgid "Wallpaper Slideshow"
+msgstr "Hintergrundbild-Diaschau"
+
+#: prefs.js:399
+msgid "Wallpaper Slideshow Version"
+msgstr "Hintergrundbild-Diaschau Version"
+
+#: prefs.js:409
+msgid "Git Commit"
+msgstr "Git-Commit"
+
+#: prefs.js:419
+msgid "GNOME Version"
+msgstr "GNOME-Version"
+
+#: prefs.js:428
+msgid "OS Name"
+msgstr "OS-Name"
+
+#: prefs.js:441
+msgid "Windowing System"
+msgstr "Fenstersystem"
+
+#: prefs.js:449
+msgid "Wallpaper Slideshow GitLab"
+msgstr "Hintergrundbild-Diaschau GitLab"
+
+#: prefs.js:452
+msgid "Donate via PayPal"
+msgstr "Per PayPal spenden"
+
+#: prefs.js:461
+msgid "Wallpaper Slideshow Settings"
+msgstr "Hintergrundbild-Diaschau Einstellungen"
+
+#: prefs.js:464
+msgid "Load"
+msgstr "Laden"
+
+#: prefs.js:469
+msgid "Load Settings"
+msgstr "Einstellungen laden"
+
+#: prefs.js:497
+msgid "Save"
+msgstr "Speichern"
+
+#: prefs.js:502
+msgid "Save Settings"
+msgstr "Einstellungen speichern"
+
+#: slideshow.js:23
+msgid "Slideshow directory not found"
+msgstr "Diaschau-Verzeichnis nicht gefunden"
+
+#: slideshow.js:23 slideshow.js:112
+msgid "Change directory in settings to begin slideshow"
+msgstr ""
+"Ändern Sie das Verzeichnis in den Einstellungen, um die Diaschau zu starten"
+
+#: slideshow.js:24 slideshow.js:113
+msgid "Open Settings"
+msgstr "Einstellungen öffnen"
+
+#: slideshow.js:112
+msgid "Slideshow contains no slides"
+msgstr "Diaschau enthält keine Bilder"
