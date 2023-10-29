@@ -25,6 +25,11 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 #### Other contributions via MR:
 
+**@[daPhipz](https://gitlab.com/daPhipz) - !4 !5**
+
+
 #### Translators:
+
+**@[Quentin](https://gitlab.com/quenty_occitania) - Occitan** | **@[daPhipz](https://gitlab.com/daPhipz) - German**
 
 -----
