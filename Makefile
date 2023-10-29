@@ -48,7 +48,7 @@ mergepo: potfile
 
 ./po/azwallpaper.pot: $(TOLOCALIZE)
 	mkdir -p po
-	xgettext -k_ -kN_ --from-code utf-8 -o po/azwallpaper.pot --package-name "azwallpaper" $(TOLOCALIZE)
+	xgettext -k_ -kN_ --from-code utf-8 --add-comments=TRANSLATORS -o po/azwallpaper.pot --package-name "azwallpaper" $(TOLOCALIZE)
 
 ./po/%.mo: ./po/%.po
 	msgfmt -c $< -o $@
