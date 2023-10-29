@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# This file is distributed under the same license as the azwallpaper package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: azwallpaper\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-13 12:29-0400\n"
+"POT-Creation-Date: 2023-10-28 21:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,150 +16,212 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: bingWallpaperDownloader.js:37
+#: bingWallpaperDownloader.js:42
 msgid "No user defined directory found for BING wallpaper downloads"
 msgstr ""
 
-#: bingWallpaperDownloader.js:38 bingWallpaperDownloader.js:46
+#: bingWallpaperDownloader.js:43 bingWallpaperDownloader.js:51
 #, javascript-format
 msgid "Directory set to - %s"
 msgstr ""
 
-#: bingWallpaperDownloader.js:45
+#: bingWallpaperDownloader.js:50
 msgid "Failed to create user defined directory for BING wallpaper downloads"
 msgstr ""
 
-#: extension.js:85
+#: bingWallpaperDownloader.js:140
+msgid "BING wallpaper download failed."
+msgstr ""
+
+#: bingWallpaperDownloader.js:140
+#, javascript-format
+msgid "Error: %s"
+msgstr ""
+
+#: bingWallpaperDownloader.js:140
+msgid "JSON data null"
+msgstr ""
+
+#: bingWallpaperDownloader.js:141
+msgid "Try again?"
+msgstr ""
+
+#: extension.js:101
 msgid "Next Wallpaper"
 msgstr ""
 
-#: extension.js:92
+#: extension.js:108
 msgid "Slideshow Settings"
 msgstr ""
 
-#: extension.js:98
+#: extension.js:114
 msgid "Display Settings"
 msgstr ""
 
-#: extension.js:99 prefs.js:33
+#: extension.js:115 prefs.js:35
 msgid "Settings"
 msgstr ""
 
-#: prefs.js:41
+#: prefs.js:43
 msgid "Slideshow Options"
 msgstr ""
 
-#: prefs.js:46
+#: prefs.js:48
 msgid "Slideshow Directory"
 msgstr ""
 
-#: prefs.js:56
+#: prefs.js:58
 msgid "Slide Duration"
 msgstr ""
 
-#: prefs.js:57
+#: prefs.js:59
 msgid "Hours"
 msgstr ""
 
-#: prefs.js:57
+#: prefs.js:59
 msgid "Minutes"
 msgstr ""
 
-#: prefs.js:57
+#: prefs.js:59
 msgid "Seconds"
 msgstr ""
 
-#: prefs.js:123
+#: prefs.js:125
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: prefs.js:129
-msgid "BING Download Directory"
+#: prefs.js:131
+msgid "Download Directory"
 msgstr ""
 
-#: prefs.js:139
-msgid "Debug Mode"
+#: prefs.js:141
+msgid "Notify on Download Error"
 msgstr ""
 
-#: prefs.js:151
-msgid "Enable Logs"
+#: prefs.js:142
+msgid ""
+"Displays a notification with error message and option to retry download."
 msgstr ""
 
-#: prefs.js:163
-msgid "Open directory..."
-msgstr ""
-
-#: prefs.js:177
-msgid "Choose new directory..."
+#: prefs.js:158
+msgid "Image Resolution"
 msgstr ""
 
 #: prefs.js:183
-msgid "Select a directory"
+msgid "Market Location"
 msgstr ""
 
-#: prefs.js:229
-msgid "About"
+#: prefs.js:184
+msgid ""
+"The market where the BING wallpaper comes from. Wallpapers may vary in "
+"different markets."
 msgstr ""
 
-#: prefs.js:253 utils.js:34
-msgid "Wallpaper Slideshow"
+#: prefs.js:215
+msgid "Images to Download"
 msgstr ""
 
-#: prefs.js:270
-msgid "Wallpaper Slideshow Version"
+#: prefs.js:216
+msgid ""
+"You can download up to 7 previous wallpapers plus the current wallpaper of "
+"the day."
+msgstr ""
+
+#: prefs.js:223
+msgid "Delete Previously Downloaded Wallpapers"
+msgstr ""
+
+#: prefs.js:235 prefs.js:262
+#, javascript-format
+msgid "Wallpaper files will be deleted after %s day"
+msgid_plural "Wallpaper files will be deleted after %s days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: prefs.js:268
+msgid "Debug Mode"
 msgstr ""
 
 #: prefs.js:280
-msgid "Git Commit"
+msgid "Enable Logs"
 msgstr ""
 
-#: prefs.js:290
-msgid "GNOME Version"
+#: prefs.js:292
+msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:299
-msgid "OS Name"
+#: prefs.js:306
+msgid "Choose new directory..."
 msgstr ""
 
 #: prefs.js:312
+msgid "Select a directory"
+msgstr ""
+
+#: prefs.js:358
+msgid "About"
+msgstr ""
+
+#: prefs.js:382
+msgid "Wallpaper Slideshow"
+msgstr ""
+
+#: prefs.js:399
+msgid "Wallpaper Slideshow Version"
+msgstr ""
+
+#: prefs.js:409
+msgid "Git Commit"
+msgstr ""
+
+#: prefs.js:419
+msgid "GNOME Version"
+msgstr ""
+
+#: prefs.js:428
+msgid "OS Name"
+msgstr ""
+
+#: prefs.js:441
 msgid "Windowing System"
 msgstr ""
 
-#: prefs.js:320
+#: prefs.js:449
 msgid "Wallpaper Slideshow GitLab"
 msgstr ""
 
-#: prefs.js:323
+#: prefs.js:452
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:332
+#: prefs.js:461
 msgid "Wallpaper Slideshow Settings"
 msgstr ""
 
-#: prefs.js:335
+#: prefs.js:464
 msgid "Load"
 msgstr ""
 
-#: prefs.js:340
+#: prefs.js:469
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:368
+#: prefs.js:497
 msgid "Save"
 msgstr ""
 
-#: prefs.js:373
+#: prefs.js:502
 msgid "Save Settings"
-msgstr ""
-
-#: slideshow.js:23 slideshow.js:112
-msgid "Change directory in settings to begin slideshow"
 msgstr ""
 
 #: slideshow.js:23
 msgid "Slideshow directory not found"
+msgstr ""
+
+#: slideshow.js:23 slideshow.js:112
+msgid "Change directory in settings to begin slideshow"
 msgstr ""
 
 #: slideshow.js:24 slideshow.js:113
