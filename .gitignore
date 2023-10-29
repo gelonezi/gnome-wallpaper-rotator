@@ -1,0 +1,4 @@
+*.mo
+*.po~
+*.zip
+schemas/gschemas.compiled
