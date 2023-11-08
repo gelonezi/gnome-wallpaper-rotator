@@ -35,7 +35,13 @@ export default class AzWallpaper extends Extension {
         this._settings.connectObject('changed::bing-wallpaper-market', () => this._restartBingWallpaperDownloader(), this);
         this._settings.connectObject('changed::bing-wallpaper-download-count', () => this._restartBingWallpaperDownloader(), this);
         this._settings.connectObject('changed::bing-wallpaper-resolution', () => this._restartBingWallpaperDownloader(), this);
-        this._settings.connectObject('changed::bing-wallpaper-delete-old', () => this._bingWallpaperDownloader.maybeDeleteOldWallpapers(), this);
+        this._settings.connectObject('changed::bing-wallpaper-delete-old', () => {
+            const [deletionEnabled, daysToDeletion_] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+            if (deletionEnabled)
+                this._bingWallpaperDownloader.maybeDeleteOldWallpapers();
+            else
+                this._settings.set_strv('bing-wallpapers-downloaded', []);
+        }, this);
 
         this._delayStartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
             if (this._settings.get_boolean('bing-wallpaper-download'))

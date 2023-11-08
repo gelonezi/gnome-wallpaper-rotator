@@ -41,8 +41,8 @@
         </key>
         <key type="(bi)" name="bing-wallpaper-delete-old">
             <default>(false, 14)</default>
-            <summary>Delete previously downloaded wallpapers after 'x' days.</summary>
-            <description>Delete previously downloaded wallpapers after 'x' days. (isEnabled, days) </description>
+            <summary>Delete previously downloaded wallpapers.</summary>
+            <description>Delete previously downloaded wallpapers (isEnabled, amountToKeep) </description>
         </key>
         <key type="t" name="bing-last-data-fetch">
             <default>0</default>

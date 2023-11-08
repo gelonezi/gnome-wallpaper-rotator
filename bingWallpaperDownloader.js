@@ -258,36 +258,32 @@ export const BingWallpaperDownloader = class {
     }
 
     maybeDeleteOldWallpapers() {
-        const [deletionEnabled, daysToDeletion] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+        const [deletionEnabled, amountToKeep] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
         if (!deletionEnabled)
             return;
 
         debugLog('BING Downloader - Checking to delete old BING wallpapers...');
-        const deletionInMs = 8.64e7 * daysToDeletion;
-        const dateNow = Date.now();
         const downloadedImages = this._settings.get_strv('bing-wallpapers-downloaded');
 
-        for (let i = downloadedImages.length - 1; i >= 0; i -= 1) {
-            const filePath = downloadedImages[i];
+        if (downloadedImages <= amountToKeep) {
+            debugLog('BING Downloader - Wallpapers to keep less than downloaded images count. Skip Deletion');
+            return;
+        }
+
+        const amountToRemove = downloadedImages.length - amountToKeep;
+
+        for (let i = 0; i < amountToRemove; i++) {
+            const filePath = downloadedImages.shift();
             const file = Gio.File.new_for_path(filePath);
-            if (!file.query_exists(null)) {
-                downloadedImages.splice(i, 1);
+            if (!file.query_exists(null))
                 continue;
-            }
+
             const fileName = file.get_basename();
             try {
-                const fileInfo = file.query_info(Gio.FILE_ATTRIBUTE_TIME_CREATED, Gio.FileQueryInfoFlags.NONE, null);
-                const creationDateTime = fileInfo.get_creation_date_time();
-                const createTimeUnix = creationDateTime.to_unix() * 1000;
-
-                if (dateNow - createTimeUnix > deletionInMs) {
-                    debugLog(`BING Downloader - ${fileName} older than ${daysToDeletion} days. Deleted`);
-                    file.delete(null);
-                    downloadedImages.splice(i, 1);
-                }
+                debugLog(`BING Downloader - Delete ${fileName}`);
+                file.delete(null);
             } catch (e) {
                 debugLog(`BING Downloader - Error gathering ${fileName} info.`);
-                downloadedImages.splice(i, 1);
                 continue;
             }
         }

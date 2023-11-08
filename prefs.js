@@ -222,9 +222,12 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         downloadsCountRow.add_suffix(downloadsCountSpinButton);
         bingDLGroup.add(downloadsCountRow);
 
-        const [deletionEnabled, daysToDeletion] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+        const [deletionEnabled, amountToKeep] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
         const deleteImagesExpanderRow = new Adw.ExpanderRow({
             title: _('Delete Previously Downloaded Wallpapers'),
+            subtitle: `${_('Stores a download history of wallpapers and limits how many wallpapers to keep.')}\n${
+                _('Only works for wallpapers downloaded when this setting is enabled.')}\n${
+                _('Previous download history is cleared when this setting is disabled.')}`,
             show_enable_switch: true,
             expanded: deletionEnabled,
             enable_expansion: deletionEnabled,
@@ -235,13 +238,13 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         });
         bingDLGroup.add(deleteImagesExpanderRow);
 
-        const daysToDeletionRow = new Adw.ActionRow({
-            title: ngettext('Wallpaper files will be deleted after %s day',
-                'Wallpaper files will be deleted after %s days', daysToDeletion).format(daysToDeletion),
+        const amountToKeepRow = new Adw.ActionRow({
+            title: ngettext('Keep %s most recent wallpaper',
+                'Keep %s most recent wallpapers', amountToKeep).format(amountToKeep),
         });
-        deleteImagesExpanderRow.add_row(daysToDeletionRow);
+        deleteImagesExpanderRow.add_row(amountToKeepRow);
 
-        const daysToDeletionSpinButton = new Gtk.SpinButton({
+        const amountToKeepSpinButton = new Gtk.SpinButton({
             adjustment: new Gtk.Adjustment({
                 lower: 1, upper: 60, step_increment: 1, page_increment: 1, page_size: 0,
             }),
@@ -250,9 +253,9 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             numeric: true,
             valign: Gtk.Align.CENTER,
             wrap: true,
-            value: daysToDeletion,
+            value: amountToKeep,
         });
-        daysToDeletionSpinButton.connect('value-changed', widget => {
+        amountToKeepSpinButton.connect('value-changed', widget => {
             if (this._updateTimeoutId)
                 GLib.source_remove(this._updateTimeoutId);
 
@@ -263,10 +266,10 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
                 this._updateTimeoutId = null;
                 return GLib.SOURCE_REMOVE;
             });
-            daysToDeletionRow.title = ngettext('Wallpaper files will be deleted after %s day',
-                'Wallpaper files will be deleted after %s days', newValue).format(newValue);
+            amountToKeepRow.title = ngettext('Keep %s most recent wallpaper',
+                'Keep %s most recent wallpapers', newValue).format(newValue);
         });
-        daysToDeletionRow.add_suffix(daysToDeletionSpinButton);
+        amountToKeepRow.add_suffix(amountToKeepSpinButton);
 
         const debugLogsGroup = new Adw.PreferencesGroup({
             title: _('Debug Mode'),

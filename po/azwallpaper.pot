@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the azwallpaper package.
+# This file is distributed under the same license as the Wallpaper Slideshow package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: azwallpaper\n"
+"Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-28 21:47+0200\n"
+"POT-Creation-Date: 2023-11-08 18:20-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,19 +48,19 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#: extension.js:101
+#: extension.js:107
 msgid "Next Wallpaper"
 msgstr ""
 
-#: extension.js:108
+#: extension.js:114
 msgid "Slideshow Settings"
 msgstr ""
 
-#: extension.js:114
+#: extension.js:120
 msgid "Display Settings"
 msgstr ""
 
-#: extension.js:115 prefs.js:35
+#: extension.js:121 prefs.js:35
 msgid "Settings"
 msgstr ""
 
@@ -137,95 +137,109 @@ msgstr ""
 msgid "Delete Previously Downloaded Wallpapers"
 msgstr ""
 
-#: prefs.js:239 prefs.js:266
+#: prefs.js:228
+msgid ""
+"Stores a download history of wallpapers and limits how many wallpapers to "
+"keep."
+msgstr ""
+
+#: prefs.js:229
+msgid "Only works for wallpapers downloaded when this setting is enabled."
+msgstr ""
+
+#: prefs.js:230
+msgid "Previous download history is cleared when this setting is disabled."
+msgstr ""
+
+#: prefs.js:242 prefs.js:269
 #, javascript-format
-msgid "Wallpaper files will be deleted after %s day"
-msgid_plural "Wallpaper files will be deleted after %s days"
+msgid "Keep %s most recent wallpaper"
+msgid_plural "Keep %s most recent wallpapers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: prefs.js:272
+#: prefs.js:275
 msgid "Debug Mode"
 msgstr ""
 
-#: prefs.js:284
+#: prefs.js:287
 msgid "Enable Logs"
 msgstr ""
 
-#: prefs.js:296
+#: prefs.js:299
 msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:310
+#: prefs.js:313
 msgid "Choose new directory..."
 msgstr ""
 
-#: prefs.js:316
+#: prefs.js:319
 msgid "Select a directory"
 msgstr ""
 
-#: prefs.js:362
+#: prefs.js:365
 msgid "About"
 msgstr ""
 
-#: prefs.js:386
+#: prefs.js:389 utils.js:34
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: prefs.js:403
+#: prefs.js:406
 msgid "Wallpaper Slideshow Version"
 msgstr ""
 
-#: prefs.js:413
+#: prefs.js:416
 msgid "Git Commit"
 msgstr ""
 
-#: prefs.js:423
+#: prefs.js:426
 msgid "GNOME Version"
 msgstr ""
 
-#: prefs.js:432
+#: prefs.js:435
 msgid "OS Name"
 msgstr ""
 
-#: prefs.js:445
+#: prefs.js:448
 msgid "Windowing System"
 msgstr ""
 
-#: prefs.js:453
+#: prefs.js:456
 msgid "Wallpaper Slideshow GitLab"
 msgstr ""
 
-#: prefs.js:456
+#: prefs.js:459
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:465
+#: prefs.js:468
 msgid "Wallpaper Slideshow Settings"
 msgstr ""
 
-#: prefs.js:468
+#: prefs.js:471
 msgid "Load"
 msgstr ""
 
-#: prefs.js:473
+#: prefs.js:476
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:501
+#: prefs.js:504
 msgid "Save"
 msgstr ""
 
-#: prefs.js:506
+#: prefs.js:509
 msgid "Save Settings"
-msgstr ""
-
-#: slideshow.js:23
-msgid "Slideshow directory not found"
 msgstr ""
 
 #: slideshow.js:23 slideshow.js:112
 msgid "Change directory in settings to begin slideshow"
+msgstr ""
+
+#: slideshow.js:23
+msgid "Slideshow directory not found"
 msgstr ""
 
 #: slideshow.js:24 slideshow.js:113
