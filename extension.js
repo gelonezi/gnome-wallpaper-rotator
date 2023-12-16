@@ -101,23 +101,17 @@ export default class AzWallpaper extends Extension {
     }
 
     _modifyBackgroundMenu(menu) {
-        menu.removeAll();
-        menu._settingsActions = {};
+        menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(), 4);
 
         let menuItem = new PopupMenu.PopupMenuItem(_('Next Wallpaper'));
         menuItem.connect('activate', () => {
             debugLog('\'Next Wallpaper\' clicked.');
             this._slideshow.startSlideshow(0, true);
         });
-        menu.addMenuItem(menuItem);
+        menu.addMenuItem(menuItem, 5);
 
         menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         menuItem.connect('activate', () => this.openPreferences());
-        menu.addMenuItem(menuItem);
-
-        menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-        menu.addSettingsAction(_('Display Settings'), 'gnome-display-panel.desktop');
-        menu.addSettingsAction(_('Settings'), 'org.gnome.Settings.desktop');
+        menu.addMenuItem(menuItem, 6);
     }
 }
