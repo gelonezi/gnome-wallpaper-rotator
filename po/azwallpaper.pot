@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-08 18:20-0500\n"
+"POT-Creation-Date: 2024-01-03 13:03-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,19 +48,15 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#: extension.js:107
+#: extension.js:102
 msgid "Next Wallpaper"
 msgstr ""
 
-#: extension.js:114
+#: extension.js:109
 msgid "Slideshow Settings"
 msgstr ""
 
-#: extension.js:120
-msgid "Display Settings"
-msgstr ""
-
-#: extension.js:121 prefs.js:35
+#: prefs.js:35
 msgid "Settings"
 msgstr ""
 
@@ -88,164 +84,179 @@ msgstr ""
 msgid "Seconds"
 msgstr ""
 
-#: prefs.js:125
+#: prefs.js:117
+msgid "Use Absolute Time for Slide Duration"
+msgstr ""
+
+#: prefs.js:118
+msgid ""
+"The slide duration will be based on absolute time elapsed, rather than time "
+"the image is displayed on the screen. Changing this setting will reset any "
+"current slide durations."
+msgstr ""
+
+#: prefs.js:135
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: prefs.js:131
+#: prefs.js:141
 msgid "Download Directory"
 msgstr ""
 
-#: prefs.js:141
+#: prefs.js:151
 msgid "Notify on Download Error"
 msgstr ""
 
-#: prefs.js:142
+#: prefs.js:152
 msgid ""
 "Displays a notification with error message and option to retry download."
 msgstr ""
 
-#: prefs.js:158
+#: prefs.js:168
 msgid "Image Resolution"
 msgstr ""
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
-#: prefs.js:185
+#: prefs.js:195
 msgid "Market Location"
 msgstr ""
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
-#: prefs.js:188
+#: prefs.js:198
 msgid ""
 "The market where the BING wallpaper comes from. Wallpapers may vary in "
 "different markets."
 msgstr ""
 
-#: prefs.js:219
+#: prefs.js:229
 msgid "Images to Download"
 msgstr ""
 
-#: prefs.js:220
+#: prefs.js:230
 msgid ""
 "You can download up to 7 previous wallpapers plus the current wallpaper of "
 "the day."
 msgstr ""
 
-#: prefs.js:227
+#: prefs.js:237
 msgid "Delete Previously Downloaded Wallpapers"
 msgstr ""
 
-#: prefs.js:228
+#: prefs.js:238
 msgid ""
 "Stores a download history of wallpapers and limits how many wallpapers to "
 "keep."
 msgstr ""
 
-#: prefs.js:229
+#: prefs.js:239
 msgid "Only works for wallpapers downloaded when this setting is enabled."
 msgstr ""
 
-#: prefs.js:230
+#: prefs.js:240
 msgid "Previous download history is cleared when this setting is disabled."
 msgstr ""
 
-#: prefs.js:242 prefs.js:269
+#: prefs.js:252 prefs.js:270
 #, javascript-format
 msgid "Keep %s most recent wallpaper"
 msgid_plural "Keep %s most recent wallpapers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: prefs.js:275
+#: prefs.js:282
+msgid "Apply"
+msgstr ""
+
+#: prefs.js:293
 msgid "Debug Mode"
 msgstr ""
 
-#: prefs.js:287
+#: prefs.js:305
 msgid "Enable Logs"
 msgstr ""
 
-#: prefs.js:299
+#: prefs.js:317
 msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:313
+#: prefs.js:331
 msgid "Choose new directory..."
 msgstr ""
 
-#: prefs.js:319
+#: prefs.js:337
 msgid "Select a directory"
 msgstr ""
 
-#: prefs.js:365
+#: prefs.js:383
 msgid "About"
 msgstr ""
 
-#: prefs.js:389 utils.js:34
+#: prefs.js:407 utils.js:34
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: prefs.js:406
+#: prefs.js:424
 msgid "Wallpaper Slideshow Version"
 msgstr ""
 
-#: prefs.js:416
+#: prefs.js:434
 msgid "Git Commit"
 msgstr ""
 
-#: prefs.js:426
+#: prefs.js:444
 msgid "GNOME Version"
 msgstr ""
 
-#: prefs.js:435
+#: prefs.js:453
 msgid "OS Name"
 msgstr ""
 
-#: prefs.js:448
+#: prefs.js:466
 msgid "Windowing System"
 msgstr ""
 
-#: prefs.js:456
+#: prefs.js:474
 msgid "Wallpaper Slideshow GitLab"
 msgstr ""
 
-#: prefs.js:459
+#: prefs.js:477
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:468
+#: prefs.js:486
 msgid "Wallpaper Slideshow Settings"
 msgstr ""
 
-#: prefs.js:471
+#: prefs.js:489
 msgid "Load"
 msgstr ""
 
-#: prefs.js:476
+#: prefs.js:494
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:504
+#: prefs.js:522
 msgid "Save"
 msgstr ""
 
-#: prefs.js:509
+#: prefs.js:527
 msgid "Save Settings"
 msgstr ""
 
-#: slideshow.js:23 slideshow.js:112
+#: slideshow.js:24 slideshow.js:119
 msgid "Change directory in settings to begin slideshow"
 msgstr ""
 
-#: slideshow.js:23
+#: slideshow.js:24
 msgid "Slideshow directory not found"
 msgstr ""
 
-#: slideshow.js:24 slideshow.js:113
+#: slideshow.js:25 slideshow.js:120
 msgid "Open Settings"
 msgstr ""
 
-#: slideshow.js:112
+#: slideshow.js:119
 msgid "Slideshow contains no slides"
 msgstr ""

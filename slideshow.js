@@ -6,6 +6,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 import {debugLog, notify} from './utils.js';
 
 const FILE_TYPES = ['png', 'jpg', 'jpeg'];
+const DELAY_TIME = 5;
 
 function fisherYatesShuffle(array) {
     for (let i = array.length - 1; i > 0; i -= 1) {
@@ -46,13 +47,19 @@ export const Slideshow = class AzSlideShow {
         this._createFileMonitor();
         this._queryWallpapersExist(this._wallpaperQueue);
 
+        const timer = this._getTimerDelay();
         this._currentSlideTime = Date.now();
 
+        const lastSlideTime = this._settings.get_uint64('slideshow-time-of-slide-start');
+        if (lastSlideTime === 0)
+            this._settings.set_uint64('slideshow-time-of-slide-start', this._currentSlideTime);
+
+        this._startSlideTimer();
+
         debugLog('Starting slideshow...');
-        const timerDelay = this._getTimerDelay();
-        this.startSlideshow(timerDelay, true);
+        this.startSlideshow(timer, true);
         debugLog(`Wallpapers in queue: ${this._wallpaperQueue.length}`);
-        debugLog(`Next slide in ${timerDelay} seconds.`);
+        debugLog(`Next slide in ${timer} seconds.`);
     }
 
     _queryWallpapersExist(wallpaperList) {
@@ -139,8 +146,13 @@ export const Slideshow = class AzSlideShow {
             debugLog(`Current wallpaper "${randomWallpaper}"`);
             debugLog(`Wallpapers in queue: ${this._wallpaperQueue.length}`);
 
+            // Store the time of when the wallpaper changed.
+            const dateNow = Date.now();
+            this._settings.set_uint64('slideshow-time-of-slide-start', dateNow);
+
             this._endSlideTimer();
             this._currentSlideTime = Date.now();
+            this._settings.set_int('slideshow-timer-remaining', 0);
             this._startSlideTimer();
 
             if (runOnce) {
@@ -162,11 +174,13 @@ export const Slideshow = class AzSlideShow {
 
     // Start a timeout to calculate remaining time to next slide
     _startSlideTimer() {
+        const remainingTimer = this._settings.get_int('slideshow-timer-remaining');
+        const timeToNextSlide = remainingTimer > 0 ? remainingTimer : this._getSlideDuration();
         this._slideTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
             const dateNow = Date.now();
-            const imageDuration = this._getSlideDuration();
-            const elapsedTime = Math.floor((dateNow - this._currentSlideTime) / 1000);
-            const remainingTime = Math.max(imageDuration - elapsedTime, 0);
+            const elapsedTime = dateNow - this._currentSlideTime;
+            const elapsedTimeSeconds = Math.floor(elapsedTime / 1000);
+            const remainingTime = Math.max(timeToNextSlide - elapsedTimeSeconds, 0);
             this._settings.set_int('slideshow-timer-remaining', remainingTime);
             return GLib.SOURCE_CONTINUE;
         });
@@ -200,6 +214,7 @@ export const Slideshow = class AzSlideShow {
         this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, null);
         this._fileMonitor.set_rate_limit(1000);
         this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
+            const currentWallpaper = this._settings.get_string('slideshow-current-wallpapper');
             const fileName = file.get_basename();
             const fileType = fileName.split('.').pop();
             const validFile = FILE_TYPES.includes(fileType);
@@ -216,6 +231,9 @@ export const Slideshow = class AzSlideShow {
                     this._wallpaperQueue.splice(index, 1);
                     this._settings.set_strv('slideshow-wallpaper-queue', this._wallpaperQueue);
                     debugLog(`Remove "${fileName}" from index:${index}`);
+                } else if (currentWallpaper === fileName) {
+                    // The deleted file was the current wallpaper, go to next slide in queue
+                    this.startSlideshow(0, true);
                 }
                 break;
             case Gio.FileMonitorEvent.CREATED:
@@ -257,6 +275,11 @@ export const Slideshow = class AzSlideShow {
                 }
 
                 this._settings.set_strv('slideshow-wallpaper-queue', this._wallpaperQueue);
+
+                if (currentWallpaper === fileName) {
+                    // The renamed file was the current wallpaper, go to next slide in queue
+                    this.startSlideshow(0, true);
+                }
                 break;
             }
             default:
@@ -269,7 +292,6 @@ export const Slideshow = class AzSlideShow {
         debugLog('Get Wallpaper List');
 
         const wallpaperPaths = [];
-
         try {
             const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
             const dir = Gio.file_new_for_path(slideshowDirectoryPath);
@@ -290,14 +312,20 @@ export const Slideshow = class AzSlideShow {
         return wallpaperPaths;
     }
 
-    _getTimerDelay() {
-        const remainingTimer = this._settings.get_int('slideshow-timer-remaining');
-        const imageDuration = this._getSlideDuration();
+    durationChanged() {
+        const useAbsoluteTime = this._settings.get_boolean('slideshow-use-absolute-time-for-duration');
+        if (useAbsoluteTime)
+            debugLog('Switching to absolute time for slide duration. Restart Slideshow.');
+        else
+            debugLog('Switching to image on screen time for slide duration. Restart Slideshow.');
 
-        if (remainingTimer === 0 || remainingTimer <= imageDuration)
-            return Math.max(remainingTimer, 0);
-
-        return imageDuration;
+        this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
+        this._settings.set_uint64('slideshow-time-of-slide-start', Date.now());
+        this._endSlideTimer();
+        const timer = this._getTimerDelay();
+        this.startSlideshow(timer, true);
+        this._currentSlideTime = Date.now();
+        this._startSlideTimer();
     }
 
     _getSlideDuration() {
@@ -305,18 +333,63 @@ export const Slideshow = class AzSlideShow {
         const durationInSeconds = (hours * 3600) + (minutes * 60) + seconds;
 
         // Cap slide duration minimum to 5 seconds
-        return Math.max(durationInSeconds, 5);
+        return Math.max(durationInSeconds, DELAY_TIME);
+    }
+
+    _getElapsedTime() {
+        const lastSlideTime = this._settings.get_uint64('slideshow-time-of-slide-start');
+        const dateNow = Date.now();
+
+        const elapsedTime = dateNow - lastSlideTime;
+
+        return elapsedTime;
+    }
+
+    _getTimerDelay() {
+        const slideDuration = this._getSlideDuration();
+        const remainingTimer = this._settings.get_int('slideshow-timer-remaining');
+        const useAbsoluteTime = this._settings.get_boolean('slideshow-use-absolute-time-for-duration');
+
+        if (!useAbsoluteTime) {
+            if (remainingTimer === 0 || remainingTimer <= slideDuration)
+                return Math.max(remainingTimer, 0);
+
+            return slideDuration;
+        }
+
+        const lastSlideTime = this._settings.get_uint64('slideshow-time-of-slide-start');
+        if (lastSlideTime === 0) {
+            this._settings.set_int('slideshow-timer-remaining', slideDuration);
+            return slideDuration;
+        }
+
+        const slideDurationMs = slideDuration * 1000;
+        const elapsedTimeMs = this._getElapsedTime();
+        const absoluteTimeRemaining = Math.floor((slideDurationMs - elapsedTimeMs) / 1000);
+        const remainingTime = Math.max(absoluteTimeRemaining, DELAY_TIME);
+        this._settings.set_int('slideshow-timer-remaining', remainingTime);
+
+        const hasTimerElapsed = elapsedTimeMs >= slideDurationMs;
+        if (hasTimerElapsed) {
+            debugLog('Time elapsed exceeded slide duration. Next slide in 5 seconds.');
+            this._settings.set_int('slideshow-timer-remaining', DELAY_TIME);
+            return DELAY_TIME;
+        }
+
+        return remainingTime;
     }
 
     reset() {
-        debugLog('Directory Changed. Reset slideshow');
+        debugLog('Reset slideshow');
         this._settings.set_strv('slideshow-wallpaper-queue', []);
         this._settings.set_int('slideshow-timer-remaining', 0);
+        this._settings.set_uint64('slideshow-time-of-slide-start', 0);
 
         this._endSlideTimer();
         this._endSlideshow();
         this._clearFileMonitor();
         this._loadSlideshowQueue();
+        this.initiate();
     }
 
     destroy() {

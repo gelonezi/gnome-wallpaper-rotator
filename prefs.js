@@ -113,6 +113,16 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         slideDurationGrid.attach(minutesLabel, 3, 0, 1, 1);
         slideDurationGrid.attach(secondsSpinButton, 4, 0, 1, 1);
 
+        const slideDurationTypeRow = new Adw.SwitchRow({
+            title: _('Use Absolute Time for Slide Duration'),
+            subtitle: _('The slide duration will be based on absolute time elapsed, rather than time the image is displayed on the screen. Changing this setting will reset any current slide durations.'),
+            active: this._settings.get_boolean('slideshow-use-absolute-time-for-duration'),
+        });
+        slideDurationTypeRow.connect('notify::active', widget => {
+            this._settings.set_boolean('slideshow-use-absolute-time-for-duration', widget.get_active());
+        });
+        slideShowGroup.add(slideDurationTypeRow);
+
         const bingDlSwitch = new Gtk.Switch({
             valign: Gtk.Align.CENTER,
             active: this._settings.get_boolean('bing-wallpaper-download'),
@@ -256,20 +266,28 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             value: amountToKeep,
         });
         amountToKeepSpinButton.connect('value-changed', widget => {
-            if (this._updateTimeoutId)
-                GLib.source_remove(this._updateTimeoutId);
-
             const newValue = widget.get_value();
-            this._updateTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
-                const [oldEnabled, oldValue_] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
-                this._settings.set_value('bing-wallpaper-delete-old', new GLib.Variant('(bi)', [oldEnabled, widget.get_value()]));
-                this._updateTimeoutId = null;
-                return GLib.SOURCE_REMOVE;
-            });
             amountToKeepRow.title = ngettext('Keep %s most recent wallpaper',
                 'Keep %s most recent wallpapers', newValue).format(newValue);
+
+            confirmAmountToKeepButton.sensitive = true;
+            confirmAmountToKeepButton.css_classes = ['suggested-action'];
         });
         amountToKeepRow.add_suffix(amountToKeepSpinButton);
+
+        const confirmAmountToKeepButton = new Gtk.Button({
+            icon_name: 'emblem-ok-symbolic',
+            sensitive: false,
+            valign: Gtk.Align.CENTER,
+            tooltip_text: _('Apply'),
+        });
+        confirmAmountToKeepButton.connect('clicked', () => {
+            const [oldEnabled, oldValue_] = this._settings.get_value('bing-wallpaper-delete-old').deep_unpack();
+            this._settings.set_value('bing-wallpaper-delete-old', new GLib.Variant('(bi)', [oldEnabled, amountToKeepSpinButton.get_value()]));
+            confirmAmountToKeepButton.sensitive = false;
+            confirmAmountToKeepButton.css_classes = [];
+        });
+        amountToKeepRow.add_suffix(confirmAmountToKeepButton);
 
         const debugLogsGroup = new Adw.PreferencesGroup({
             title: _('Debug Mode'),

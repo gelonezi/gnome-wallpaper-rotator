@@ -27,8 +27,9 @@ export default class AzWallpaper extends Extension {
             };
         });
 
-        this._settings.connectObject('changed::slideshow-slide-duration', () => this._slideshow.startSlideshow(), this);
-        this._settings.connectObject('changed::slideshow-directory', () => this._slideshowDirectoryChanged(), this);
+        this._settings.connectObject('changed::slideshow-slide-duration', () => this._slideshow.durationChanged(), this);
+        this._settings.connectObject('changed::slideshow-directory', () => this._slideshow.reset(), this);
+        this._settings.connectObject('changed::slideshow-use-absolute-time-for-duration', () => this._slideshow.durationChanged(), this);
 
         this._settings.connectObject('changed::bing-wallpaper-download', () => this._bingWallpaperDownloadChanged(), this);
         this._settings.connectObject('changed::bing-download-directory', () => this._restartBingWallpaperDownloader(), this);
@@ -77,11 +78,6 @@ export default class AzWallpaper extends Extension {
         this._slideshow = null;
         this._settings.disconnectObject(this);
         this._settings = null;
-    }
-
-    _slideshowDirectoryChanged() {
-        this._slideshow.reset();
-        this._slideshow.initiate();
     }
 
     _bingWallpaperDownloadChanged() {

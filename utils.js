@@ -16,7 +16,7 @@ export function debugLog(message) {
     const extension = Extension.lookupByURL(import.meta.url);
     const settings = extension.getSettings();
     if (settings.get_boolean('debug-logs'))
-        log(`Wallpaper Slideshow: ${message}`);
+        console.log(`Wallpaper Slideshow: ${message}`);
 }
 
 /**
