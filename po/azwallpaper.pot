@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-03 13:03-0500\n"
+"POT-Creation-Date: 2024-01-14 08:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,192 +56,232 @@ msgstr ""
 msgid "Slideshow Settings"
 msgstr ""
 
-#: prefs.js:35
-msgid "Settings"
+#: prefs.js:19
+msgid "Open directory..."
 msgstr ""
 
-#: prefs.js:43
+#: prefs.js:33
+msgid "Choose new directory..."
+msgstr ""
+
+#: prefs.js:39
+msgid "Select a directory"
+msgstr ""
+
+#: prefs.js:87
+msgid "Slideshow"
+msgstr ""
+
+#: prefs.js:96
 msgid "Slideshow Options"
 msgstr ""
 
-#: prefs.js:48
+#: prefs.js:101
 msgid "Slideshow Directory"
 msgstr ""
 
-#: prefs.js:58
+#: prefs.js:111
 msgid "Slide Duration"
 msgstr ""
 
-#: prefs.js:59
+#: prefs.js:112
 msgid "Hours"
 msgstr ""
 
-#: prefs.js:59
+#: prefs.js:112
 msgid "Minutes"
 msgstr ""
 
-#: prefs.js:59
+#: prefs.js:112
 msgid "Seconds"
 msgstr ""
 
-#: prefs.js:117
+#: prefs.js:170
 msgid "Use Absolute Time for Slide Duration"
 msgstr ""
 
-#: prefs.js:118
+#: prefs.js:171
 msgid ""
 "The slide duration will be based on absolute time elapsed, rather than time "
 "the image is displayed on the screen. Changing this setting will reset any "
 "current slide durations."
 msgstr ""
 
-#: prefs.js:135
+#: prefs.js:180
+msgid "Wallpaper Options"
+msgstr ""
+
+#: prefs.js:185
+msgid "None"
+msgstr ""
+
+#: prefs.js:186
+msgid "Wallpaper"
+msgstr ""
+
+#: prefs.js:187
+msgid "Centered"
+msgstr ""
+
+#: prefs.js:188
+msgid "Scaled"
+msgstr ""
+
+#: prefs.js:189
+msgid "Streched"
+msgstr ""
+
+#: prefs.js:190
+msgid "Zoom"
+msgstr ""
+
+#: prefs.js:191
+msgid "Spanned"
+msgstr ""
+
+#: prefs.js:194
+msgid "Image Adjustment"
+msgstr ""
+
+#: prefs.js:226
+msgid "Bing Wallpapers"
+msgstr ""
+
+#: prefs.js:241
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: prefs.js:141
+#: prefs.js:247
 msgid "Download Directory"
 msgstr ""
 
-#: prefs.js:151
+#: prefs.js:257
 msgid "Notify on Download Error"
 msgstr ""
 
-#: prefs.js:152
+#: prefs.js:258
 msgid ""
 "Displays a notification with error message and option to retry download."
 msgstr ""
 
-#: prefs.js:168
+#: prefs.js:274
 msgid "Image Resolution"
 msgstr ""
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
-#: prefs.js:195
+#: prefs.js:301
 msgid "Market Location"
 msgstr ""
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
-#: prefs.js:198
+#: prefs.js:304
 msgid ""
 "The market where the BING wallpaper comes from. Wallpapers may vary in "
 "different markets."
 msgstr ""
 
-#: prefs.js:229
+#: prefs.js:335
 msgid "Images to Download"
 msgstr ""
 
-#: prefs.js:230
+#: prefs.js:336
 msgid ""
 "You can download up to 7 previous wallpapers plus the current wallpaper of "
 "the day."
 msgstr ""
 
-#: prefs.js:237
+#: prefs.js:343
 msgid "Delete Previously Downloaded Wallpapers"
 msgstr ""
 
-#: prefs.js:238
+#: prefs.js:344
 msgid ""
 "Stores a download history of wallpapers and limits how many wallpapers to "
 "keep."
 msgstr ""
 
-#: prefs.js:239
+#: prefs.js:345
 msgid "Only works for wallpapers downloaded when this setting is enabled."
 msgstr ""
 
-#: prefs.js:240
+#: prefs.js:346
 msgid "Previous download history is cleared when this setting is disabled."
 msgstr ""
 
-#: prefs.js:252 prefs.js:270
+#: prefs.js:358 prefs.js:376
 #, javascript-format
 msgid "Keep %s most recent wallpaper"
 msgid_plural "Keep %s most recent wallpapers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: prefs.js:282
+#: prefs.js:388
 msgid "Apply"
 msgstr ""
 
-#: prefs.js:293
-msgid "Debug Mode"
-msgstr ""
-
-#: prefs.js:305
-msgid "Enable Logs"
-msgstr ""
-
-#: prefs.js:317
-msgid "Open directory..."
-msgstr ""
-
-#: prefs.js:331
-msgid "Choose new directory..."
-msgstr ""
-
-#: prefs.js:337
-msgid "Select a directory"
-msgstr ""
-
-#: prefs.js:383
+#: prefs.js:404
 msgid "About"
 msgstr ""
 
-#: prefs.js:407 utils.js:34
+#: prefs.js:430 utils.js:34
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: prefs.js:424
+#: prefs.js:448
 msgid "Wallpaper Slideshow Version"
 msgstr ""
 
-#: prefs.js:434
+#: prefs.js:458
 msgid "Git Commit"
 msgstr ""
 
-#: prefs.js:444
+#: prefs.js:468
 msgid "GNOME Version"
 msgstr ""
 
-#: prefs.js:453
+#: prefs.js:477
 msgid "OS Name"
 msgstr ""
 
-#: prefs.js:466
+#: prefs.js:490
 msgid "Windowing System"
 msgstr ""
 
-#: prefs.js:474
-msgid "Wallpaper Slideshow GitLab"
+#: prefs.js:503
+msgid "Website"
 msgstr ""
 
-#: prefs.js:477
+#: prefs.js:506
+msgid "Report an Issue"
+msgstr ""
+
+#: prefs.js:509
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:486
+#: prefs.js:524
+msgid "Enable Debug Logs"
+msgstr ""
+
+#: prefs.js:533
 msgid "Wallpaper Slideshow Settings"
 msgstr ""
 
-#: prefs.js:489
+#: prefs.js:536
 msgid "Load"
 msgstr ""
 
-#: prefs.js:494
+#: prefs.js:541
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:522
+#: prefs.js:569
 msgid "Save"
 msgstr ""
 
-#: prefs.js:527
+#: prefs.js:574
 msgid "Save Settings"
 msgstr ""
 

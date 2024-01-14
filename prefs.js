@@ -11,6 +11,55 @@ import * as Constants from './constants.js';
 
 import {ExtensionPreferences, gettext as _, ngettext} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
+function createOpenDirectoyButton(parent, directory) {
+    const file = Gio.file_new_for_path(directory);
+    const fileUri = file.get_uri();
+    const button = new Gtk.Button({
+        icon_name: 'folder-open-symbolic',
+        tooltip_text: _('Open directory...'),
+        valign: Gtk.Align.CENTER,
+    });
+
+    button.connect('clicked', () => {
+        Gtk.show_uri(parent.get_root(), fileUri, Gdk.CURRENT_TIME);
+    });
+
+    return button;
+}
+
+function  createFileChooserButton(parent, settings, setting, parentRow) {
+    const fileChooserButton = new Gtk.Button({
+        icon_name: 'folder-new-symbolic',
+        tooltip_text: _('Choose new directory...'),
+        valign: Gtk.Align.CENTER,
+    });
+
+    fileChooserButton.connect('clicked', () => {
+        const dialog = new Gtk.FileChooserDialog({
+            title: _('Select a directory'),
+            transient_for: parent.get_root(),
+            action: Gtk.FileChooserAction.SELECT_FOLDER,
+        });
+        dialog.add_button('_Cancel', Gtk.ResponseType.CANCEL);
+        dialog.add_button('_Select', Gtk.ResponseType.ACCEPT);
+
+        dialog.connect('response', (self, response) => {
+            if (response === Gtk.ResponseType.ACCEPT) {
+                const filePath = dialog.get_file().get_path();
+                settings.set_string(setting, filePath);
+                parentRow.subtitle = filePath;
+                dialog.destroy();
+            } else if (response === Gtk.ResponseType.CANCEL) {
+                dialog.destroy();
+            }
+        });
+        dialog.show();
+    });
+
+    parentRow.activatable_widget = fileChooserButton;
+    return fileChooserButton;
+}
+
 export default class AzWallpaperPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
@@ -20,24 +69,28 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
         if (!iconTheme.get_search_path().includes(iconPath))
             iconTheme.add_search_path(iconPath);
 
-        const homePage = new HomePage(settings);
-        window.add(homePage);
+        const slideShowPage = new SlideShowPage(settings);
+        window.add(slideShowPage);
 
-        const aboutPage = new AboutPage(this.metadata);
+        const bingPage = new BingPage(settings);
+        window.add(bingPage);
+
+        const aboutPage = new AboutPage(settings, this.metadata);
         window.add(aboutPage);
     }
 }
 
-var HomePage = GObject.registerClass(
-class azWallpaperHomePage extends Adw.PreferencesPage {
+var SlideShowPage = GObject.registerClass(
+class azWallpaperSlideShowPage extends Adw.PreferencesPage {
     _init(settings) {
         super._init({
-            title: _('Settings'),
-            icon_name: 'preferences-system-symbolic',
+            title: _('Slideshow'),
+            icon_name: 'emblem-photos-symbolic',
             name: 'HomePage',
         });
 
         this._settings = settings;
+        this._backgroundSettings = new Gio.Settings({schema: 'org.gnome.desktop.background'});
 
         const slideShowGroup = new Adw.PreferencesGroup({
             title: _('Slideshow Options'),
@@ -48,8 +101,8 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             title: _('Slideshow Directory'),
             subtitle: this._settings.get_string('slideshow-directory'),
         });
-        let fileChooserButton = this.createFileChooserButton('slideshow-directory', slideShowDirRow);
-        let openDirectoryButton = this.createOpenDirectoyButton(this._settings.get_string('slideshow-directory'));
+        const fileChooserButton = createFileChooserButton(this, this._settings, 'slideshow-directory', slideShowDirRow);
+        const openDirectoryButton = createOpenDirectoyButton(this, this._settings.get_string('slideshow-directory'));
         slideShowDirRow.add_prefix(openDirectoryButton);
         slideShowDirRow.add_suffix(fileChooserButton);
         slideShowGroup.add(slideShowDirRow);
@@ -123,6 +176,60 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         });
         slideShowGroup.add(slideDurationTypeRow);
 
+        const backgroundGroup = new Adw.PreferencesGroup({
+            title: _('Wallpaper Options'),
+        });
+        this.add(backgroundGroup);
+
+        const adjustmentList = new Gtk.StringList();
+        adjustmentList.append(_('None'));
+        adjustmentList.append(_('Wallpaper'));
+        adjustmentList.append(_('Centered'));
+        adjustmentList.append(_('Scaled'));
+        adjustmentList.append(_('Streched'));
+        adjustmentList.append(_('Zoom'));
+        adjustmentList.append(_('Spanned'));
+
+        const backgroundAdjustRow = new Adw.ComboRow({
+            title: _('Image Adjustment'),
+            model: adjustmentList,
+            selected: this._backgroundSettings.get_enum('picture-options'),
+        });
+        backgroundAdjustRow.connect('notify::selected', widget => {
+            this._backgroundSettings.set_enum('picture-options', widget.selected);
+        });
+        backgroundGroup.add(backgroundAdjustRow);
+    }
+
+    _createSpinButton(value, lower, upper) {
+        const spinButton = new Gtk.SpinButton({
+            adjustment: new Gtk.Adjustment({
+                lower, upper, step_increment: 1, page_increment: 1, page_size: 0,
+            }),
+            climb_rate: 1,
+            digits: 0,
+            numeric: true,
+            valign: Gtk.Align.CENTER,
+            wrap: true,
+            value,
+            orientation: Gtk.Orientation.VERTICAL,
+            width_request: 40,
+        });
+        return spinButton;
+    }
+});
+
+var BingPage = GObject.registerClass(
+class azWallpaperBingPage extends Adw.PreferencesPage {
+    _init(settings) {
+        super._init({
+            title: _('Bing Wallpapers'),
+            icon_name: 'insert-image-symbolic',
+            name: 'BingPage',
+        });
+
+        this._settings = settings;
+
         const bingDlSwitch = new Gtk.Switch({
             valign: Gtk.Align.CENTER,
             active: this._settings.get_boolean('bing-wallpaper-download'),
@@ -130,7 +237,6 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
         bingDlSwitch.connect('notify::active', widget => {
             this._settings.set_boolean('bing-wallpaper-download', widget.get_active());
         });
-
         const bingDLGroup = new Adw.PreferencesGroup({
             title: _('Download BING wallpaper of the day'),
             header_suffix: bingDlSwitch,
@@ -141,8 +247,8 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             title: _('Download Directory'),
             subtitle: this._settings.get_string('bing-download-directory'),
         });
-        fileChooserButton = this.createFileChooserButton('bing-download-directory', bingDlRow);
-        openDirectoryButton = this.createOpenDirectoyButton(this._settings.get_string('bing-download-directory'));
+        const fileChooserButton = createFileChooserButton(this, this._settings, 'bing-download-directory', bingDlRow);
+        const openDirectoryButton = createOpenDirectoyButton(this, this._settings.get_string('bing-download-directory'));
         bingDlRow.add_suffix(fileChooserButton);
         bingDlRow.add_prefix(openDirectoryButton);
         bingDLGroup.add(bingDlRow);
@@ -288,102 +394,19 @@ class azWallpaperHomePage extends Adw.PreferencesPage {
             confirmAmountToKeepButton.css_classes = [];
         });
         amountToKeepRow.add_suffix(confirmAmountToKeepButton);
-
-        const debugLogsGroup = new Adw.PreferencesGroup({
-            title: _('Debug Mode'),
-        });
-        this.add(debugLogsGroup);
-
-        const debugLogsSwitch = new Gtk.Switch({
-            valign: Gtk.Align.CENTER,
-            active: this._settings.get_boolean('debug-logs'),
-        });
-        debugLogsSwitch.connect('notify::active', widget => {
-            this._settings.set_boolean('debug-logs', widget.get_active());
-        });
-        const debugLogsRow = new Adw.ActionRow({
-            title: _('Enable Logs'),
-            activatable_widget: debugLogsSwitch,
-        });
-        debugLogsRow.add_suffix(debugLogsSwitch);
-        debugLogsGroup.add(debugLogsRow);
-    }
-
-    createOpenDirectoyButton(directory) {
-        const file = Gio.file_new_for_path(directory);
-        const fileUri = file.get_uri();
-        const button = new Gtk.Button({
-            icon_name: 'folder-open-symbolic',
-            tooltip_text: _('Open directory...'),
-            valign: Gtk.Align.CENTER,
-        });
-
-        button.connect('clicked', () => {
-            Gtk.show_uri(this.get_root(), fileUri, Gdk.CURRENT_TIME);
-        });
-
-        return button;
-    }
-
-    createFileChooserButton(setting, parentRow) {
-        const fileChooserButton = new Gtk.Button({
-            icon_name: 'folder-new-symbolic',
-            tooltip_text: _('Choose new directory...'),
-            valign: Gtk.Align.CENTER,
-        });
-
-        fileChooserButton.connect('clicked', () => {
-            const dialog = new Gtk.FileChooserDialog({
-                title: _('Select a directory'),
-                transient_for: this.get_root(),
-                action: Gtk.FileChooserAction.SELECT_FOLDER,
-            });
-            dialog.add_button('_Cancel', Gtk.ResponseType.CANCEL);
-            dialog.add_button('_Select', Gtk.ResponseType.ACCEPT);
-
-            dialog.connect('response', (self, response) => {
-                if (response === Gtk.ResponseType.ACCEPT) {
-                    const filePath = dialog.get_file().get_path();
-                    this._settings.set_string(setting, filePath);
-                    parentRow.subtitle = filePath;
-                    dialog.destroy();
-                } else if (response === Gtk.ResponseType.CANCEL) {
-                    dialog.destroy();
-                }
-            });
-            dialog.show();
-        });
-
-        parentRow.activatable_widget = fileChooserButton;
-        return fileChooserButton;
-    }
-
-    _createSpinButton(value, lower, upper) {
-        const spinButton = new Gtk.SpinButton({
-            adjustment: new Gtk.Adjustment({
-                lower, upper, step_increment: 1, page_increment: 1, page_size: 0,
-            }),
-            climb_rate: 1,
-            digits: 0,
-            numeric: true,
-            valign: Gtk.Align.CENTER,
-            wrap: true,
-            value,
-            orientation: Gtk.Orientation.VERTICAL,
-            width_request: 40,
-        });
-        return spinButton;
     }
 });
 
 var AboutPage = GObject.registerClass(
 class AzWallpaperAboutPage extends Adw.PreferencesPage {
-    _init(metadata) {
+    _init(settings, metadata) {
         super._init({
             title: _('About'),
             icon_name: 'help-about-symbolic',
             name: 'AboutPage',
         });
+
+        this._settings = settings;
 
         const PAYPAL_LINK = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+${metadata.name}&source=url`;
         const PROJECT_IMAGE = 'azwallpaper-logo';
@@ -417,8 +440,9 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         this.add(projectHeaderGroup);
         // -----------------------------------------------------------------------
 
-        // Extension/OS Info and Links Group------------------------------------------------
+        // Extension/OS Info------------------------------------------------
         const infoGroup = new Adw.PreferencesGroup();
+        this.add(infoGroup);
 
         const projectVersionRow = new Adw.ActionRow({
             title: _('Wallpaper Slideshow Version'),
@@ -470,15 +494,38 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
             css_classes: ['dim-label'],
         }));
         infoGroup.add(sessionTypeRow);
+        // -----------------------------------------------------------------------
 
-        const gitlabRow = this._createLinkRow(_('Wallpaper Slideshow GitLab'), metadata.url);
-        infoGroup.add(gitlabRow);
+        // Links------------------------------------------------------------------
+        const linksGroup = new Adw.PreferencesGroup();
+        this.add(linksGroup);
+
+        const gitlabRow = this._createLinkRow(_('Website'), metadata.url);
+        linksGroup.add(gitlabRow);
+
+        const issueRow = this._createLinkRow(_('Report an Issue'), `${metadata.url}/-/issues`);
+        linksGroup.add(issueRow);
 
         const donateRow = this._createLinkRow(_('Donate via PayPal'), PAYPAL_LINK);
-        infoGroup.add(donateRow);
-
-        this.add(infoGroup);
+        linksGroup.add(donateRow);
         // -----------------------------------------------------------------------
+
+        const debugLogsGroup = new Adw.PreferencesGroup();
+        this.add(debugLogsGroup);
+
+        const debugLogsSwitch = new Gtk.Switch({
+            valign: Gtk.Align.CENTER,
+            active: this._settings.get_boolean('debug-logs'),
+        });
+        debugLogsSwitch.connect('notify::active', widget => {
+            this._settings.set_boolean('debug-logs', widget.get_active());
+        });
+        const debugLogsRow = new Adw.ActionRow({
+            title: _('Enable Debug Logs'),
+            activatable_widget: debugLogsSwitch,
+        });
+        debugLogsRow.add_suffix(debugLogsSwitch);
+        debugLogsGroup.add(debugLogsRow);
 
         // Save/Load Settings----------------------------------------------------------
         const settingsGroup = new Adw.PreferencesGroup();
