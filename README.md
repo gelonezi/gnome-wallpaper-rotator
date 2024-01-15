@@ -25,7 +25,9 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 #### Other contributions via MR:
 
-**@[daPhipz](https://gitlab.com/daPhipz) - !4 !5**
+**@[daPhipz](https://gitlab.com/daPhipz) - !4, !5**
+
+**@[adamthiede](https://gitlab.com/adamthiede) - !8**
 
 
 #### Translators:
