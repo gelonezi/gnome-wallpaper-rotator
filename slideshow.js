@@ -217,7 +217,7 @@ export const Slideshow = class AzSlideShow {
             const currentWallpaper = this._settings.get_string('slideshow-current-wallpapper');
             const fileName = file.get_basename();
             const fileType = fileName.split('.').pop();
-            const validFile = FILE_TYPES.includes(fileType);
+            const validFile = FILE_TYPES.includes(fileType.toLowerCase());
 
             const index = this._wallpaperQueue.indexOf(fileName);
             const fileInQueue = index >= 0;
@@ -252,7 +252,7 @@ export const Slideshow = class AzSlideShow {
             }
             case Gio.FileMonitorEvent.RENAMED: {
                 const newFileType = newFileName.split('.').pop();
-                const validNewFile = FILE_TYPES.includes(newFileType);
+                const validNewFile = FILE_TYPES.includes(newFileType.toLowerCase());
 
                 if (fileInQueue && validNewFile) {
                     // Replace the old file with the new file
@@ -302,7 +302,7 @@ export const Slideshow = class AzSlideShow {
             while ((info = fileEnum.next_file(null))) {
                 const name = info.get_name();
                 const ext = name.split('.').pop();
-                if (FILE_TYPES.includes(ext))
+                if (FILE_TYPES.includes(ext.toLowerCase()))
                     wallpaperPaths.push(name);
             }
         } catch (e) {
