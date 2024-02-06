@@ -5,7 +5,8 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {debugLog, notify} from './utils.js';
 
-const FILE_TYPES = ['png', 'jpg', 'jpeg'];
+Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
+
 const DELAY_TIME = 5;
 
 function fisherYatesShuffle(array) {
@@ -29,6 +30,20 @@ function isValidDirectory(extension, slideshowDirectory) {
     return true;
 }
 
+async function isValidFile(file) {
+    let info;
+    try {
+        info = await file.query_info_async(
+            Gio.FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+            Gio.FileQueryInfoFlags.NONE, 0, null);
+    } catch (e) {
+        return false;
+    }
+
+    const contentType = info.get_content_type();
+    return contentType.startsWith('image/');
+}
+
 export const Slideshow = class AzSlideShow {
     constructor(extension) {
         this._extension = extension;
@@ -48,13 +63,8 @@ export const Slideshow = class AzSlideShow {
         this._queryWallpapersExist(this._wallpaperQueue);
 
         const timer = this._getTimerDelay();
-        this._currentSlideTime = Date.now();
-
-        const lastSlideTime = this._settings.get_uint64('slideshow-time-of-slide-start');
-        if (lastSlideTime === 0)
-            this._settings.set_uint64('slideshow-time-of-slide-start', this._currentSlideTime);
-
-        this._startSlideTimer();
+        this._slideshowStartTime = Date.now();
+        this._settings.set_uint64('slideshow-time-of-slide-start', this._slideshowStartTime);
 
         debugLog('Starting slideshow...');
         this.startSlideshow(timer, true);
@@ -147,16 +157,13 @@ export const Slideshow = class AzSlideShow {
             debugLog(`Wallpapers in queue: ${this._wallpaperQueue.length}`);
 
             // Store the time of when the wallpaper changed.
-            const dateNow = Date.now();
-            this._settings.set_uint64('slideshow-time-of-slide-start', dateNow);
-
-            this._endSlideTimer();
-            this._currentSlideTime = Date.now();
-            this._settings.set_int('slideshow-timer-remaining', 0);
-            this._startSlideTimer();
+            this._slideshowStartTime = Date.now();
+            this._settings.set_uint64('slideshow-time-of-slide-start', this._slideshowStartTime);
+            const slideDuration = this._getSlideDuration();
+            this._settings.set_int('slideshow-timer-remaining', slideDuration);
 
             if (runOnce) {
-                this.startSlideshow(this._getSlideDuration());
+                this.startSlideshow(slideDuration);
                 return GLib.SOURCE_REMOVE;
             }
 
@@ -169,27 +176,6 @@ export const Slideshow = class AzSlideShow {
         if (this._slideshowId) {
             GLib.source_remove(this._slideshowId);
             this._slideshowId = null;
-        }
-    }
-
-    // Start a timeout to calculate remaining time to next slide
-    _startSlideTimer() {
-        const remainingTimer = this._settings.get_int('slideshow-timer-remaining');
-        const timeToNextSlide = remainingTimer > 0 ? remainingTimer : this._getSlideDuration();
-        this._slideTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
-            const dateNow = Date.now();
-            const elapsedTime = dateNow - this._currentSlideTime;
-            const elapsedTimeSeconds = Math.floor(elapsedTime / 1000);
-            const remainingTime = Math.max(timeToNextSlide - elapsedTimeSeconds, 0);
-            this._settings.set_int('slideshow-timer-remaining', remainingTime);
-            return GLib.SOURCE_CONTINUE;
-        });
-    }
-
-    _endSlideTimer() {
-        if (this._slideTimerId) {
-            GLib.source_remove(this._slideTimerId);
-            this._slideTimerId = null;
         }
     }
 
@@ -213,11 +199,9 @@ export const Slideshow = class AzSlideShow {
         const dir = Gio.file_new_for_path(slideshowDirectoryPath);
         this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, null);
         this._fileMonitor.set_rate_limit(1000);
-        this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
+        this._fileMonitorChangedId = this._fileMonitor.connect('changed', async (_monitor, file, otherFile, eventType) => {
             const currentWallpaper = this._settings.get_string('slideshow-current-wallpapper');
             const fileName = file.get_basename();
-            const fileType = fileName.split('.').pop();
-            const validFile = FILE_TYPES.includes(fileType.toLowerCase());
 
             const index = this._wallpaperQueue.indexOf(fileName);
             const fileInQueue = index >= 0;
@@ -227,7 +211,7 @@ export const Slideshow = class AzSlideShow {
             switch (eventType) {
             case Gio.FileMonitorEvent.DELETED:
             case Gio.FileMonitorEvent.MOVED_OUT:
-                if (fileInQueue && validFile) {
+                if (fileInQueue) {
                     this._wallpaperQueue.splice(index, 1);
                     this._settings.set_strv('slideshow-wallpaper-queue', this._wallpaperQueue);
                     debugLog(`Remove "${fileName}" from index:${index}`);
@@ -238,6 +222,7 @@ export const Slideshow = class AzSlideShow {
                 break;
             case Gio.FileMonitorEvent.CREATED:
             case Gio.FileMonitorEvent.MOVED_IN: {
+                const validFile = await isValidFile(file);
                 if (!validFile) {
                     debugLog(`"${fileName}" is not a valid image.`);
                     break;
@@ -251,8 +236,7 @@ export const Slideshow = class AzSlideShow {
                 break;
             }
             case Gio.FileMonitorEvent.RENAMED: {
-                const newFileType = newFileName.split('.').pop();
-                const validNewFile = FILE_TYPES.includes(newFileType.toLowerCase());
+                const validNewFile = await isValidFile(otherFile);
 
                 if (fileInQueue && validNewFile) {
                     // Replace the old file with the new file
@@ -290,20 +274,21 @@ export const Slideshow = class AzSlideShow {
 
     _getWallpaperList() {
         debugLog('Get Wallpaper List');
-
         const wallpaperPaths = [];
+
         try {
             const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
             const dir = Gio.file_new_for_path(slideshowDirectoryPath);
 
-            const fileEnum = dir.enumerate_children('standard::name,standard::type', Gio.FileQueryInfoFlags.NONE, null);
+            const fileEnum = dir.enumerate_children('standard::name,standard::type,standard::content-type', Gio.FileQueryInfoFlags.NONE, null);
 
             let info;
             while ((info = fileEnum.next_file(null))) {
-                const name = info.get_name();
-                const ext = name.split('.').pop();
-                if (FILE_TYPES.includes(ext.toLowerCase()))
-                    wallpaperPaths.push(name);
+                const fileName = info.get_name();
+                const contentType = info.get_content_type();
+
+                if (contentType.startsWith('image/'))
+                    wallpaperPaths.push(fileName);
             }
         } catch (e) {
             debugLog(e);
@@ -321,11 +306,9 @@ export const Slideshow = class AzSlideShow {
 
         this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
         this._settings.set_uint64('slideshow-time-of-slide-start', Date.now());
-        this._endSlideTimer();
         const timer = this._getTimerDelay();
         this.startSlideshow(timer, true);
-        this._currentSlideTime = Date.now();
-        this._startSlideTimer();
+        this._slideshowStartTime = Date.now();
     }
 
     _getSlideDuration() {
@@ -358,23 +341,27 @@ export const Slideshow = class AzSlideShow {
         }
 
         const lastSlideTime = this._settings.get_uint64('slideshow-time-of-slide-start');
+        // This only occurs when 'slideshow-time-of-slide-start' is set to the default value.
         if (lastSlideTime === 0) {
             this._settings.set_int('slideshow-timer-remaining', slideDuration);
             return slideDuration;
         }
 
-        const slideDurationMs = slideDuration * 1000;
+        const remainingTimerMs = remainingTimer * 1000;
         const elapsedTimeMs = this._getElapsedTime();
-        const absoluteTimeRemaining = Math.floor((slideDurationMs - elapsedTimeMs) / 1000);
-        const remainingTime = Math.max(absoluteTimeRemaining, DELAY_TIME);
-        this._settings.set_int('slideshow-timer-remaining', remainingTime);
 
-        const hasTimerElapsed = elapsedTimeMs >= slideDurationMs;
+        const hasTimerElapsed = elapsedTimeMs >= remainingTimerMs;
         if (hasTimerElapsed) {
             debugLog('Time elapsed exceeded slide duration. Next slide in 5 seconds.');
             this._settings.set_int('slideshow-timer-remaining', DELAY_TIME);
             return DELAY_TIME;
         }
+
+        const absoluteTimeRemaining = Math.floor((remainingTimerMs - elapsedTimeMs) / 1000);
+        const remainingTime = Math.max(absoluteTimeRemaining, DELAY_TIME);
+        this._settings.set_int('slideshow-timer-remaining', remainingTime);
+
+        debugLog(`Time elapsed has not exceeded slide duration. Next slide in ${remainingTime} seconds.`);
 
         return remainingTime;
     }
@@ -385,15 +372,27 @@ export const Slideshow = class AzSlideShow {
         this._settings.set_int('slideshow-timer-remaining', 0);
         this._settings.set_uint64('slideshow-time-of-slide-start', 0);
 
-        this._endSlideTimer();
         this._endSlideshow();
         this._clearFileMonitor();
         this._loadSlideshowQueue();
         this.initiate();
     }
 
+    saveTimer() {
+        const slideShowEndTime = Date.now();
+        const elapsedTime = Math.floor((slideShowEndTime - this._slideshowStartTime) / 1000);
+
+        const timerRemaining = this._settings.get_int('slideshow-timer-remaining');
+        const remainingTimer = Math.max(timerRemaining - elapsedTime, 0);
+
+        debugLog(`Total 'On' Time: ${elapsedTime}`);
+        debugLog(`Save remaining timer: ${remainingTimer}`);
+        this._settings.set_int('slideshow-timer-remaining', remainingTimer);
+        this._settings.set_uint64('slideshow-time-of-slide-start', slideShowEndTime);
+    }
+
     destroy() {
-        this._endSlideTimer();
+        this.saveTimer();
         this._endSlideshow();
         this._clearFileMonitor();
         this._backgroundSettings = null;

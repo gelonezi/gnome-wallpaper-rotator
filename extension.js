@@ -4,6 +4,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
 import {Extension, gettext as _, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
+import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
 
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
 import {Slideshow} from './slideshow.js';
@@ -53,6 +54,22 @@ export default class AzWallpaper extends Extension {
             this._delayStartId = null;
             return GLib.SOURCE_REMOVE;
         });
+
+
+        // Connect to a few signals to store the remaining time of a slide.
+        // disable() isn't called on shutdown, restart, etc.
+        const loginManager = LoginManager.getLoginManager();
+        loginManager.connectObject('prepare-for-sleep', () => {
+            this._slideshow?.saveTimer();
+        }, this);
+
+        global.connectObject('shutdown', () => {
+            this._slideshow?.saveTimer();
+        }, this);
+
+        global.display.connectObject('x11-display-closing', () => {
+            this._slideshow?.saveTimer();
+        }, this);
     }
 
     get settings() {
@@ -60,8 +77,6 @@ export default class AzWallpaper extends Extension {
     }
 
     disable() {
-        debugLog('disabled()');
-
         if (this._delayStartId) {
             GLib.source_remove(this._delayStartId);
             this._delayStartId = null;
@@ -71,6 +86,12 @@ export default class AzWallpaper extends Extension {
         this._injectionManager = null;
 
         Main.layoutManager._updateBackgrounds();
+
+        const loginManager = LoginManager.getLoginManager();
+        loginManager.disconnectObject(this);
+
+        global.display.disconnectObject(this);
+        global.disconnectObject(this);
 
         this._bingWallpaperDownloader.destroy();
         this._bingWallpaperDownloader = null;
