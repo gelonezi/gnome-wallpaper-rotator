@@ -1,0 +1,303 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Wallpaper Slideshow package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Wallpaper Slideshow\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-01-14 08:42-0500\n"
+"PO-Revision-Date: 2024-02-28 20:34-0600\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.4.2\n"
+
+#: bingWallpaperDownloader.js:42
+msgid "No user defined directory found for BING wallpaper downloads"
+msgstr ""
+
+#: bingWallpaperDownloader.js:43 bingWallpaperDownloader.js:51
+#, javascript-format
+msgid "Directory set to - %s"
+msgstr ""
+
+#: bingWallpaperDownloader.js:50
+msgid "Failed to create user defined directory for BING wallpaper downloads"
+msgstr ""
+
+#: bingWallpaperDownloader.js:140
+msgid "BING wallpaper download failed."
+msgstr ""
+
+#: bingWallpaperDownloader.js:140
+#, javascript-format
+msgid "Error: %s"
+msgstr ""
+
+#: bingWallpaperDownloader.js:140
+msgid "JSON data null"
+msgstr ""
+
+#: bingWallpaperDownloader.js:141
+msgid "Try again?"
+msgstr ""
+
+#: extension.js:102
+msgid "Next Wallpaper"
+msgstr ""
+
+#: extension.js:109
+msgid "Slideshow Settings"
+msgstr ""
+
+#: prefs.js:19
+msgid "Open directory..."
+msgstr ""
+
+#: prefs.js:33
+msgid "Choose new directory..."
+msgstr ""
+
+#: prefs.js:39
+msgid "Select a directory"
+msgstr ""
+
+#: prefs.js:87
+msgid "Slideshow"
+msgstr ""
+
+#: prefs.js:96
+msgid "Slideshow Options"
+msgstr ""
+
+#: prefs.js:101
+msgid "Slideshow Directory"
+msgstr ""
+
+#: prefs.js:111
+msgid "Slide Duration"
+msgstr ""
+
+#: prefs.js:112
+msgid "Hours"
+msgstr ""
+
+#: prefs.js:112
+msgid "Minutes"
+msgstr ""
+
+#: prefs.js:112
+msgid "Seconds"
+msgstr ""
+
+#: prefs.js:170
+msgid "Use Absolute Time for Slide Duration"
+msgstr ""
+
+#: prefs.js:171
+msgid ""
+"The slide duration will be based on absolute time elapsed, rather than time "
+"the image is displayed on the screen. Changing this setting will reset any "
+"current slide durations."
+msgstr ""
+
+#: prefs.js:180
+msgid "Wallpaper Options"
+msgstr ""
+
+#: prefs.js:185
+msgid "None"
+msgstr ""
+
+#: prefs.js:186
+msgid "Wallpaper"
+msgstr ""
+
+#: prefs.js:187
+msgid "Centered"
+msgstr ""
+
+#: prefs.js:188
+msgid "Scaled"
+msgstr ""
+
+#: prefs.js:189
+msgid "Streched"
+msgstr ""
+
+#: prefs.js:190
+msgid "Zoom"
+msgstr ""
+
+#: prefs.js:191
+msgid "Spanned"
+msgstr ""
+
+#: prefs.js:194
+msgid "Image Adjustment"
+msgstr ""
+
+#: prefs.js:226
+msgid "Bing Wallpapers"
+msgstr ""
+
+#: prefs.js:241
+msgid "Download BING wallpaper of the day"
+msgstr ""
+
+#: prefs.js:247
+msgid "Download Directory"
+msgstr ""
+
+#: prefs.js:257
+msgid "Notify on Download Error"
+msgstr ""
+
+#: prefs.js:258
+msgid ""
+"Displays a notification with error message and option to retry download."
+msgstr ""
+
+#: prefs.js:274
+msgid "Image Resolution"
+msgstr ""
+
+#. TRANSLATORS: Markets are specific regions, defined by their language codes.
+#. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
+#: prefs.js:301
+msgid "Market Location"
+msgstr ""
+
+#. TRANSLATORS: Markets are specific regions, defined by their language codes.
+#. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
+#: prefs.js:304
+msgid ""
+"The market where the BING wallpaper comes from. Wallpapers may vary in "
+"different markets."
+msgstr ""
+
+#: prefs.js:335
+msgid "Images to Download"
+msgstr ""
+
+#: prefs.js:336
+msgid ""
+"You can download up to 7 previous wallpapers plus the current wallpaper of "
+"the day."
+msgstr ""
+
+#: prefs.js:343
+msgid "Delete Previously Downloaded Wallpapers"
+msgstr ""
+
+#: prefs.js:344
+msgid ""
+"Stores a download history of wallpapers and limits how many wallpapers to "
+"keep."
+msgstr ""
+
+#: prefs.js:345
+msgid "Only works for wallpapers downloaded when this setting is enabled."
+msgstr ""
+
+#: prefs.js:346
+msgid "Previous download history is cleared when this setting is disabled."
+msgstr ""
+
+#: prefs.js:358 prefs.js:376
+#, javascript-format
+msgid "Keep %s most recent wallpaper"
+msgid_plural "Keep %s most recent wallpapers"
+msgstr[0] ""
+msgstr[1] ""
+
+#: prefs.js:388
+msgid "Apply"
+msgstr ""
+
+#: prefs.js:404
+msgid "About"
+msgstr ""
+
+#: prefs.js:430 utils.js:34
+msgid "Wallpaper Slideshow"
+msgstr ""
+
+#: prefs.js:448
+msgid "Wallpaper Slideshow Version"
+msgstr ""
+
+#: prefs.js:458
+msgid "Git Commit"
+msgstr ""
+
+#: prefs.js:468
+msgid "GNOME Version"
+msgstr ""
+
+#: prefs.js:477
+msgid "OS Name"
+msgstr ""
+
+#: prefs.js:490
+msgid "Windowing System"
+msgstr ""
+
+#: prefs.js:503
+msgid "Website"
+msgstr ""
+
+#: prefs.js:506
+msgid "Report an Issue"
+msgstr ""
+
+#: prefs.js:509
+msgid "Donate via PayPal"
+msgstr ""
+
+#: prefs.js:524
+msgid "Enable Debug Logs"
+msgstr ""
+
+#: prefs.js:533
+msgid "Wallpaper Slideshow Settings"
+msgstr ""
+
+#: prefs.js:536
+msgid "Load"
+msgstr ""
+
+#: prefs.js:541
+msgid "Load Settings"
+msgstr ""
+
+#: prefs.js:569
+msgid "Save"
+msgstr ""
+
+#: prefs.js:574
+msgid "Save Settings"
+msgstr ""
+
+#: slideshow.js:24 slideshow.js:119
+msgid "Change directory in settings to begin slideshow"
+msgstr ""
+
+#: slideshow.js:24
+msgid "Slideshow directory not found"
+msgstr ""
+
+#: slideshow.js:25 slideshow.js:120
+msgid "Open Settings"
+msgstr ""
+
+#: slideshow.js:119
+msgid "Slideshow contains no slides"
+msgstr ""
