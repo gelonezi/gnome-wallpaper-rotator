@@ -45,31 +45,37 @@ export default class AzWallpaper extends Extension {
                 this._settings.set_strv('bing-wallpapers-downloaded', []);
         }, this);
 
-        this._delayStartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 1, () => {
+        if (!Main.layoutManager._startingUp) {
+            this._startExtension();
+        } else {
+            Main.layoutManager.connectObject('startup-complete', () =>
+                this._startExtension(), this);
+        }
+
+        // Connect to a few signals to store the remaining time of a slide.
+        // disable() isn't called on shutdown, restart, etc.
+        const loginManager = LoginManager.getLoginManager();
+        loginManager.connectObject('prepare-for-sleep', () =>
+            this._slideshow?.saveTimer(), this);
+
+        global.connectObject('shutdown', () =>
+            this._slideshow?.saveTimer(), this);
+
+        global.display.connectObject('x11-display-closing', () =>
+            this._slideshow?.saveTimer(), this);
+    }
+
+    _startExtension() {
+        this._delayStartId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, 3, () => {
             if (this._settings.get_boolean('bing-wallpaper-download'))
                 this._bingWallpaperDownloader.initiate();
+
             this._slideshow.initiate();
             Main.layoutManager._updateBackgrounds();
 
             this._delayStartId = null;
             return GLib.SOURCE_REMOVE;
         });
-
-
-        // Connect to a few signals to store the remaining time of a slide.
-        // disable() isn't called on shutdown, restart, etc.
-        const loginManager = LoginManager.getLoginManager();
-        loginManager.connectObject('prepare-for-sleep', () => {
-            this._slideshow?.saveTimer();
-        }, this);
-
-        global.connectObject('shutdown', () => {
-            this._slideshow?.saveTimer();
-        }, this);
-
-        global.display.connectObject('x11-display-closing', () => {
-            this._slideshow?.saveTimer();
-        }, this);
     }
 
     get settings() {
@@ -90,6 +96,7 @@ export default class AzWallpaper extends Extension {
         const loginManager = LoginManager.getLoginManager();
         loginManager.disconnectObject(this);
 
+        Main.layoutManager.disconnectObject(this);
         global.display.disconnectObject(this);
         global.disconnectObject(this);
 
