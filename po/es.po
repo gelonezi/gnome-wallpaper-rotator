@@ -1,7 +1,7 @@
-# SOME DESCRIPTIVE TITLE.
+# Spanish translation (^_^)/ hello friend!.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Wallpaper Slideshow package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Nosis <EMAIL@ADDRESS>, 2024.
 #
 #, fuzzy
 msgid ""
@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-01-14 08:42-0500\n"
-"PO-Revision-Date: 2024-02-28 20:34-0600\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2024-03-05 16:19-0600\n"
+"Last-Translator: Nosis \n"
 "Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -22,84 +22,88 @@ msgstr ""
 #: bingWallpaperDownloader.js:42
 msgid "No user defined directory found for BING wallpaper downloads"
 msgstr ""
+"No se ha encontrado ningún directorio definido por el usuario para "
+"descargar fondos de pantalla desde BING"
 
 #: bingWallpaperDownloader.js:43 bingWallpaperDownloader.js:51
 #, javascript-format
 msgid "Directory set to - %s"
-msgstr ""
+msgstr "Directorio establecido en - %s"
 
 #: bingWallpaperDownloader.js:50
 msgid "Failed to create user defined directory for BING wallpaper downloads"
 msgstr ""
+"Error al crear el directorio definido por el usuario para descargas de "
+"fondos de escritorio desde BING"
 
 #: bingWallpaperDownloader.js:140
 msgid "BING wallpaper download failed."
-msgstr ""
+msgstr "Fallo en la descarga del fondo de pantalla desde BING."
 
 #: bingWallpaperDownloader.js:140
 #, javascript-format
 msgid "Error: %s"
-msgstr ""
+msgstr "Error: %s"
 
 #: bingWallpaperDownloader.js:140
 msgid "JSON data null"
-msgstr ""
+msgstr "Datos JSON nulos"
 
 #: bingWallpaperDownloader.js:141
 msgid "Try again?"
-msgstr ""
+msgstr "¿Intentar de nuevo?"
 
 #: extension.js:102
 msgid "Next Wallpaper"
-msgstr ""
+msgstr "Siguiente fondo de pantalla"
 
 #: extension.js:109
 msgid "Slideshow Settings"
-msgstr ""
+msgstr "Configuración del cambio automático"
 
 #: prefs.js:19
 msgid "Open directory..."
-msgstr ""
+msgstr "Abrir directorio..."
 
 #: prefs.js:33
 msgid "Choose new directory..."
-msgstr ""
+msgstr "Elige un nuevo directorio..."
 
 #: prefs.js:39
 msgid "Select a directory"
-msgstr ""
+msgstr "Seleccione un directorio"
 
 #: prefs.js:87
 msgid "Slideshow"
-msgstr ""
+msgstr "Cambio automático de fondos de pantalla"
 
 #: prefs.js:96
 msgid "Slideshow Options"
-msgstr ""
+msgstr "Directorio del cambio automático"
 
 #: prefs.js:101
 msgid "Slideshow Directory"
-msgstr ""
+msgstr "Directorio del cambio automático de fondos de pantalla"
 
 #: prefs.js:111
 msgid "Slide Duration"
-msgstr ""
+msgstr "Duración para cambiar el fondo"
 
 #: prefs.js:112
 msgid "Hours"
-msgstr ""
+msgstr "Horas"
 
 #: prefs.js:112
 msgid "Minutes"
-msgstr ""
+msgstr "Minutos"
 
 #: prefs.js:112
 msgid "Seconds"
-msgstr ""
+msgstr "Segundos"
 
 #: prefs.js:170
 msgid "Use Absolute Time for Slide Duration"
-msgstr ""
+msgstr "Utilice el tiempo absoluto para la duración de la diapositiva"
 
 #: prefs.js:171
 msgid ""
@@ -107,73 +111,79 @@ msgid ""
 "the image is displayed on the screen. Changing this setting will reset any "
 "current slide durations."
 msgstr ""
+"La duración de la diapositiva se basará en el tiempo absoluto transcurrido, "
+"en lugar del tiempo en que se muestra la imagen en la pantalla. Al cambiar "
+"esta configuración se restablecerán las duraciones de las diapositivas "
+"actuales."
 
 #: prefs.js:180
 msgid "Wallpaper Options"
-msgstr ""
+msgstr "Opciones del fondo de pantalla"
 
 #: prefs.js:185
 msgid "None"
-msgstr ""
+msgstr "Ninguno"
 
 #: prefs.js:186
 msgid "Wallpaper"
-msgstr ""
+msgstr "Fondo de pantalla"
 
 #: prefs.js:187
 msgid "Centered"
-msgstr ""
+msgstr "Centrado"
 
 #: prefs.js:188
 msgid "Scaled"
-msgstr ""
+msgstr "Escala"
 
 #: prefs.js:189
 msgid "Streched"
-msgstr ""
+msgstr "Estirado"
 
 #: prefs.js:190
 msgid "Zoom"
-msgstr ""
+msgstr "Zoom"
 
 #: prefs.js:191
 msgid "Spanned"
-msgstr ""
+msgstr "Ocupar toda la pantalla"
 
 #: prefs.js:194
 msgid "Image Adjustment"
-msgstr ""
+msgstr "Ajuste de la imagen"
 
 #: prefs.js:226
 msgid "Bing Wallpapers"
-msgstr ""
+msgstr "Fondos de Bing"
 
 #: prefs.js:241
 msgid "Download BING wallpaper of the day"
-msgstr ""
+msgstr "Descarga el fondo de pantalla del día de BING"
 
 #: prefs.js:247
 msgid "Download Directory"
-msgstr ""
+msgstr "Carpeta de Descargas"
 
 #: prefs.js:257
 msgid "Notify on Download Error"
-msgstr ""
+msgstr "Notificar error de descarga"
 
 #: prefs.js:258
 msgid ""
 "Displays a notification with error message and option to retry download."
 msgstr ""
+"Muestra una notificación con un mensaje de error y una opción para volver a "
+"intentar la descarga."
 
 #: prefs.js:274
 msgid "Image Resolution"
-msgstr ""
+msgstr "Resolución de la imagen"
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
 #: prefs.js:301
 msgid "Market Location"
-msgstr ""
+msgstr "Ubicación del la fuente del fondo"
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
@@ -182,122 +192,133 @@ msgid ""
 "The market where the BING wallpaper comes from. Wallpapers may vary in "
 "different markets."
 msgstr ""
+"Fuente del que procede el fondo de pantalla de BING. Los fondos de pantalla "
+"pueden variar en los distintas fuentes."
 
 #: prefs.js:335
 msgid "Images to Download"
-msgstr ""
+msgstr "Imágenes para descarga"
 
 #: prefs.js:336
 msgid ""
 "You can download up to 7 previous wallpapers plus the current wallpaper of "
 "the day."
 msgstr ""
+"Podrás descargar hasta 7 fondos de pantalla anteriores más el fondo de "
+"pantalla actual del día."
 
 #: prefs.js:343
 msgid "Delete Previously Downloaded Wallpapers"
-msgstr ""
+msgstr "Eliminar fondos de pantalla descargados previamente"
 
 #: prefs.js:344
 msgid ""
 "Stores a download history of wallpapers and limits how many wallpapers to "
 "keep."
 msgstr ""
+"Almacena el historial de descargas de fondos de pantalla y limita el número "
+"de fondos que se pueden almacenar."
 
 #: prefs.js:345
 msgid "Only works for wallpapers downloaded when this setting is enabled."
 msgstr ""
+"Sólo funciona para fondos de pantalla descargados cuando esta opción está "
+"activada."
 
 #: prefs.js:346
 msgid "Previous download history is cleared when this setting is disabled."
 msgstr ""
+"Borrar el historial anterior de descargas si se desactiva esta opción."
 
 #: prefs.js:358 prefs.js:376
 #, javascript-format
 msgid "Keep %s most recent wallpaper"
 msgid_plural "Keep %s most recent wallpapers"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Guardar %s el fondo de pantalla más reciente"
+msgstr[1] "Guardar %s fondos de pantalla más recientes"
 
 #: prefs.js:388
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: prefs.js:404
 msgid "About"
-msgstr ""
+msgstr "Acerca de"
 
 #: prefs.js:430 utils.js:34
 msgid "Wallpaper Slideshow"
-msgstr ""
+msgstr "Slideshow de los fondos de pantalla"
 
 #: prefs.js:448
 msgid "Wallpaper Slideshow Version"
-msgstr ""
+msgstr "Wallpaper Slideshow Version"
 
 #: prefs.js:458
 msgid "Git Commit"
-msgstr ""
+msgstr "Git Commit"
 
 #: prefs.js:468
 msgid "GNOME Version"
-msgstr ""
+msgstr "Versión de GNOME"
 
 #: prefs.js:477
 msgid "OS Name"
-msgstr ""
+msgstr "Nombre del SO"
 
 #: prefs.js:490
 msgid "Windowing System"
-msgstr ""
+msgstr "Sistema de ventanas"
 
 #: prefs.js:503
 msgid "Website"
-msgstr ""
+msgstr "Website"
 
 #: prefs.js:506
 msgid "Report an Issue"
-msgstr ""
+msgstr "Informar de un problema 🐛"
 
 #: prefs.js:509
 msgid "Donate via PayPal"
-msgstr ""
+msgstr "Donar mediante PayPal  ❤️"
 
 #: prefs.js:524
 msgid "Enable Debug Logs"
-msgstr ""
+msgstr "Activar registros de depuración"
 
 #: prefs.js:533
 msgid "Wallpaper Slideshow Settings"
-msgstr ""
+msgstr "Configuración del pase de los fondos de pantalla"
 
 #: prefs.js:536
 msgid "Load"
-msgstr ""
+msgstr "Cargar"
 
 #: prefs.js:541
 msgid "Load Settings"
-msgstr ""
+msgstr "Cargar ajustes"
 
 #: prefs.js:569
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
 #: prefs.js:574
 msgid "Save Settings"
-msgstr ""
+msgstr "Guardar ajustes"
 
 #: slideshow.js:24 slideshow.js:119
 msgid "Change directory in settings to begin slideshow"
 msgstr ""
+"Cambiar la carpeta en la configuración, para iniciar la pase automático de "
+"los fondos"
 
 #: slideshow.js:24
 msgid "Slideshow directory not found"
-msgstr ""
+msgstr "No se encuentra la carpeta Slideshow"
 
 #: slideshow.js:25 slideshow.js:120
 msgid "Open Settings"
-msgstr ""
+msgstr "Abrir ajustes"
 
 #: slideshow.js:119
 msgid "Slideshow contains no slides"
-msgstr ""
+msgstr "Slideshow no contiene fondos de pantalla"
