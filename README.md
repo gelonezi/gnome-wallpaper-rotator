@@ -32,6 +32,10 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 #### Translators:
 
-**@[Quentin](https://gitlab.com/quenty_occitania) - Occitan** | **@[daPhipz](https://gitlab.com/daPhipz) - German**
+| Language | Translators |
+| ------ | ------ |
+| **German** | **@[daPhipz](https://gitlab.com/daPhipz)** |
+| **Occitan** | **@[Quentin](https://gitlab.com/quenty_occitania)** |
+| **Spanish** | **@[Fer](https://gitlab.com/Imparator)** |
 
 -----
