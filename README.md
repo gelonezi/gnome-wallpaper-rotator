@@ -7,7 +7,9 @@ A GNOME Shell extension that adds a wallpaper slideshow and optionally downloads
 
 ### Installation
 
-To install the most recent official release: Visit Wallpaper Slideshow on the [Official GNOME Extensions](https://extensions.gnome.org) website.
+#### To install the most recent official release, visit Wallpaper Slideshow on the [Official GNOME Extensions](https://extensions.gnome.org/extension/6281/wallpaper-slideshow/) website.
+
+<a href="https://extensions.gnome.org/extension/6281/wallpaper-slideshow/"> <img src="https://gitlab.com/arcmenu/arcmenu-assets/raw/master/images/get-it-ego.png" width="240" style="margin-left: 4px"/></a>
 
 -----
 
