@@ -28,21 +28,41 @@ export function debugLog(message) {
  */
 export function notify(msg, details, actionLabel = null, actionCallback = null) {
     const extension = Extension.lookupByURL(import.meta.url);
-    const source = new MessageTray.SystemNotificationSource();
-    Main.messageTray.add(source);
-
     msg = `${_('Wallpaper Slideshow')}: ${msg}`;
 
-    const notification = new MessageTray.Notification(source, msg, details, {
-        gicon: Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`),
-    });
+    // MessageTray.SystemNotificationSource removed in GNOME 46
+    if (MessageTray.SystemNotificationSource) {
+        const source = new MessageTray.SystemNotificationSource();
+        Main.messageTray.add(source);
 
-    if (actionLabel && actionCallback) {
-        notification.setUrgency(MessageTray.Urgency.CRITICAL);
-        notification.addAction(actionLabel, actionCallback);
+        const notification = new MessageTray.Notification(source, msg, details, {
+            gicon: Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`),
+        });
+
+        if (actionLabel && actionCallback) {
+            notification.setUrgency(MessageTray.Urgency.CRITICAL);
+            notification.addAction(actionLabel, actionCallback);
+        } else {
+            notification.setTransient(true);
+        }
+
+        source.showNotification(notification);
     } else {
-        notification.setTransient(true);
-    }
+        const source = MessageTray.getSystemSource();
+        const notification = new MessageTray.Notification({
+            source,
+            title: msg,
+            body: details,
+            gicon: Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`),
+        });
 
-    source.showNotification(notification);
+        if (actionLabel && actionCallback) {
+            notification.urgency = MessageTray.Urgency.CRITICAL;
+            notification.addAction(actionLabel, actionCallback);
+        } else {
+            notification.isTransient = true;
+        }
+
+        source.addNotification(notification);
+    }
 }

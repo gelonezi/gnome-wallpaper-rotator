@@ -55,8 +55,10 @@ export const Slideshow = class AzSlideShow {
 
     initiate() {
         const slideshowDirectory = this._settings.get_string('slideshow-directory');
-        if (!isValidDirectory(this._extension, slideshowDirectory))
+        if (!isValidDirectory(this._extension, slideshowDirectory)) {
+            this._monitorSlideshowDirectory();
             return;
+        }
 
         debugLog('Initiate slideshow.');
         this._createFileMonitor();
@@ -192,12 +194,24 @@ export const Slideshow = class AzSlideShow {
         }
     }
 
+    _monitorSlideshowDirectory() {
+        this._clearFileMonitor();
+        const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
+        const dir = Gio.file_new_for_path(slideshowDirectoryPath);
+        this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.NONE, null);
+        this._fileMonitor.set_rate_limit(1000);
+        this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
+            if (eventType === Gio.FileMonitorEvent.CREATED)
+                this.reset();
+        });
+    }
+
     _createFileMonitor() {
         this._clearFileMonitor();
 
         const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
         const dir = Gio.file_new_for_path(slideshowDirectoryPath);
-        this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.WATCH_MOVES, null);
+        this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
         this._fileMonitor.set_rate_limit(1000);
         this._fileMonitorChangedId = this._fileMonitor.connect('changed', async (_monitor, file, otherFile, eventType) => {
             const currentWallpaper = this._settings.get_string('slideshow-current-wallpapper');
@@ -218,6 +232,8 @@ export const Slideshow = class AzSlideShow {
                 } else if (currentWallpaper === fileName) {
                     // The deleted file was the current wallpaper, go to next slide in queue
                     this.startSlideshow(0, true);
+                } else if (file.get_path() === slideshowDirectoryPath) {
+                    this.reset();
                 }
                 break;
             case Gio.FileMonitorEvent.CREATED:
@@ -264,6 +280,12 @@ export const Slideshow = class AzSlideShow {
                     // The renamed file was the current wallpaper, go to next slide in queue
                     this.startSlideshow(0, true);
                 }
+                break;
+            }
+            case Gio.FileMonitorEvent.UNMOUNTED: {
+                if (file.get_path() === slideshowDirectoryPath)
+                    this.reset();
+
                 break;
             }
             default:
