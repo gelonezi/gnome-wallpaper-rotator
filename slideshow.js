@@ -201,8 +201,8 @@ export const Slideshow = class AzSlideShow {
         this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.NONE, null);
         this._fileMonitor.set_rate_limit(1000);
         this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
-            if (eventType === Gio.FileMonitorEvent.CREATED)
-                this.reset();
+            if (eventType === Gio.FileMonitorEvent.CREATED && file.get_path() === slideshowDirectoryPath)
+                this.restart();
         });
     }
 
@@ -233,7 +233,7 @@ export const Slideshow = class AzSlideShow {
                     // The deleted file was the current wallpaper, go to next slide in queue
                     this.startSlideshow(0, true);
                 } else if (file.get_path() === slideshowDirectoryPath) {
-                    this.reset();
+                    this.restart();
                 }
                 break;
             case Gio.FileMonitorEvent.CREATED:
@@ -284,7 +284,7 @@ export const Slideshow = class AzSlideShow {
             }
             case Gio.FileMonitorEvent.UNMOUNTED: {
                 if (file.get_path() === slideshowDirectoryPath)
-                    this.reset();
+                    this.restart();
 
                 break;
             }
@@ -386,6 +386,21 @@ export const Slideshow = class AzSlideShow {
         debugLog(`Time elapsed has not exceeded slide duration. Next slide in ${remainingTime} seconds.`);
 
         return remainingTime;
+    }
+
+    restart() {
+        this._endSlideshow();
+        this._clearFileMonitor();
+        this._loadSlideshowQueue();
+
+        const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
+        const currentSlidePath = this._settings.get_string('slideshow-current-wallpapper');
+        const filePath = GLib.build_filenamev([slideshowDirectoryPath, currentSlidePath]);
+
+        this._backgroundSettings.set_string('picture-uri', `file://${filePath}`);
+        this._backgroundSettings.set_string('picture-uri-dark', `file://${filePath}`);
+
+        this.initiate();
     }
 
     reset() {
