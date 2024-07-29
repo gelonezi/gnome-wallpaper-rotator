@@ -176,10 +176,10 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         slideShowGroup.add(slideDurationTypeRow);
 
-        const backgroundGroup = new Adw.PreferencesGroup({
+        const wallpaperOptionsGroup = new Adw.PreferencesGroup({
             title: _('Wallpaper Options'),
         });
-        this.add(backgroundGroup);
+        this.add(wallpaperOptionsGroup);
 
         const adjustmentList = new Gtk.StringList();
         adjustmentList.append(_('None'));
@@ -198,7 +198,65 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         backgroundAdjustRow.connect('notify::selected', widget => {
             this._backgroundSettings.set_enum('picture-options', widget.selected);
         });
-        backgroundGroup.add(backgroundAdjustRow);
+        wallpaperOptionsGroup.add(backgroundAdjustRow);
+
+        const backgroundOptionsGroup = new Adw.PreferencesGroup({
+            title: _('Background Color Options'),
+            description: _('The background color/style if the wallpaper does not fill the screen'),
+        });
+        this.add(backgroundOptionsGroup);
+
+        const backgroundShadingType = new Gtk.StringList();
+        backgroundShadingType.append(_('Solid'));
+        backgroundShadingType.append(_('Vertical Gradient'));
+        backgroundShadingType.append(_('Horizontal Gradient'));
+
+        const backgroundShadingTypeRow = new Adw.ComboRow({
+            title: _('Color Style'),
+            model: backgroundShadingType,
+            selected: this._backgroundSettings.get_enum('color-shading-type'),
+        });
+        backgroundShadingTypeRow.connect('notify::selected', widget => {
+            this._backgroundSettings.set_enum('color-shading-type', widget.selected);
+        });
+        backgroundOptionsGroup.add(backgroundShadingTypeRow);
+
+        const backgroundRGBA = new Gdk.RGBA();
+        backgroundRGBA.parse(this._backgroundSettings.get_string('primary-color'));
+        const backgroundColorButton = new Gtk.ColorDialogButton({
+            valign: Gtk.Align.CENTER,
+            dialog: new Gtk.ColorDialog(),
+            rgba: backgroundRGBA,
+        });
+        backgroundColorButton.connect('notify::rgba', widget => {
+            const colorString = widget.get_rgba().to_string();
+            this._backgroundSettings.set_string('primary-color', colorString);
+        });
+        const backgroundColorRow = new Adw.ActionRow({
+            title: _('Primary Color'),
+            activatable_widget: backgroundColorButton,
+        });
+        backgroundColorRow.add_suffix(backgroundColorButton);
+        backgroundOptionsGroup.add(backgroundColorRow);
+
+        const backgroundSecondaryRGBA = new Gdk.RGBA();
+        backgroundSecondaryRGBA.parse(this._backgroundSettings.get_string('secondary-color'));
+        const backgroundSecondaryColorButton = new Gtk.ColorDialogButton({
+            valign: Gtk.Align.CENTER,
+            dialog: new Gtk.ColorDialog(),
+            rgba: backgroundSecondaryRGBA,
+        });
+        backgroundSecondaryColorButton.connect('notify::rgba', widget => {
+            const colorString = widget.get_rgba().to_string();
+            this._backgroundSettings.set_string('secondary-color', colorString);
+        });
+        const backgroundSecondaryColorRow = new Adw.ActionRow({
+            title: _('Secondary Color'),
+            subtitle: _("The secondary color if 'Color Style' not set to Solid."),
+            activatable_widget: backgroundSecondaryColorButton,
+        });
+        backgroundSecondaryColorRow.add_suffix(backgroundSecondaryColorButton);
+        backgroundOptionsGroup.add(backgroundSecondaryColorRow);
     }
 
     _createSpinButton(value, lower, upper) {
