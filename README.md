@@ -38,6 +38,7 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 | ------ | ------ |
 | **German** | **@[daPhipz](https://gitlab.com/daPhipz)** |
 | **Occitan** | **@[Quentin](https://gitlab.com/quenty_occitania)** |
+| **Russian** | **@[kve1989](https://gitlab.com/kve1989)** |
 | **Spanish** | **@[Fer](https://gitlab.com/Imparator)** |
 
 -----
