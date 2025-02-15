@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
+    <enum id='org.gnome.shell.extensions.azwallpaper.slideshow-queue-sort-type'>
+        <value value='0' nick='Random'/>
+        <value value='1' nick='A-Z'/>
+        <value value='2' nick='Z-A'/>
+        <value value='3' nick='Newest'/>
+        <value value='4' nick='Oldest'/>
+    </enum>
     <schema id="org.gnome.shell.extensions.azwallpaper" path="/org/gnome/shell/extensions/azwallpaper/">
+        <key type="i" name="support-notifier-project-version">
+            <default>0</default>
+            <summary>The project version of when a support notification was shown</summary>
+        </key>
+        <key type="b" name="support-notifier-enabled">
+            <default>true</default>
+            <summary>Enable/Disable the support notifications</summary>
+        </key>
+        <key type="s" name="prefs-visible-page">
+            <default>''</default>
+            <summary>Which page to show when settings window is opened. Empty string is default.</summary>
+        </key>
         <key type="b" name="bing-wallpaper-download">
             <default>false</default>
             <summary>Download the BING wallpaper of the day. Queries BING on 12hour interval.</summary>
@@ -43,6 +62,10 @@
             <default>''</default>
             <summary>The directory of the slideshow wallpapers.</summary>
         </key>
+        <key enum="org.gnome.shell.extensions.azwallpaper.slideshow-queue-sort-type" name="slideshow-queue-sort-type">
+            <default>'Random'</default>
+            <summary>How to order the slideshow queue.</summary>
+        </key>
         <key type="(iii)" name="slideshow-slide-duration">
             <default>(0, 0, 60)</default>
             <summary>Duration of each image in the slideshow (seconds).</summary>
@@ -59,9 +82,13 @@
             <default>0</default>
             <summary>When (in seconds) to change to the next background image.</summary>
         </key>
-        <key type="as" name="slideshow-wallpaper-queue">
+        <key type="aa{ss}" name="slideshow-queue">
             <default>[]</default>
             <summary>Permanent storage of the slideshow queue</summary>
+        </key>
+        <key type="i" name="slideshow-current-slide-index">
+            <default>0</default>
+            <summary>The current index of 'slideshow-queue' array</summary>
         </key>
         <key type="s" name="slideshow-current-wallpapper">
             <default>''</default>

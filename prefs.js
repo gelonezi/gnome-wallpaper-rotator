@@ -65,6 +65,19 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
         const settings = this.getSettings();
         const iconPath = `${this.path}/media`;
 
+        let pageChangedId = settings.connect('changed::prefs-visible-page', () => {
+            if (settings.get_string('prefs-visible-page') !== '')
+                this._setVisiblePage(window, settings);
+        });
+        window.connect('close-request', () => {
+            if (pageChangedId) {
+                settings.disconnect(pageChangedId);
+                pageChangedId = null;
+            }
+        });
+
+        window.set_default_size(750, 800);
+
         const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
         if (!iconTheme.get_search_path().includes(iconPath))
             iconTheme.add_search_path(iconPath);
@@ -75,8 +88,29 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
         const bingPage = new BingPage(settings);
         window.add(bingPage);
 
-        const aboutPage = new AboutPage(settings, this.metadata);
+        const donatePage = new DonatePage(settings, this.metadata);
+        window.add(donatePage);
+
+        const aboutPage = new AboutPage(this.metadata, this.path);
         window.add(aboutPage);
+        this._setVisiblePage(window, settings);
+    }
+
+    _setVisiblePage(window, settings) {
+        const prefsVisiblePage = settings.get_string('prefs-visible-page');
+
+        window.pop_subpage();
+        if (prefsVisiblePage === '') {
+            window.set_visible_page_name('HomePage');
+        } else if (prefsVisiblePage === 'DonatePage') {
+            window.set_visible_page_name('DonatePage');
+        } else if (prefsVisiblePage === 'WhatsNewPage') {
+            window.set_visible_page_name('AboutPage');
+            const page = window.get_visible_page();
+            page.showWhatsNewPage();
+        }
+
+        settings.set_string('prefs-visible-page', '');
     }
 }
 
@@ -106,6 +140,23 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         slideShowDirRow.add_prefix(openDirectoryButton);
         slideShowDirRow.add_suffix(fileChooserButton);
         slideShowGroup.add(slideShowDirRow);
+
+        const queueSortingList = new Gtk.StringList();
+        queueSortingList.append(_('Random'));
+        queueSortingList.append(_('A-Z (Ascending Order)'));
+        queueSortingList.append(_('Z-A (Descending Order)'));
+        queueSortingList.append(_('Newest First (Date)'));
+        queueSortingList.append(_('Oldest First (Date)'));
+
+        const queueSortingRow = new Adw.ComboRow({
+            title: _('Slideshow Queue Sorting'),
+            model: queueSortingList,
+            selected: this._settings.get_enum('slideshow-queue-sort-type'),
+        });
+        queueSortingRow.connect('notify::selected', widget => {
+            this._settings.set_enum('slideshow-queue-sort-type', widget.selected);
+        });
+        slideShowGroup.add(queueSortingRow);
 
         const slideDurationRow = new Adw.ActionRow({
             title: _('Slide Duration'),
@@ -167,8 +218,8 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         slideDurationGrid.attach(secondsSpinButton, 4, 0, 1, 1);
 
         const slideDurationTypeRow = new Adw.SwitchRow({
-            title: _('Use Absolute Time for Slide Duration'),
-            subtitle: _('The slide duration will be based on absolute time elapsed, rather than time the image is displayed on the screen. Changing this setting will reset any current slide durations.'),
+            title: _('Use Absolute Time Elapsed for Slide Duration'),
+            subtitle: _('Disabled: Slide duration counts down only while the extension is active.\nEnabled: Slide duration counts down even when the extension is inactive (e.g., Lock Screen, Power Off, etc.).'),
             active: this._settings.get_boolean('slideshow-use-absolute-time-for-duration'),
         });
         slideDurationTypeRow.connect('notify::active', widget => {
@@ -202,7 +253,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
 
         const backgroundOptionsGroup = new Adw.PreferencesGroup({
             title: _('Background Color Options'),
-            description: _('The background color/style if the wallpaper does not fill the screen'),
+            description: _('The background fill type and colors to be shown when the wallpaper does not fill the screen'),
         });
         this.add(backgroundOptionsGroup);
 
@@ -212,7 +263,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         backgroundShadingType.append(_('Horizontal Gradient'));
 
         const backgroundShadingTypeRow = new Adw.ComboRow({
-            title: _('Color Style'),
+            title: _('Fill Type'),
             model: backgroundShadingType,
             selected: this._backgroundSettings.get_enum('color-shading-type'),
         });
@@ -252,11 +303,28 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         const backgroundSecondaryColorRow = new Adw.ActionRow({
             title: _('Secondary Color'),
-            subtitle: _("The secondary color if 'Color Style' not set to Solid."),
+            subtitle: _("Only shown if 'Fill Type' is a gradient."),
             activatable_widget: backgroundSecondaryColorButton,
         });
         backgroundSecondaryColorRow.add_suffix(backgroundSecondaryColorButton);
         backgroundOptionsGroup.add(backgroundSecondaryColorRow);
+
+        const debugLogsGroup = new Adw.PreferencesGroup();
+        this.add(debugLogsGroup);
+
+        const debugLogsSwitch = new Gtk.Switch({
+            valign: Gtk.Align.CENTER,
+            active: this._settings.get_boolean('debug-logs'),
+        });
+        debugLogsSwitch.connect('notify::active', widget => {
+            this._settings.set_boolean('debug-logs', widget.get_active());
+        });
+        const debugLogsRow = new Adw.ActionRow({
+            title: _('Enable Debug Logs'),
+            activatable_widget: debugLogsSwitch,
+        });
+        debugLogsRow.add_suffix(debugLogsSwitch);
+        debugLogsGroup.add(debugLogsRow);
     }
 
     _createSpinButton(value, lower, upper) {
@@ -359,7 +427,7 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
             title: _('Market Location'),
             /* TRANSLATORS: Markets are specific regions, defined by their language codes.
             See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes */
-            subtitle: _('The market where the BING wallpaper comes from. Wallpapers may vary in different markets.'),
+            subtitle: _('The market where the BING wallpaper comes from.\nWallpapers may vary in different markets.'),
             model: marketsList,
             selected: selectedMarket,
         });
@@ -456,22 +524,25 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
 });
 
 var AboutPage = GObject.registerClass(
-class AzWallpaperAboutPage extends Adw.PreferencesPage {
-    _init(settings, metadata) {
+class AboutPage extends Adw.PreferencesPage {
+    _init(metadata, path) {
         super._init({
             title: _('About'),
             icon_name: 'help-about-symbolic',
             name: 'AboutPage',
         });
 
-        this._settings = settings;
-
-        const PAYPAL_LINK = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+${metadata.name}&source=url`;
+        const PROJECT_NAME = _('Wallpaper Slideshow');
+        const PROJECT_DESCRIPTION = _('Optionally downloads BING wallpaper of the day.');
         const PROJECT_IMAGE = 'azwallpaper-logo';
         const SCHEMA_PATH = '/org/gnome/shell/extensions/azwallpaper/';
 
+        const VERSION = metadata['version-name'] ? metadata['version-name'] : metadata.version.toString();
+
         // Project Logo, title, description-------------------------------------
         const projectHeaderGroup = new Adw.PreferencesGroup();
+        this.add(projectHeaderGroup);
+
         const projectHeaderBox = new Gtk.Box({
             orientation: Gtk.Orientation.VERTICAL,
             hexpand: false,
@@ -485,17 +556,21 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         });
 
         const projectTitleLabel = new Gtk.Label({
-            label: _('Wallpaper Slideshow'),
+            label: _(PROJECT_NAME),
             css_classes: ['title-1'],
             vexpand: true,
             valign: Gtk.Align.FILL,
         });
 
+        const projectDescriptionLabel = new Gtk.Label({
+            label: PROJECT_DESCRIPTION,
+            hexpand: false,
+            vexpand: false,
+        });
         projectHeaderBox.append(projectImage);
         projectHeaderBox.append(projectTitleLabel);
+        projectHeaderBox.append(projectDescriptionLabel);
         projectHeaderGroup.add(projectHeaderBox);
-
-        this.add(projectHeaderGroup);
         // -----------------------------------------------------------------------
 
         // Extension/OS Info------------------------------------------------
@@ -503,13 +578,48 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         this.add(infoGroup);
 
         const projectVersionRow = new Adw.ActionRow({
-            title: _('Wallpaper Slideshow Version'),
+            /* TRANSLATORS: 'PROJECT_NAME' Version*/
+            title: _('%s Version').format(PROJECT_NAME),
         });
         projectVersionRow.add_suffix(new Gtk.Label({
-            label: metadata.version.toString(),
+            label: VERSION,
             css_classes: ['dim-label'],
         }));
         infoGroup.add(projectVersionRow);
+
+        /* TRANSLATORS: 'PROJECT_NAME' - Release Notes*/
+        const {subpage: whatsNewSubPage, page: whatsNewPage} = this._createSubPage(_('%s - Release Notes').format(PROJECT_NAME));
+        this._whatsNewSubPage = whatsNewSubPage;
+        const whatsNewRow = this._createSubPageRow(_("What's New"), whatsNewSubPage);
+        infoGroup.add(whatsNewRow);
+
+        const whatsNewGroup = new Adw.PreferencesGroup();
+        whatsNewPage.add(whatsNewGroup);
+
+        let releaseNotes = '';
+        try {
+            const fileContent = GLib.file_get_contents(`${path}/RELEASENOTES`)[1];
+            const decoder = new TextDecoder('utf-8');
+            releaseNotes = decoder.decode(fileContent);
+        } catch (e) {
+            releaseNotes = "Failed to load 'What's New' content.";
+        }
+
+        const releaseNotesLabel = new Gtk.Label({
+            label: releaseNotes,
+            use_markup: true,
+            xalign: Gtk.Align.START,
+            justify: Gtk.Justification.LEFT,
+            margin_top: 14,
+            margin_bottom: 14,
+            margin_start: 14,
+            margin_end: 14,
+        });
+        const releaseNotesBox = new Gtk.Box({
+            css_classes: ['card'],
+        });
+        releaseNotesBox.append(releaseNotesLabel);
+        whatsNewGroup.add(releaseNotesBox);
 
         if (metadata.commit) {
             const commitRow = new Adw.ActionRow({
@@ -554,41 +664,22 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         infoGroup.add(sessionTypeRow);
         // -----------------------------------------------------------------------
 
-        // Links------------------------------------------------------------------
-        const linksGroup = new Adw.PreferencesGroup();
-        this.add(linksGroup);
+        // Links -----------------------------------------------------------------
+        /* TRANSLATORS: 'PROJECT_NAME' on GitLab*/
+        const gitlabRow = this._createLinkRow(_('%s on GitLab').format(PROJECT_NAME), `${metadata.url}`);
+        infoGroup.add(gitlabRow);
 
-        const gitlabRow = this._createLinkRow(_('Website'), metadata.url);
-        linksGroup.add(gitlabRow);
-
-        const issueRow = this._createLinkRow(_('Report an Issue'), `${metadata.url}/-/issues`);
-        linksGroup.add(issueRow);
-
-        const donateRow = this._createLinkRow(_('Donate via PayPal'), PAYPAL_LINK);
-        linksGroup.add(donateRow);
+        const reportIssueRow = this._createLinkRow(_('Report an Issue'), `${metadata.url}/-/issues`);
+        infoGroup.add(reportIssueRow);
         // -----------------------------------------------------------------------
-
-        const debugLogsGroup = new Adw.PreferencesGroup();
-        this.add(debugLogsGroup);
-
-        const debugLogsSwitch = new Gtk.Switch({
-            valign: Gtk.Align.CENTER,
-            active: this._settings.get_boolean('debug-logs'),
-        });
-        debugLogsSwitch.connect('notify::active', widget => {
-            this._settings.set_boolean('debug-logs', widget.get_active());
-        });
-        const debugLogsRow = new Adw.ActionRow({
-            title: _('Enable Debug Logs'),
-            activatable_widget: debugLogsSwitch,
-        });
-        debugLogsRow.add_suffix(debugLogsSwitch);
-        debugLogsGroup.add(debugLogsRow);
 
         // Save/Load Settings----------------------------------------------------------
         const settingsGroup = new Adw.PreferencesGroup();
+        this.add(settingsGroup);
+
         const settingsRow = new Adw.ActionRow({
-            title: _('Wallpaper Slideshow Settings'),
+            /* TRANSLATORS: 'PROJECT_NAME' Settings*/
+            title: _('%s Settings').format(PROJECT_NAME),
         });
         const loadButton = new Gtk.Button({
             label: _('Load'),
@@ -603,22 +694,20 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
                     if (filename && GLib.file_test(filename, GLib.FileTest.EXISTS)) {
                         const settingsFile = Gio.File.new_for_path(filename);
                         const [success_, pid_, stdin, stdout, stderr] =
-                            GLib.spawn_async_with_pipes(
-                                null,
-                                ['dconf', 'load', SCHEMA_PATH],
-                                null,
-                                GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                null
-                            );
+                           GLib.spawn_async_with_pipes(
+                               null,
+                               ['dconf', 'load', SCHEMA_PATH],
+                               null,
+                               GLib.SpawnFlags.SEARCH_PATH | GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                               null
+                           );
 
+                        // TODO: Replace this with `GioUnix.OutputStream` later
                         const outputStream = new Gio.UnixOutputStream({fd: stdin, close_fd: true});
                         GLib.close(stdout);
                         GLib.close(stderr);
-
                         outputStream.splice(settingsFile.read(null),
-                            Gio.OutputStreamSpliceFlags.CLOSE_SOURCE |
-                            Gio.OutputStreamSpliceFlags.CLOSE_TARGET,
-                            null);
+                            Gio.OutputStreamSpliceFlags.CLOSE_SOURCE | Gio.OutputStreamSpliceFlags.CLOSE_TARGET, null);
                     }
                 }
             );
@@ -645,26 +734,76 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         settingsRow.add_suffix(saveButton);
         settingsRow.add_suffix(loadButton);
         settingsGroup.add(settingsRow);
-        this.add(settingsGroup);
         // -----------------------------------------------------------------------
 
+        // Legal/Misc ----------------------------------------------------------------
+        const miscGroup = new Adw.PreferencesGroup();
+        this.add(miscGroup);
+
+        const {subpage: legalSubPage, page: legalPage} = this._createSubPage(_('Legal'));
+        const legalRow = this._createSubPageRow(_('Legal'), legalSubPage);
+        miscGroup.add(legalRow);
+
         const gnuSoftwareGroup = new Adw.PreferencesGroup();
+        legalPage.add(gnuSoftwareGroup);
+
+        const warrantyLabel = _('This program comes with absolutely no warranty.');
+        /* TRANSLATORS: this is the program license url; the string contains the name of the license as link text.*/
+        const urlLabel = _('See the <a href="%s">%s</a> for details.').format('https://gnu.org/licenses/old-licenses/gpl-2.0.html', _('GNU General Public License, version 2 or later'));
+
         const gnuSofwareLabel = new Gtk.Label({
-            label: _(GNU_SOFTWARE),
+            label: `${_(warrantyLabel)}\n${_(urlLabel)}`,
             use_markup: true,
             justify: Gtk.Justification.CENTER,
         });
-        const gnuSofwareLabelBox = new Gtk.Box({
-            orientation: Gtk.Orientation.VERTICAL,
-            valign: Gtk.Align.END,
-            vexpand: true,
-        });
-        gnuSofwareLabelBox.append(gnuSofwareLabel);
-        gnuSoftwareGroup.add(gnuSofwareLabelBox);
-        this.add(gnuSoftwareGroup);
+        gnuSoftwareGroup.add(gnuSofwareLabel);
+        // -----------------------------------------------------------------------
     }
 
-    _createLinkRow(title, uri) {
+    showWhatsNewPage() {
+        this.get_root().push_subpage(this._whatsNewSubPage);
+    }
+
+    _createSubPage(title) {
+        const subpage = new Adw.NavigationPage({
+            title,
+        });
+
+        const headerBar = new Adw.HeaderBar();
+
+        const sidebarToolBarView = new Adw.ToolbarView();
+
+        sidebarToolBarView.add_top_bar(headerBar);
+        subpage.set_child(sidebarToolBarView);
+        const page = new Adw.PreferencesPage();
+        sidebarToolBarView.set_content(page);
+
+        return {subpage, page};
+    }
+
+    _createSubPageRow(title, subpage) {
+        const subpageRow = new Adw.ActionRow({
+            title: _(title),
+            activatable: true,
+        });
+
+        subpageRow.connect('activated', () => {
+            this.get_root().push_subpage(subpage);
+        });
+
+        const goNextImage = new Gtk.Image({
+            gicon: Gio.icon_new_for_string('go-next-symbolic'),
+            halign: Gtk.Align.END,
+            valign: Gtk.Align.CENTER,
+            hexpand: false,
+            vexpand: false,
+        });
+
+        subpageRow.add_suffix(goNextImage);
+        return subpageRow;
+    }
+
+    _createLinkRow(title, uri, subtitle = null) {
         const image = new Gtk.Image({
             icon_name: 'adw-external-link-symbolic',
             valign: Gtk.Align.CENTER,
@@ -672,6 +811,8 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         const linkRow = new Adw.ActionRow({
             title: _(title),
             activatable: true,
+            tooltip_text: uri,
+            subtitle: subtitle ? _(subtitle) : null,
         });
         linkRow.connect('activated', () => {
             Gtk.show_uri(this.get_root(), uri, Gdk.CURRENT_TIME);
@@ -696,7 +837,7 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
                 try {
                     acceptHandler(dialog.get_file().get_path());
                 } catch (e) {
-                    log(`AppsIconTaskbar - Filechooser error: ${e}`);
+                    console.log(`Wallpaper Slideshow - Filechooser error: ${e}`);
                 }
             }
             dialog.destroy();
@@ -706,9 +847,92 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
     }
 });
 
-var GNU_SOFTWARE = '<span size="small">' +
-        'This program comes with absolutely no warranty.\n' +
-        'See the <a href="https://gnu.org/licenses/old-licenses/gpl-2.0.html">' +
-        'GNU General Public License, version 2 or later</a> for details.' +
-        '</span>';
+var DonatePage = GObject.registerClass(
+class DonatePage extends Adw.PreferencesPage {
+    _init(settings, metadata) {
+        super._init({
+            title: _('Donate'),
+            icon_name: 'emote-love-symbolic',
+            name: 'DonatePage',
+        });
+        this._settings = settings;
+
+        const PROJECT_NAME = _('Wallpaper Slideshow');
+        const PAYPAL_LINK = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+${metadata.name}&source=url`;
+        const BUYMEACOFFEE_LINK = 'https://buymeacoffee.com/azaech';
+
+        const donateGroup = new Adw.PreferencesGroup({
+            title: _('Help Support %s').format(_(PROJECT_NAME)),
+            description: _('Thank you for using %s! If you enjoy it and would like to help support its continued development, please consider making a donation.').format(_(PROJECT_NAME)),
+        });
+        this.add(donateGroup);
+
+        const paypalRow = this._createLinkRow(_('Donate via PayPal'), 'settings-paypal-logo', PAYPAL_LINK);
+        donateGroup.add(paypalRow);
+
+        const buyMeACoffeeRow = this._createLinkRow(_('Donate via Buy Me a Coffee'), 'settings-bmc-logo', BUYMEACOFFEE_LINK);
+        donateGroup.add(buyMeACoffeeRow);
+
+        const thankYouGroup = new Adw.PreferencesGroup();
+        this.add(thankYouGroup);
+        const thankYouBox = new Gtk.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            vexpand: true,
+            valign: Gtk.Align.END,
+        });
+        thankYouGroup.add(thankYouBox);
+        const thankYouLabel = new Gtk.Label({
+            label: _('A huge thank you to everyone who has supported %s! Your support helps keep %s going. It is truly appreciated!').format(_(PROJECT_NAME), _(PROJECT_NAME)),
+            css_classes: ['title-5'],
+            hexpand: true,
+            wrap: true,
+            justify: Gtk.Justification.CENTER,
+            halign: Gtk.Align.CENTER,
+        });
+        thankYouBox.append(thankYouLabel);
+
+        const enableNotificationsGroup = new Adw.PreferencesGroup();
+        this.add(enableNotificationsGroup);
+
+        const enableNotificationsSwitch = new Gtk.Switch({
+            valign: Gtk.Align.CENTER,
+            active: this._settings.get_boolean('support-notifier-enabled'),
+        });
+        enableNotificationsSwitch.connect('notify::active', widget => {
+            this._settings.set_boolean('support-notifier-enabled', widget.get_active());
+        });
+        const enableNotificationsRow = new Adw.ActionRow({
+            title: _('Message Tray Notifications'),
+            subtitle: _('Show a notification when %s receives an update.').format(_(PROJECT_NAME)),
+            activatable_widget: enableNotificationsSwitch,
+        });
+        enableNotificationsRow.add_suffix(enableNotificationsSwitch);
+        enableNotificationsGroup.add(enableNotificationsRow);
+    }
+
+    _createLinkRow(title, iconName, uri, subtitle = null) {
+        const image = new Gtk.Image({
+            icon_name: 'adw-external-link-symbolic',
+            valign: Gtk.Align.CENTER,
+        });
+        const prefixImage = new Gtk.Image({
+            icon_name: iconName,
+            valign: Gtk.Align.CENTER,
+        });
+        const linkRow = new Adw.ActionRow({
+            title: _(title),
+            activatable: true,
+            tooltip_text: uri,
+            subtitle: subtitle ? _(subtitle) : null,
+        });
+        linkRow.connect('activated', () => {
+            Gtk.show_uri(this.get_root(), uri, Gdk.CURRENT_TIME);
+        });
+        linkRow.add_suffix(image);
+        linkRow.add_prefix(prefixImage);
+
+        return linkRow;
+    }
+});
+
 

@@ -8,6 +8,7 @@ import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js'
 
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
 import {Slideshow} from './slideshow.js';
+import {SupportNotification} from './supportNotifier.js';
 import {debugLog} from './utils.js';
 
 export default class AzWallpaper extends Extension {
@@ -17,6 +18,8 @@ export default class AzWallpaper extends Extension {
         this._slideshow = new Slideshow(this);
         this._bingWallpaperDownloader = new BingWallpaperDownloader(this);
         this._injectionManager = new InjectionManager();
+
+        this._supportNotification = new SupportNotification(this);
 
         this._injectionManager.overrideMethod(Main.layoutManager, '_addBackgroundMenu', originalMethod => {
             const azWallpaper = this;
@@ -70,7 +73,6 @@ export default class AzWallpaper extends Extension {
             if (this._settings.get_boolean('bing-wallpaper-download'))
                 this._bingWallpaperDownloader.initiate();
 
-            this._slideshow.initiate();
             Main.layoutManager._updateBackgrounds();
 
             this._delayStartId = null;
@@ -100,6 +102,8 @@ export default class AzWallpaper extends Extension {
         global.display.disconnectObject(this);
         global.disconnectObject(this);
 
+        this._supportNotification.destroy();
+        this._supportNotification = null;
         this._bingWallpaperDownloader.destroy();
         this._bingWallpaperDownloader = null;
         this._slideshow.destroy();
@@ -109,7 +113,7 @@ export default class AzWallpaper extends Extension {
     }
 
     _bingWallpaperDownloadChanged() {
-        this._bingWallpaperDownloader.destroy();
+        this._bingWallpaperDownloader.disable();
         if (this._settings.get_boolean('bing-wallpaper-download'))
             this._bingWallpaperDownloader.initiate();
     }
@@ -130,12 +134,35 @@ export default class AzWallpaper extends Extension {
         let menuItem = new PopupMenu.PopupMenuItem(_('Next Wallpaper'));
         menuItem.connect('activate', () => {
             debugLog('\'Next Wallpaper\' clicked.');
-            this._slideshow.startSlideshow(0, true);
+            this._slideshow.goToNextSlide();
         });
         menu.addMenuItem(menuItem, 5);
 
         menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         menuItem.connect('activate', () => this.openPreferences());
         menu.addMenuItem(menuItem, 6);
+    }
+
+    openPreferences() {
+        // Find if an extension preferences window is already open
+        const prefsWindow = global.get_window_actors().map(wa => wa.meta_window).find(w => w.wm_class === 'org.gnome.Shell.Extensions');
+
+        if (!prefsWindow) {
+            super.openPreferences();
+            return;
+        }
+
+        // The current prefsWindow belongs to this extension, activate it
+        if (prefsWindow.title === this.metadata.name) {
+            Main.activateWindow(prefsWindow);
+            return;
+        }
+
+        // If another extension's preferences are open, close it and open this extension's preferences
+        prefsWindow.connectObject('unmanaged', () => {
+            super.openPreferences();
+            prefsWindow.disconnectObject(this);
+        }, this);
+        prefsWindow.delete(global.get_current_time());
     }
 }

@@ -1,12 +1,15 @@
 import Gio from 'gi://Gio';
 
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 
 import {domain} from 'gettext';
 const {gettext: _} = domain('azwallpaper');
+
+const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
+const PROJECT_NAME = _('Wallpaper Slideshow');
 
 /**
  *
@@ -21,48 +24,43 @@ export function debugLog(message) {
 
 /**
  *
- * @param {string} msg A message
- * @param {string} details Additional information
- * @param {Label} actionLabel the label for the action
+ * @param {string} title notification title
+ * @param {string} body notification body
+ * @param {string} actionLabel the label for the action
  * @param {Function} actionCallback the callback for the action
  */
-export function notify(msg, details, actionLabel = null, actionCallback = null) {
+export function notify(title, body, actionLabel = null, actionCallback = null) {
     const extension = Extension.lookupByURL(import.meta.url);
-    msg = `${_('Wallpaper Slideshow')}: ${msg}`;
+    title = `${_(PROJECT_NAME)}: ${_(title)}`;
+    const gicon = Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`);
 
-    // MessageTray.SystemNotificationSource removed in GNOME 46
-    if (MessageTray.SystemNotificationSource) {
-        const source = new MessageTray.SystemNotificationSource();
-        Main.messageTray.add(source);
+    const source = new MessageTray.Source();
+    source.title = PROJECT_NAME;
+    source.iconName = 'application-x-addon-symbolic';
+    Main.messageTray.add(source);
 
-        const notification = new MessageTray.Notification(source, msg, details, {
-            gicon: Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`),
+    const notification = getNotification(source, title, body, gicon);
+    notification.urgency = MessageTray.Urgency.CRITICAL;
+
+    if (actionLabel && actionCallback) {
+        notification.addAction(actionLabel, () => {
+            actionCallback();
+            notification.destroy();
         });
-
-        if (actionLabel && actionCallback) {
-            notification.setUrgency(MessageTray.Urgency.CRITICAL);
-            notification.addAction(actionLabel, actionCallback);
-        } else {
-            notification.setTransient(true);
-        }
-
-        source.showNotification(notification);
+        notification.resident = true;
     } else {
-        const source = MessageTray.getSystemSource();
-        const notification = new MessageTray.Notification({
-            source,
-            title: msg,
-            body: details,
-            gicon: Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`),
-        });
-
-        if (actionLabel && actionCallback) {
-            notification.urgency = MessageTray.Urgency.CRITICAL;
-            notification.addAction(actionLabel, actionCallback);
-        } else {
-            notification.isTransient = true;
-        }
-
-        source.addNotification(notification);
+        notification.isTransient = true;
     }
+
+    if (ShellVersion >= 46)
+        source.addNotification(notification);
+    else
+        source.showNotification(notification);
+}
+
+function getNotification(source, title, body, gicon) {
+    if (ShellVersion >= 46)
+        return new MessageTray.Notification({source, title, body, gicon});
+    else
+        return new MessageTray.Notification(source, title, body, {gicon});
 }

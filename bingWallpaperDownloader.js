@@ -292,7 +292,7 @@ export const BingWallpaperDownloader = class {
         debugLog('BING Downloader - Check to delete old BING wallpapers complete!');
     }
 
-    destroy() {
+    disable() {
         debugLog('BING Downloader - Disabled!');
         this.endSingleDownload();
         this.endDownloadTimer();
@@ -300,5 +300,11 @@ export const BingWallpaperDownloader = class {
             this._session.abort();
             this._session = null;
         }
+    }
+
+    destroy() {
+        debugLog('BING Downloader - Destroyed!');
+        this.disable();
+        this._settings = null;
     }
 };
