@@ -6,8 +6,9 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
+import {Logger} from './extension.js';
 import * as Constants from './constants.js';
-import {debugLog, notify} from './utils.js';
+import {notify} from './utils.js';
 
 const STARTUP_DELAY = 10;
 const DELAY_TIME = 3;
@@ -26,7 +27,7 @@ export const BingWallpaperDownloader = class {
     }
 
     initiate() {
-        debugLog('BING Downloader - Initiate BING Wallpaper downloader');
+        Logger.log('BING Downloader - Initiate BING Wallpaper downloader');
         this.setBingParams();
         this.setDownloadDirectory();
         this._session = new Soup.Session({user_agent: this._userAgent, timeout: 60});
@@ -52,7 +53,7 @@ export const BingWallpaperDownloader = class {
                 }
             }
         }
-        debugLog(`BING Downloader - Download Directory ${this._bingWallpapersDirectory}`);
+        Logger.log(`BING Downloader - Download Directory ${this._bingWallpapersDirectory}`);
     }
 
     setBingParams() {
@@ -61,7 +62,7 @@ export const BingWallpaperDownloader = class {
         const isValidMarket = Constants.Markets.indexOf(marketSetting) >= 0;
         const market = isValidMarket ? marketSetting : 'Automatic';
 
-        debugLog(`BING Downloader - Set BING download Params. Number of downloads: ${numberOfDownloads}. Market: ${market}`);
+        Logger.log(`BING Downloader - Set BING download Params. Number of downloads: ${numberOfDownloads}. Market: ${market}`);
         this._bingParams = {
             format: 'js', idx: '0', n: numberOfDownloads, mbl: '1', mkt: market === 'Automatic' ? '' : market,
         };
@@ -90,7 +91,7 @@ export const BingWallpaperDownloader = class {
     }
 
     downloadOnceWithDelay(delay = DELAY_TIME) {
-        debugLog(`BING Downloader - Next download attempt in ${this._getPrettyTime(delay)}`);
+        Logger.log(`BING Downloader - Next download attempt in ${this._getPrettyTime(delay)}`);
         this.endSingleDownload();
         this._singleDownloadTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, delay, () => {
             this._queueDownload();
@@ -104,7 +105,7 @@ export const BingWallpaperDownloader = class {
 
     _startDownloaderTimer(delay) {
         this.endDownloadTimer();
-        debugLog(`BING Downloader - Next download attempt in ${this._getPrettyTime(delay)}`);
+        Logger.log(`BING Downloader - Next download attempt in ${this._getPrettyTime(delay)}`);
         this._downloadTimerId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, delay, () => {
             this._queueDownload();
             this._setLastDataFetch();
@@ -127,14 +128,14 @@ export const BingWallpaperDownloader = class {
     }
 
     async _queueDownload() {
-        debugLog('BING Downloader - Starting download...');
+        Logger.log('BING Downloader - Starting download...');
 
         const {jsonData, error} = await this._getJsonData();
         if (!jsonData || error) {
             if (error)
-                debugLog(`BING Downloader - Download Failed! ${error}`);
+                Logger.log(`BING Downloader - Download Failed! ${error}`);
             else
-                debugLog('BING Downloader - Download Failed! JSON data null.');
+                Logger.log('BING Downloader - Download Failed! JSON data null.');
 
             if (this._settings.get_boolean('bing-wallpaper-notify-on-error')) {
                 notify(_('BING wallpaper download failed.'), _('Error: %s').format(error ?? _('JSON data null')),
@@ -148,10 +149,10 @@ export const BingWallpaperDownloader = class {
             await Promise.all(results).then(values => {
                 for (const value of values) {
                     const {msg} = value;
-                    debugLog(msg);
+                    Logger.log(msg);
                 }
             });
-            debugLog('BING Downloader - Download Finished!');
+            Logger.log('BING Downloader - Download Finished!');
         }
         this.maybeDeleteOldWallpapers();
     }
@@ -171,7 +172,7 @@ export const BingWallpaperDownloader = class {
         const has12HoursPassed = elapsedTime >= TWELVE_HOURS_IN_MILLISECONDS;
 
         if (lastDataFetch === 0 || has12HoursPassed) {
-            debugLog('BING Downloader - 12 hours passed. Queue download...');
+            Logger.log('BING Downloader - 12 hours passed. Queue download...');
             return STARTUP_DELAY;
         }
 
@@ -226,7 +227,7 @@ export const BingWallpaperDownloader = class {
         if (file.query_exists(null))
             return {msg: `BING Downloader - "${fileName}" already downloaded!`};
 
-        debugLog(`BING Downloader - Retrieving "${fileName}" from BING`);
+        Logger.log(`BING Downloader - Retrieving "${fileName}" from BING`);
 
         const message = Soup.Message.new('GET', url);
 
@@ -262,11 +263,11 @@ export const BingWallpaperDownloader = class {
         if (!deletionEnabled)
             return;
 
-        debugLog('BING Downloader - Checking to delete old BING wallpapers...');
+        Logger.log('BING Downloader - Checking to delete old BING wallpapers...');
         const downloadedImages = this._settings.get_strv('bing-wallpapers-downloaded');
 
         if (downloadedImages <= amountToKeep) {
-            debugLog('BING Downloader - Wallpapers to keep less than downloaded images count. Skip Deletion');
+            Logger.log('BING Downloader - Wallpapers to keep less than downloaded images count. Skip Deletion');
             return;
         }
 
@@ -280,20 +281,20 @@ export const BingWallpaperDownloader = class {
 
             const fileName = file.get_basename();
             try {
-                debugLog(`BING Downloader - Delete ${fileName}`);
+                Logger.log(`BING Downloader - Delete ${fileName}`);
                 file.delete(null);
             } catch (e) {
-                debugLog(`BING Downloader - Error gathering ${fileName} info.`);
+                Logger.log(`BING Downloader - Error gathering ${fileName} info.`);
                 continue;
             }
         }
 
         this._settings.set_strv('bing-wallpapers-downloaded', downloadedImages);
-        debugLog('BING Downloader - Check to delete old BING wallpapers complete!');
+        Logger.log('BING Downloader - Check to delete old BING wallpapers complete!');
     }
 
     disable() {
-        debugLog('BING Downloader - Disabled!');
+        Logger.log('BING Downloader - Disabled!');
         this.endSingleDownload();
         this.endDownloadTimer();
         if (this._session) {
@@ -303,7 +304,7 @@ export const BingWallpaperDownloader = class {
     }
 
     destroy() {
-        debugLog('BING Downloader - Destroyed!');
+        Logger.log('BING Downloader - Destroyed!');
         this.disable();
         this._settings = null;
     }

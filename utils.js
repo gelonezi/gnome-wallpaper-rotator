@@ -13,17 +13,6 @@ const PROJECT_NAME = _('Wallpaper Slideshow');
 
 /**
  *
- * @param {string} message
- */
-export function debugLog(message) {
-    const extension = Extension.lookupByURL(import.meta.url);
-    const settings = extension.getSettings();
-    if (settings.get_boolean('debug-logs'))
-        console.log(`Wallpaper Slideshow: ${message}`);
-}
-
-/**
- *
  * @param {string} title notification title
  * @param {string} body notification body
  * @param {string} actionLabel the label for the action

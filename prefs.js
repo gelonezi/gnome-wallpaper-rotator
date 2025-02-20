@@ -155,8 +155,19 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         queueSortingRow.connect('notify::selected', widget => {
             this._settings.set_enum('slideshow-queue-sort-type', widget.selected);
+            reShuffleRow.visible = widget.selected === 0;
         });
         slideShowGroup.add(queueSortingRow);
+
+        const reShuffleRow = new Adw.SwitchRow({
+            title: _('Shuffle Slideshow Queue on Completion'),
+            active: this._settings.get_boolean('slideshow-queue-reshuffle-on-complete'),
+            visible: queueSortingRow.selected === 0,
+        });
+        reShuffleRow.connect('notify::active', widget => {
+            this._settings.set_boolean('slideshow-queue-reshuffle-on-complete', widget.get_active());
+        });
+        slideShowGroup.add(reShuffleRow);
 
         const slideDurationRow = new Adw.ActionRow({
             title: _('Slide Duration'),

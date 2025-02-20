@@ -86,11 +86,15 @@
             <default>[]</default>
             <summary>Permanent storage of the slideshow queue</summary>
         </key>
+        <key type="b" name="slideshow-queue-reshuffle-on-complete">
+            <default>true</default>
+            <summary>Reshuffle the slideshow queue when complete</summary>
+        </key>
         <key type="i" name="slideshow-current-slide-index">
             <default>0</default>
             <summary>The current index of 'slideshow-queue' array</summary>
         </key>
-        <key type="s" name="slideshow-current-wallpapper">
+        <key type="s" name="slideshow-current-wallpaper">
             <default>''</default>
             <summary>The current wallpaper of the slideshow.</summary>
         </key>

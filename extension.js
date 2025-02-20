@@ -9,11 +9,12 @@ import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js'
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
 import {Slideshow} from './slideshow.js';
 import {SupportNotification} from './supportNotifier.js';
-import {debugLog} from './utils.js';
 
 export default class AzWallpaper extends Extension {
     enable() {
         this._settings = this.getSettings();
+
+        this._logger = new Logger(this._settings);
 
         this._slideshow = new Slideshow(this);
         this._bingWallpaperDownloader = new BingWallpaperDownloader(this);
@@ -102,6 +103,9 @@ export default class AzWallpaper extends Extension {
         global.display.disconnectObject(this);
         global.disconnectObject(this);
 
+        this._logger.destroy();
+        this._logger = null;
+
         this._supportNotification.destroy();
         this._supportNotification = null;
         this._bingWallpaperDownloader.destroy();
@@ -131,16 +135,23 @@ export default class AzWallpaper extends Extension {
     _modifyBackgroundMenu(menu) {
         menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem(), 4);
 
-        let menuItem = new PopupMenu.PopupMenuItem(_('Next Wallpaper'));
+        let menuItem = new PopupMenu.PopupMenuItem(_('Previous Wallpaper'));
         menuItem.connect('activate', () => {
-            debugLog('\'Next Wallpaper\' clicked.');
-            this._slideshow.goToNextSlide();
+            Logger.log('\'Previous Wallpaper\' clicked.');
+            this._slideshow.goToPreviousSlide();
         });
         menu.addMenuItem(menuItem, 5);
 
+        menuItem = new PopupMenu.PopupMenuItem(_('Next Wallpaper'));
+        menuItem.connect('activate', () => {
+            Logger.log('\'Next Wallpaper\' clicked.');
+            this._slideshow.goToNextSlide();
+        });
+        menu.addMenuItem(menuItem, 6);
+
         menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         menuItem.connect('activate', () => this.openPreferences());
-        menu.addMenuItem(menuItem, 6);
+        menu.addMenuItem(menuItem, 7);
     }
 
     openPreferences() {
@@ -164,5 +175,20 @@ export default class AzWallpaper extends Extension {
             prefsWindow.disconnectObject(this);
         }, this);
         prefsWindow.delete(global.get_current_time());
+    }
+}
+
+export class Logger {
+    constructor(settings) {
+        Logger.settings = settings;
+    }
+
+    static log(msg) {
+        if (Logger.settings?.get_boolean('debug-logs'))
+            console.log(`Wallpaper Slideshow: ${msg}`);
+    }
+
+    destroy() {
+        Logger.settings = null;
     }
 }
