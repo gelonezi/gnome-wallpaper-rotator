@@ -23,9 +23,7 @@ export function notify(title, body, actionLabel = null, actionCallback = null) {
     title = `${_(PROJECT_NAME)}: ${_(title)}`;
     const gicon = Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`);
 
-    const source = new MessageTray.Source();
-    source.title = PROJECT_NAME;
-    source.iconName = 'application-x-addon-symbolic';
+    const source = new getSource(PROJECT_NAME, 'application-x-addon-symbolic');
     Main.messageTray.add(source);
 
     const notification = getNotification(source, title, body, gicon);
@@ -52,4 +50,11 @@ function getNotification(source, title, body, gicon) {
         return new MessageTray.Notification({source, title, body, gicon});
     else
         return new MessageTray.Notification(source, title, body, {gicon});
+}
+
+function getSource(title, iconName) {
+    if (ShellVersion >= 46)
+        return new MessageTray.Source({title, iconName});
+    else
+        return new MessageTray.Source(title, iconName);
 }

@@ -109,15 +109,10 @@ export class Slideshow extends GObject.Object {
     }
 
     initiate() {
-        const slideshowDirectory = this._settings.get_string('slideshow-directory');
-        if (!this._isValidDirectory(slideshowDirectory)) {
-            notify(_('Slideshow directory not found'), _('Change directory in settings to begin slideshow'),
-                _('Open Settings'), () => this._extension.openPreferences());
-            this._monitorInvalidDirectory();
+        const isValidDirectory = this._isValidDirectory();
+        if (!isValidDirectory)
             return;
-        }
 
-        // this._checkIfBackgroundSetToCurrentSlide();
         Logger.log('Initiate slideshow.');
         this._createFileMonitor();
 
@@ -131,7 +126,25 @@ export class Slideshow extends GObject.Object {
         this._startSlideshowTimer(timer, true);
     }
 
+    _isValidDirectory() {
+        const slideshowDirectory = this._settings.get_string('slideshow-directory');
+
+        const directory = Gio.file_new_for_path(slideshowDirectory);
+        if (!slideshowDirectory || !directory.query_exists(null)) {
+            notify(_('Slideshow directory not found'), _('Change directory in settings to begin slideshow'),
+                _('Open Settings'), () => this._extension.openPreferences());
+            this._monitorInvalidDirectory();
+            return false;
+        }
+
+        return true;
+    }
+
     async _loadSlideshowQueue(initiate = true) {
+        const isValidDirectory = this._isValidDirectory();
+        if (!isValidDirectory)
+            return;
+
         const wallpapers = await this._getWallpapersFromDirectory().catch(e => console.log(e));
         this._updateQueue(this._wallpaperQueue, wallpapers);
 
@@ -406,19 +419,16 @@ export class Slideshow extends GObject.Object {
         this._clearFileMonitor();
         const directoryPath = this._settings.get_string('slideshow-directory');
         const dir = Gio.file_new_for_path(directoryPath);
-        this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.NONE, null);
-        this._fileMonitor.set_rate_limit(1000);
-        this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
-            if (eventType === Gio.FileMonitorEvent.CREATED && file.get_path() === directoryPath)
-                this.restart();
-        });
-    }
-
-    _isValidDirectory(slideshowDirectory) {
-        const directory = Gio.file_new_for_path(slideshowDirectory);
-        if (!slideshowDirectory || !directory.query_exists(null))
-            return false;
-        return true;
+        try {
+            this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.NONE, null);
+            this._fileMonitor.set_rate_limit(1000);
+            this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
+                if (eventType === Gio.FileMonitorEvent.CREATED && file.get_path() === directoryPath)
+                    this.restart();
+            });
+        } catch (e) {
+            console.log(`Wallpaper Slideshow: Error monitoring directroy - ${e}`);
+        }
     }
 
     _createFileMonitor() {
@@ -612,7 +622,7 @@ export class Slideshow extends GObject.Object {
         this._wallpaperQueue = [];
         this.slideIndex = 0;
         this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', []));
-        this._settings.set_int('slideshow-timer-remaining', 0);
+        this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
         this._settings.set_uint64('slideshow-time-of-slide-start', 0);
 
         this._endSlideshowTimer();
