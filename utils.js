@@ -23,7 +23,7 @@ export function notify(title, body, actionLabel = null, actionCallback = null) {
     title = `${_(PROJECT_NAME)}: ${_(title)}`;
     const gicon = Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`);
 
-    const source = new getSource(PROJECT_NAME, 'application-x-addon-symbolic');
+    const source = getSource(PROJECT_NAME, 'application-x-addon-symbolic');
     Main.messageTray.add(source);
 
     const notification = getNotification(source, title, body, gicon);
