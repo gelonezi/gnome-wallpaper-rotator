@@ -35,6 +35,8 @@ export default class AzWallpaper extends Extension {
         this._settings.connectObject('changed::slideshow-slide-duration', () => this._slideshow.durationChanged(), this);
         this._settings.connectObject('changed::slideshow-directory', () => this._slideshow.reset(), this);
         this._settings.connectObject('changed::slideshow-use-absolute-time-for-duration', () => this._slideshow.durationChanged(), this);
+        this._settings.connectObject('changed::slideshow-next-slide-bool', () => this._goToNextSlide(), this );
+        this._settings.connectObject('changed::slideshow-previous-slide-bool', () => this._goToPreviousSlide(), this );
 
         this._settings.connectObject('changed::bing-wallpaper-download', () => this._bingWallpaperDownloadChanged(), this);
         this._settings.connectObject('changed::bing-download-directory', () => this._restartBingWallpaperDownloader(), this);
@@ -129,6 +131,18 @@ export default class AzWallpaper extends Extension {
             this._bingWallpaperDownloader.setBingParams();
             this._bingWallpaperDownloader.setDownloadDirectory();
             this._bingWallpaperDownloader.downloadOnceWithDelay();
+        }
+    }
+
+    _goToNextSlide() {
+        if (this._settings.get_boolean('slideshow-next-slide-bool')) {
+            this._slideshow.goToNextSlide();
+        }
+    }
+
+    _goToPreviousSlide() {
+        if (this._settings.get_boolean('slideshow-previous-slide-bool')) {
+            this._slideshow.goToPreviousSlide();
         }
     }
 

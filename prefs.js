@@ -238,6 +238,32 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         slideShowGroup.add(slideDurationTypeRow);
 
+        const slideControlsRow = new Adw.ActionRow({
+            title: _('Slide Controls'),
+            subtitle: _('Control the current wallpaper in the slideshow'),
+        });        
+        const prevSlideButton = new Gtk.Button({
+            icon_name: 'media-skip-backward-symbolic',
+            valign: Gtk.Align.CENTER,
+            tooltip_text: _('Previous Wallpaper')
+        });
+        prevSlideButton.connect('clicked', () => {
+            settings.set_boolean('slideshow-previous-slide-bool', true);
+            settings.set_boolean('slideshow-previous-slide-bool', false);
+        });        
+        const nextSlideButton = new Gtk.Button({
+            icon_name: 'media-skip-forward-symbolic',
+            valign: Gtk.Align.CENTER,
+            tooltip_text: _('Next Wallpaper')
+        });
+        nextSlideButton.connect('clicked', () => {
+            settings.set_boolean('slideshow-next-slide-bool', true);
+            settings.set_boolean('slideshow-next-slide-bool', false);
+        });
+        slideControlsRow.add_suffix(prevSlideButton);
+        slideControlsRow.add_suffix(nextSlideButton);
+        slideShowGroup.add(slideControlsRow);
+
         const wallpaperOptionsGroup = new Adw.PreferencesGroup({
             title: _('Wallpaper Options'),
         });
