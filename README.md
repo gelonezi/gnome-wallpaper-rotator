@@ -31,6 +31,8 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 **@[adamthiede](https://gitlab.com/adamthiede) - !8**
 
+**@[sean288](https://gitlab.com/sean288) - !12**
+
 
 #### Translators:
 
