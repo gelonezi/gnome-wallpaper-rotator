@@ -345,7 +345,7 @@ export class Slideshow extends GObject.Object {
     }
 
     getCurrentSlide() {
-        if (this._wallpaperQueue.length === 0)
+        if (this._wallpaperQueue.length === 0 || !this._wallpaperQueue[this.slideIndex])
             return {path: null, name: null};
 
         const name = this._wallpaperQueue[this.slideIndex].name;
