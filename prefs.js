@@ -91,7 +91,7 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
         const donatePage = new DonatePage(settings, this.metadata);
         window.add(donatePage);
 
-        const aboutPage = new AboutPage(this.metadata, this.path);
+        const aboutPage = new AboutPage(settings, this.metadata, this.path);
         window.add(aboutPage);
         this._setVisiblePage(window, settings);
     }
@@ -160,7 +160,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         slideShowGroup.add(queueSortingRow);
 
         const reShuffleRow = new Adw.SwitchRow({
-            title: _('Shuffle Slideshow Queue on Completion'),
+            title: _('Shuffle Slideshow on Completion'),
             active: this._settings.get_boolean('slideshow-queue-reshuffle-on-complete'),
             visible: queueSortingRow.selected === 0,
         });
@@ -241,28 +241,38 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         const slideControlsRow = new Adw.ActionRow({
             title: _('Slide Controls'),
             subtitle: _('Control the current wallpaper in the slideshow'),
-        });        
+        });
         const prevSlideButton = new Gtk.Button({
-            icon_name: 'media-skip-backward-symbolic',
+            icon_name: 'media-seek-backward-symbolic',
             valign: Gtk.Align.CENTER,
-            tooltip_text: _('Previous Wallpaper')
+            tooltip_text: _('Previous Wallpaper'),
         });
         prevSlideButton.connect('clicked', () => {
-            settings.set_boolean('slideshow-previous-slide-bool', true);
-            settings.set_boolean('slideshow-previous-slide-bool', false);
-        });        
+            this._settings.set_int('slideshow-change-slide-event', 0);
+            this._settings.set_int('slideshow-change-slide-event', 1);
+        });
         const nextSlideButton = new Gtk.Button({
-            icon_name: 'media-skip-forward-symbolic',
+            icon_name: 'media-seek-forward-symbolic',
             valign: Gtk.Align.CENTER,
-            tooltip_text: _('Next Wallpaper')
+            tooltip_text: _('Next Wallpaper'),
         });
         nextSlideButton.connect('clicked', () => {
-            settings.set_boolean('slideshow-next-slide-bool', true);
-            settings.set_boolean('slideshow-next-slide-bool', false);
+            this._settings.set_int('slideshow-change-slide-event', 0);
+            this._settings.set_int('slideshow-change-slide-event', 2);
         });
+
         slideControlsRow.add_suffix(prevSlideButton);
         slideControlsRow.add_suffix(nextSlideButton);
         slideShowGroup.add(slideControlsRow);
+
+        const quickSettingsRow = new Adw.SwitchRow({
+            title: _('Show Slide Controls in Quick Settings Menu'),
+            active: this._settings.get_boolean('slideshow-show-quick-settings-entry'),
+        });
+        quickSettingsRow.connect('notify::active', widget => {
+            this._settings.set_boolean('slideshow-show-quick-settings-entry', widget.get_active());
+        });
+        slideShowGroup.add(quickSettingsRow);
 
         const wallpaperOptionsGroup = new Adw.PreferencesGroup({
             title: _('Wallpaper Options'),
@@ -345,23 +355,6 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         backgroundSecondaryColorRow.add_suffix(backgroundSecondaryColorButton);
         backgroundOptionsGroup.add(backgroundSecondaryColorRow);
-
-        const debugLogsGroup = new Adw.PreferencesGroup();
-        this.add(debugLogsGroup);
-
-        const debugLogsSwitch = new Gtk.Switch({
-            valign: Gtk.Align.CENTER,
-            active: this._settings.get_boolean('debug-logs'),
-        });
-        debugLogsSwitch.connect('notify::active', widget => {
-            this._settings.set_boolean('debug-logs', widget.get_active());
-        });
-        const debugLogsRow = new Adw.ActionRow({
-            title: _('Enable Debug Logs'),
-            activatable_widget: debugLogsSwitch,
-        });
-        debugLogsRow.add_suffix(debugLogsSwitch);
-        debugLogsGroup.add(debugLogsRow);
     }
 
     _createSpinButton(value, lower, upper) {
@@ -562,7 +555,7 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
 
 var AboutPage = GObject.registerClass(
 class AboutPage extends Adw.PreferencesPage {
-    _init(metadata, path) {
+    _init(settings, metadata, path) {
         super._init({
             title: _('About'),
             icon_name: 'help-about-symbolic',
@@ -777,6 +770,21 @@ class AboutPage extends Adw.PreferencesPage {
         const miscGroup = new Adw.PreferencesGroup();
         this.add(miscGroup);
 
+        const debugLogsSwitch = new Gtk.Switch({
+            valign: Gtk.Align.CENTER,
+            active: settings.get_boolean('debug-logs'),
+        });
+        debugLogsSwitch.connect('notify::active', widget => {
+            settings.set_boolean('debug-logs', widget.get_active());
+        });
+        const debugLogsRow = new Adw.ActionRow({
+            title: _('Enable Debug Mode'),
+            subtitle: _('Show extensive messages in logs for debugging.'),
+            activatable_widget: debugLogsSwitch,
+        });
+        debugLogsRow.add_suffix(debugLogsSwitch);
+        miscGroup.add(debugLogsRow);
+
         const {subpage: legalSubPage, page: legalPage} = this._createSubPage(_('Legal'));
         const legalRow = this._createSubPageRow(_('Legal'), legalSubPage);
         miscGroup.add(legalRow);
@@ -971,5 +979,3 @@ class DonatePage extends Adw.PreferencesPage {
         return linkRow;
     }
 });
-
-

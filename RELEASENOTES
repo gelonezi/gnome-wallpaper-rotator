@@ -1,4 +1,4 @@
-<b><span size="large">Version 11 (2025-01-20)</span></b>
+<b><span size="large">Version 11 (2025-02-22)</span></b>
 
 • Use async file operations to gather wallpaper files and info.
 • Add new wallpaper queue sorting options.
@@ -13,3 +13,6 @@
 • Add Donate page to settings.
 • Show notification when Wallpaper Slideshow is updated.
 • Cap slide duration minimum to 5 seconds.
+• Add setting to add Slideshow Options to Quick Settings Menu.
+• Add Slide Controls to settings.
+• Add option to re-shuffle slideshow when complete.

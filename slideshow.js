@@ -106,9 +106,14 @@ export class Slideshow extends GObject.Object {
             this.slideIndex = 0;
             this._loadSlideshowQueue();
         }, this);
+
+        this._settings.connectObject('changed::slideshow-slide-duration', () => this._onDurationChange(), this);
+        this._settings.connectObject('changed::slideshow-use-absolute-time-for-duration', () => this._onDurationChange(), this);
+        this._settings.connectObject('changed::slideshow-directory', () => this._reset(), this);
+        this._settings.connectObject('changed::slideshow-change-slide-event', () => this._onChangeSlideEvent(), this);
     }
 
-    initiate() {
+    _initiate() {
         const isValidDirectory = this._isValidDirectory();
         if (!isValidDirectory)
             return;
@@ -166,7 +171,7 @@ export class Slideshow extends GObject.Object {
         }
 
         if (initiate)
-            this.initiate();
+            this._initiate();
     }
 
     _sortSlideshowQueue(wallpaperQueue) {
@@ -299,6 +304,21 @@ export class Slideshow extends GObject.Object {
     }
 
     /**
+     * A change slide request was triggered from the settings.
+     */
+    _onChangeSlideEvent() {
+        const changeEvent = this._settings.get_int('slideshow-change-slide-event');
+        if (changeEvent === 1)
+            this.goToPreviousSlide();
+        else if (changeEvent === 2)
+            this.goToNextSlide();
+        else if (changeEvent === 0)
+            return;
+
+        this._settings.set_int('slideshow-change-slide-event', 0);
+    }
+
+    /**
      * Manually goes to the previous slide and restarts the timer.
      */
     goToPreviousSlide() {
@@ -424,7 +444,7 @@ export class Slideshow extends GObject.Object {
             this._fileMonitor.set_rate_limit(1000);
             this._fileMonitorChangedId = this._fileMonitor.connect('changed', (_monitor, file, otherFile, eventType) => {
                 if (eventType === Gio.FileMonitorEvent.CREATED && file.get_path() === directoryPath)
-                    this.restart();
+                    this._restart();
             });
         } catch (e) {
             console.log(`Wallpaper Slideshow: Error monitoring directroy - ${e}`);
@@ -459,7 +479,7 @@ export class Slideshow extends GObject.Object {
                     // The deleted file was the current wallpaper, go to next slide in queue
                     this.goToNextSlide();
                 } else if (file.get_path() === slideshowDirectoryPath) {
-                    this.restart();
+                    this._restart();
                 }
                 break;
             case Gio.FileMonitorEvent.CREATED:
@@ -528,7 +548,7 @@ export class Slideshow extends GObject.Object {
             }
             case Gio.FileMonitorEvent.UNMOUNTED: {
                 if (file.get_path() === slideshowDirectoryPath)
-                    this.restart();
+                    this._restart();
                 break;
             }
             default:
@@ -537,7 +557,7 @@ export class Slideshow extends GObject.Object {
         });
     }
 
-    durationChanged() {
+    _onDurationChange() {
         Logger.log('Slide Duration or Absoulte Time setting changed. Current Slide Timer reset.');
 
         this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
@@ -602,7 +622,7 @@ export class Slideshow extends GObject.Object {
         return remainingTime;
     }
 
-    async restart() {
+    async _restart() {
         this._wallpaperQueue = [];
         this.slideIndex = 0;
         this._endSlideshowTimer();
@@ -617,7 +637,7 @@ export class Slideshow extends GObject.Object {
         this._backgroundSettings.set_string('picture-uri-dark', `file://${filePath}`);
     }
 
-    async reset() {
+    async _reset() {
         Logger.log('Reset slideshow');
         this._wallpaperQueue = [];
         this.slideIndex = 0;

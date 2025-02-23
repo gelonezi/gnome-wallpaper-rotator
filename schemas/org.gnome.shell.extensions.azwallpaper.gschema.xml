@@ -82,15 +82,9 @@
             <default>0</default>
             <summary>When (in seconds) to change to the next background image.</summary>
         </key>
-        <key type="b" name="slideshow-next-slide-bool">
-            <default>false</default>
-            <summary>Next slide boolean</summary>
-            <description>Boolean to trigger next slide</description>
-        </key>
-        <key type="b" name="slideshow-previous-slide-bool">
-             <default>false</default>
-            <summary>Previous slide boolean</summary>
-            <description>Boolean to trigger previous slide</description>
+        <key type="i" name="slideshow-change-slide-event">
+            <default>0</default>
+            <summary>Used in Settings to trigger a manual slide change. 0: Do nothing, 1: Go Previous, 2: Go Next.</summary>
         </key>
         <key type="aa{ss}" name="slideshow-queue">
             <default>[]</default>
@@ -107,6 +101,10 @@
         <key type="s" name="slideshow-current-wallpaper">
             <default>''</default>
             <summary>The current wallpaper of the slideshow.</summary>
+        </key>
+        <key type="b" name="slideshow-show-quick-settings-entry">
+            <default>true</default>
+            <summary>Adds an entry to the quick settings menu to control current slide and open settings.</summary>
         </key>
         <key type="b" name="debug-logs">
             <default>false</default>

@@ -1,7 +1,11 @@
+import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
+import GObject from 'gi://GObject';
+import St from 'gi://St';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
 
 import {Extension, gettext as _, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
@@ -20,6 +24,7 @@ export default class AzWallpaper extends Extension {
         this._bingWallpaperDownloader = new BingWallpaperDownloader(this);
         this._injectionManager = new InjectionManager();
 
+        this._createQuickSettingsEntry();
         this._supportNotification = new SupportNotification(this);
 
         this._injectionManager.overrideMethod(Main.layoutManager, '_addBackgroundMenu', originalMethod => {
@@ -31,12 +36,6 @@ export default class AzWallpaper extends Extension {
                 azWallpaper._modifyBackgroundMenu(menu);
             };
         });
-
-        this._settings.connectObject('changed::slideshow-slide-duration', () => this._slideshow.durationChanged(), this);
-        this._settings.connectObject('changed::slideshow-directory', () => this._slideshow.reset(), this);
-        this._settings.connectObject('changed::slideshow-use-absolute-time-for-duration', () => this._slideshow.durationChanged(), this);
-        this._settings.connectObject('changed::slideshow-next-slide-bool', () => this._goToNextSlide(), this );
-        this._settings.connectObject('changed::slideshow-previous-slide-bool', () => this._goToPreviousSlide(), this );
 
         this._settings.connectObject('changed::bing-wallpaper-download', () => this._bingWallpaperDownloadChanged(), this);
         this._settings.connectObject('changed::bing-download-directory', () => this._restartBingWallpaperDownloader(), this);
@@ -50,6 +49,7 @@ export default class AzWallpaper extends Extension {
             else
                 this._settings.set_strv('bing-wallpapers-downloaded', []);
         }, this);
+        this._settings.connectObject('changed::slideshow-show-quick-settings-entry', () => this._createQuickSettingsEntry(), this);
 
         if (!Main.layoutManager._startingUp) {
             this._startExtension();
@@ -87,6 +87,10 @@ export default class AzWallpaper extends Extension {
         return this._settings;
     }
 
+    get slideshow() {
+        return this._slideshow;
+    }
+
     disable() {
         if (this._delayStartId) {
             GLib.source_remove(this._delayStartId);
@@ -104,9 +108,15 @@ export default class AzWallpaper extends Extension {
         Main.layoutManager.disconnectObject(this);
         global.display.disconnectObject(this);
         global.disconnectObject(this);
+        this._settings.disconnectObject(this);
 
         this._logger.destroy();
         this._logger = null;
+
+        if (this._quickMenuItem) {
+            this._quickMenuItem.destroy();
+            this._quickMenuItem = null;
+        }
 
         this._supportNotification.destroy();
         this._supportNotification = null;
@@ -114,7 +124,6 @@ export default class AzWallpaper extends Extension {
         this._bingWallpaperDownloader = null;
         this._slideshow.destroy();
         this._slideshow = null;
-        this._settings.disconnectObject(this);
         this._settings = null;
     }
 
@@ -131,18 +140,6 @@ export default class AzWallpaper extends Extension {
             this._bingWallpaperDownloader.setBingParams();
             this._bingWallpaperDownloader.setDownloadDirectory();
             this._bingWallpaperDownloader.downloadOnceWithDelay();
-        }
-    }
-
-    _goToNextSlide() {
-        if (this._settings.get_boolean('slideshow-next-slide-bool')) {
-            this._slideshow.goToNextSlide();
-        }
-    }
-
-    _goToPreviousSlide() {
-        if (this._settings.get_boolean('slideshow-previous-slide-bool')) {
-            this._slideshow.goToPreviousSlide();
         }
     }
 
@@ -166,6 +163,18 @@ export default class AzWallpaper extends Extension {
         menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         menuItem.connect('activate', () => this.openPreferences());
         menu.addMenuItem(menuItem, 7);
+    }
+
+    _createQuickSettingsEntry() {
+        const showQuickSettingsEntry = this._settings.get_boolean('slideshow-show-quick-settings-entry');
+
+        if (this._quickMenuItem) {
+            this._quickMenuItem.destroy();
+            this._quickMenuItem = null;
+        }
+
+        if (showQuickSettingsEntry)
+            this._quickMenuItem = new SlideshowQuickMenu(this);
     }
 
     openPreferences() {
@@ -206,3 +215,68 @@ export class Logger {
         Logger.settings = null;
     }
 }
+
+const SlideshowQuickMenu = GObject.registerClass(
+class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
+    _init(extension) {
+        super._init({
+            icon_name: 'emblem-photos-symbolic',
+            title: _('Slideshow'),
+            checked: true,
+        });
+
+        this.connect('clicked', () => this.menu.open());
+
+        const quickSettings = Main.panel.statusArea.quickSettings;
+        const backgroundApps = quickSettings._backgroundApps?.quickSettingsItems?.at(-1) ?? null;
+        quickSettings.menu.insertItemBefore(this, backgroundApps);
+
+        this.menu.setHeader('emblem-photos-symbolic', _('Wallpaper Slideshow'));
+
+        const slideShowMenuItem = new SlideshowMenuItem(extension);
+        this.menu.addMenuItem(slideShowMenuItem);
+
+        const settingsMenuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
+        settingsMenuItem.connect('activate', () => {
+            Main.panel.closeQuickSettings();
+            extension.openPreferences();
+        }
+        );
+        this.menu.addMenuItem(settingsMenuItem);
+    }
+});
+
+const SlideshowMenuItem = GObject.registerClass(
+class SlideshowMenuItem extends PopupMenu.PopupMenuItem {
+    _init(extension) {
+        super._init(_('Change Current Slide'), {
+            activate: false,
+            hover: false,
+        });
+        this.track_hover = false;
+
+        const {slideshow} = extension;
+
+        const goNextButton = new St.Button({
+            icon_name: 'media-seek-forward-symbolic',
+            style_class: 'icon-button',
+            x_align: Clutter.ActorAlign.END,
+        });
+        goNextButton.connect('clicked', () => {
+            slideshow.goToNextSlide();
+        });
+
+        const goPrevButton = new St.Button({
+            icon_name: 'media-seek-backward-symbolic',
+            style_class: 'icon-button',
+            x_expand: true,
+            x_align: Clutter.ActorAlign.END,
+        });
+        goPrevButton.connect('clicked', () => {
+            slideshow.goToPreviousSlide();
+        });
+
+        this.add_child(goPrevButton);
+        this.add_child(goNextButton);
+    }
+});
