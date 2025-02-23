@@ -344,6 +344,16 @@ export class Slideshow extends GObject.Object {
         this._startSlideshowTimer();
     }
 
+    getCurrentSlide() {
+        if (this._wallpaperQueue.length === 0)
+            return {path: null, name: null};
+
+        const name = this._wallpaperQueue[this.slideIndex].name;
+        const directoryPath = this._settings.get_string('slideshow-directory');
+        const path = GLib.build_filenamev([directoryPath, name]);
+        return {path, name};
+    }
+
     _setWallpaper() {
         const wallpaper = this._wallpaperQueue[this.slideIndex].name;
         Logger.log(`Current wallpaper "${wallpaper}"`);

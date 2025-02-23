@@ -1,8 +1,10 @@
 import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
@@ -13,6 +15,8 @@ import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js'
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
 import {Slideshow} from './slideshow.js';
 import {SupportNotification} from './supportNotifier.js';
+
+const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
 
 export default class AzWallpaper extends Extension {
     enable() {
@@ -227,27 +231,71 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
 
         this.connect('clicked', () => this.menu.open());
 
+        const {slideshow} = extension;
+
         const quickSettings = Main.panel.statusArea.quickSettings;
         const backgroundApps = quickSettings._backgroundApps?.quickSettingsItems?.at(-1) ?? null;
         quickSettings.menu.insertItemBefore(this, backgroundApps);
 
         this.menu.setHeader('emblem-photos-symbolic', _('Wallpaper Slideshow'));
 
-        const slideShowMenuItem = new SlideshowMenuItem(extension);
-        this.menu.addMenuItem(slideShowMenuItem);
+        const currentSlideInfo = new SlideInfoMenuItem(slideshow);
+        this.menu.addMenuItem(currentSlideInfo);
+
+        const slideControlsMenuItem = new SlideControlsMenuItem(extension);
+        this.menu.addMenuItem(slideControlsMenuItem);
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         const settingsMenuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         settingsMenuItem.connect('activate', () => {
             Main.panel.closeQuickSettings();
             extension.openPreferences();
-        }
-        );
+        });
         this.menu.addMenuItem(settingsMenuItem);
     }
 });
 
-const SlideshowMenuItem = GObject.registerClass(
-class SlideshowMenuItem extends PopupMenu.PopupMenuItem {
+const SlideInfoMenuItem = GObject.registerClass(
+class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
+    _init(slideshow) {
+        super._init(_('Current Slide'));
+
+        if (ShellVersion >= 48)
+            this.orientation = Clutter.Orientation.VERTICAL;
+        else
+            this.vertical = true;
+
+        this.subLabel = new St.Label({
+            text: slideshow.getCurrentSlide().name ?? '',
+            y_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
+            style_class: 'device-subtitle',
+        });
+        this.add_child(this.subLabel);
+
+        slideshow.connectObject('notify::slide-index', () => {
+            this.subLabel.text = slideshow.getCurrentSlide().name ?? '';
+        }, this);
+
+        this.connect('activate', () => {
+            Main.panel.closeQuickSettings();
+            const filePath = slideshow.getCurrentSlide().path;
+            if (!filePath)
+                return;
+
+            const fileUri = Gio.File.new_for_path(filePath).get_uri();
+            try {
+                Gio.AppInfo.launch_default_for_uri(fileUri, null);
+            } catch (e) {
+                console.log(e, `Failed to open URI: ${fileUri}`);
+            }
+        });
+    }
+});
+
+const SlideControlsMenuItem = GObject.registerClass(
+class SlideControlsMenuItem extends PopupMenu.PopupMenuItem {
     _init(extension) {
         super._init(_('Change Current Slide'), {
             activate: false,
