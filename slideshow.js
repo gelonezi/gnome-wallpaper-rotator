@@ -103,7 +103,7 @@ export class Slideshow extends GObject.Object {
 
         this._settings.connectObject('changed::slideshow-queue-sort-type', () => {
             this._wallpaperQueue = [];
-            this.slideIndex = 0;
+            this.slideIndex = -1;
             this._loadSlideshowQueue();
         }, this);
 
@@ -157,10 +157,10 @@ export class Slideshow extends GObject.Object {
         const slideIndexInRange = this._isIndexInRange();
         // If the queue is empty or slideIndex out of range, create a new queue.
         if (isQueueEmpty || !slideIndexInRange) {
-            this.slideIndex = 0;
             this._sortSlideshowQueue(wallpapers);
             this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', wallpapers));
             this._wallpaperQueue = wallpapers;
+            this.slideIndex = 0;
         }
 
         const isQueueStillEmpty = this._isQueueEmpty();
@@ -634,7 +634,7 @@ export class Slideshow extends GObject.Object {
 
     async _restart() {
         this._wallpaperQueue = [];
-        this.slideIndex = 0;
+        this.slideIndex = -1;
         this._endSlideshowTimer();
         this._clearFileMonitor();
         await this._loadSlideshowQueue();
@@ -650,7 +650,7 @@ export class Slideshow extends GObject.Object {
     async _reset() {
         Logger.log('Reset slideshow');
         this._wallpaperQueue = [];
-        this.slideIndex = 0;
+        this.slideIndex = -1;
         this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', []));
         this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
         this._settings.set_uint64('slideshow-time-of-slide-start', 0);
