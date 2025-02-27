@@ -88,7 +88,7 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
         const bingPage = new BingPage(settings);
         window.add(bingPage);
 
-        const donatePage = new DonatePage(settings, this.metadata);
+        const donatePage = new DonatePage(this.metadata);
         window.add(donatePage);
 
         const aboutPage = new AboutPage(settings, this.metadata, this.path);
@@ -651,6 +651,27 @@ class AboutPage extends Adw.PreferencesPage {
         releaseNotesBox.append(releaseNotesLabel);
         whatsNewGroup.add(releaseNotesBox);
 
+        const enableNotificationsGroup = new Adw.PreferencesGroup({
+            vexpand: true,
+            valign: Gtk.Align.END,
+        });
+        whatsNewGroup.add(enableNotificationsGroup);
+
+        const enableNotificationsSwitch = new Gtk.Switch({
+            valign: Gtk.Align.CENTER,
+            active: settings.get_boolean('update-notifier-enabled'),
+        });
+        enableNotificationsSwitch.connect('notify::active', widget => {
+            settings.set_boolean('update-notifier-enabled', widget.get_active());
+        });
+        const enableNotificationsRow = new Adw.ActionRow({
+            title: _('Message Tray Update Notification'),
+            subtitle: _('Show a notification when %s receives an update.').format(_(PROJECT_NAME)),
+            activatable_widget: enableNotificationsSwitch,
+        });
+        enableNotificationsRow.add_suffix(enableNotificationsSwitch);
+        enableNotificationsGroup.add(enableNotificationsRow);
+
         if (metadata.commit) {
             const commitRow = new Adw.ActionRow({
                 title: _('Git Commit'),
@@ -894,13 +915,12 @@ class AboutPage extends Adw.PreferencesPage {
 
 var DonatePage = GObject.registerClass(
 class DonatePage extends Adw.PreferencesPage {
-    _init(settings, metadata) {
+    _init(metadata) {
         super._init({
             title: _('Donate'),
             icon_name: 'emote-love-symbolic',
             name: 'DonatePage',
         });
-        this._settings = settings;
 
         const PROJECT_NAME = _('Wallpaper Slideshow');
         const PAYPAL_LINK = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+${metadata.name}&source=url`;
@@ -935,24 +955,6 @@ class DonatePage extends Adw.PreferencesPage {
             halign: Gtk.Align.CENTER,
         });
         thankYouBox.append(thankYouLabel);
-
-        const enableNotificationsGroup = new Adw.PreferencesGroup();
-        this.add(enableNotificationsGroup);
-
-        const enableNotificationsSwitch = new Gtk.Switch({
-            valign: Gtk.Align.CENTER,
-            active: this._settings.get_boolean('support-notifier-enabled'),
-        });
-        enableNotificationsSwitch.connect('notify::active', widget => {
-            this._settings.set_boolean('support-notifier-enabled', widget.get_active());
-        });
-        const enableNotificationsRow = new Adw.ActionRow({
-            title: _('Message Tray Notifications'),
-            subtitle: _('Show a notification when %s receives an update.').format(_(PROJECT_NAME)),
-            activatable_widget: enableNotificationsSwitch,
-        });
-        enableNotificationsRow.add_suffix(enableNotificationsSwitch);
-        enableNotificationsGroup.add(enableNotificationsRow);
     }
 
     _createLinkRow(title, iconName, uri, subtitle = null) {

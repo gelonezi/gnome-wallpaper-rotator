@@ -14,7 +14,7 @@ import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js'
 
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
 import {Slideshow} from './slideshow.js';
-import {SupportNotification} from './supportNotifier.js';
+import {UpdateNotification} from './updateNotifier.js';
 
 const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
 
@@ -29,7 +29,7 @@ export default class AzWallpaper extends Extension {
         this._injectionManager = new InjectionManager();
 
         this._createQuickSettingsEntry();
-        this._supportNotification = new SupportNotification(this);
+        this._updateNotification = new UpdateNotification(this);
 
         this._injectionManager.overrideMethod(Main.layoutManager, '_addBackgroundMenu', originalMethod => {
             const azWallpaper = this;
@@ -122,8 +122,8 @@ export default class AzWallpaper extends Extension {
             this._quickMenuItem = null;
         }
 
-        this._supportNotification.destroy();
-        this._supportNotification = null;
+        this._updateNotification.destroy();
+        this._updateNotification = null;
         this._bingWallpaperDownloader.destroy();
         this._bingWallpaperDownloader = null;
         this._slideshow.destroy();

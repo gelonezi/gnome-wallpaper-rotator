@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-23 07:53-0500\n"
+"POT-Creation-Date: 2025-02-27 08:42-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,27 +48,31 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#: extension.js:149 prefs.js:248
+#: extension.js:153 prefs.js:248
 msgid "Previous Wallpaper"
 msgstr ""
 
-#: extension.js:156 prefs.js:257
+#: extension.js:160 prefs.js:257
 msgid "Next Wallpaper"
 msgstr ""
 
-#: extension.js:163 extension.js:239
+#: extension.js:167 extension.js:250
 msgid "Slideshow Settings"
 msgstr ""
 
-#: extension.js:224 prefs.js:121
+#: extension.js:228 prefs.js:121
 msgid "Slideshow"
 msgstr ""
 
-#: extension.js:234 prefs.js:565 prefs.js:905 utils.js:12
+#: extension.js:240 prefs.js:565 prefs.js:925 utils.js:12
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: extension.js:252
+#: extension.js:262
+msgid "Current Slide"
+msgstr ""
+
+#: extension.js:300
 msgid "Change Current Slide"
 msgstr ""
 
@@ -335,126 +339,126 @@ msgstr ""
 msgid "What's New"
 msgstr ""
 
-#: prefs.js:656
+#: prefs.js:668
+msgid "Message Tray Update Notification"
+msgstr ""
+
+#: prefs.js:669
+#, javascript-format
+msgid "Show a notification when %s receives an update."
+msgstr ""
+
+#: prefs.js:677
 msgid "Git Commit"
 msgstr ""
 
-#: prefs.js:666
+#: prefs.js:687
 msgid "GNOME Version"
 msgstr ""
 
-#: prefs.js:675
+#: prefs.js:696
 msgid "OS Name"
 msgstr ""
 
-#: prefs.js:688
+#: prefs.js:709
 msgid "Windowing System"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' on GitLab
-#: prefs.js:699
+#: prefs.js:720
 #, javascript-format
 msgid "%s on GitLab"
 msgstr ""
 
-#: prefs.js:702
+#: prefs.js:723
 msgid "Report an Issue"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' Settings
-#: prefs.js:712
+#: prefs.js:733
 #, javascript-format
 msgid "%s Settings"
 msgstr ""
 
-#: prefs.js:715
+#: prefs.js:736
 msgid "Load"
 msgstr ""
 
-#: prefs.js:720
+#: prefs.js:741
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:746
+#: prefs.js:767
 msgid "Save"
 msgstr ""
 
-#: prefs.js:751
+#: prefs.js:772
 msgid "Save Settings"
 msgstr ""
 
-#: prefs.js:781
+#: prefs.js:802
 msgid "Enable Debug Mode"
 msgstr ""
 
-#: prefs.js:782
+#: prefs.js:803
 msgid "Show extensive messages in logs for debugging."
 msgstr ""
 
-#: prefs.js:788 prefs.js:789
+#: prefs.js:809 prefs.js:810
 msgid "Legal"
 msgstr ""
 
-#: prefs.js:795
+#: prefs.js:816
 msgid "This program comes with absolutely no warranty."
 msgstr ""
 
-#: prefs.js:797
+#: prefs.js:818
 msgid "GNU General Public License, version 2 or later"
 msgstr ""
 
 #. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
-#: prefs.js:797
+#: prefs.js:818
 #, javascript-format
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: prefs.js:899 supportNotifier.js:67
+#: prefs.js:920 supportNotifier.js:67 updateNotifier.js:66
 msgid "Donate"
 msgstr ""
 
-#: prefs.js:910
+#: prefs.js:930
 #, javascript-format
 msgid "Help Support %s"
 msgstr ""
 
-#: prefs.js:911 supportNotifier.js:58
+#: prefs.js:931 supportNotifier.js:58 updateNotifier.js:57
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
 "continued development, please consider making a donation."
 msgstr ""
 
-#: prefs.js:915
+#: prefs.js:935
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:918
+#: prefs.js:938
 msgid "Donate via Buy Me a Coffee"
 msgstr ""
 
-#: prefs.js:930
+#: prefs.js:950
 #, javascript-format
 msgid ""
 "A huge thank you to everyone who has supported %s! Your support helps keep "
 "%s going. It is truly appreciated!"
 msgstr ""
 
-#: prefs.js:950
-msgid "Message Tray Notifications"
-msgstr ""
-
-#: prefs.js:951
-#, javascript-format
-msgid "Show a notification when %s receives an update."
-msgstr ""
-
 #: slideshow.js:139 slideshow.js:168
-msgid "Change directory in settings to begin slideshow"
+msgid "Change directory in settings to begin slideshow."
 msgstr ""
 
 #: slideshow.js:139
-msgid "Slideshow directory not found"
+msgid "Slideshow directory does not exist!"
 msgstr ""
 
 #: slideshow.js:140 slideshow.js:169
@@ -462,19 +466,19 @@ msgid "Open Settings"
 msgstr ""
 
 #: slideshow.js:168
-msgid "Slideshow contains no slides"
+msgid "Slideshow directory contains no images!"
 msgstr ""
 
 #. TRANSLATORS: This will display as "ProjectName v21 Released!" as an example.
-#: supportNotifier.js:57
+#: supportNotifier.js:57 updateNotifier.js:56
 #, javascript-format
 msgid "%s v%s Released!"
 msgstr ""
 
-#: supportNotifier.js:68
+#: supportNotifier.js:68 updateNotifier.js:67
 msgid "What's new?"
 msgstr ""
 
-#: supportNotifier.js:69
+#: supportNotifier.js:69 updateNotifier.js:68
 msgid "Dismiss"
 msgstr ""

@@ -8,13 +8,13 @@
         <value value='4' nick='Oldest'/>
     </enum>
     <schema id="org.gnome.shell.extensions.azwallpaper" path="/org/gnome/shell/extensions/azwallpaper/">
-        <key type="i" name="support-notifier-project-version">
+        <key type="i" name="update-notifier-project-version">
             <default>0</default>
-            <summary>The project version of when a support notification was shown</summary>
+            <summary>The project version of when an update notification was shown</summary>
         </key>
-        <key type="b" name="support-notifier-enabled">
+        <key type="b" name="update-notifier-enabled">
             <default>true</default>
-            <summary>Enable/Disable the support notifications</summary>
+            <summary>Enable/Disable the update notifications</summary>
         </key>
         <key type="s" name="prefs-visible-page">
             <default>''</default>

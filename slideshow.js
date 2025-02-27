@@ -136,7 +136,7 @@ export class Slideshow extends GObject.Object {
 
         const directory = Gio.file_new_for_path(slideshowDirectory);
         if (!slideshowDirectory || !directory.query_exists(null)) {
-            notify(_('Slideshow directory not found'), _('Change directory in settings to begin slideshow'),
+            notify(_('Slideshow directory does not exist!'), _('Change directory in settings to begin slideshow.'),
                 _('Open Settings'), () => this._extension.openPreferences());
             this._monitorInvalidDirectory();
             return false;
@@ -165,7 +165,7 @@ export class Slideshow extends GObject.Object {
 
         const isQueueStillEmpty = this._isQueueEmpty();
         if (isQueueStillEmpty) {
-            notify(_('Slideshow contains no slides'), _('Change directory in settings to begin slideshow'),
+            notify(_('Slideshow directory contains no images!'), _('Change directory in settings to begin slideshow.'),
                 _('Open Settings'), () => this._extension.openPreferences());
             return;
         }
