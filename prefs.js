@@ -119,7 +119,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
     _init(settings) {
         super._init({
             title: _('Slideshow'),
-            icon_name: 'emblem-photos-symbolic',
+            icon_name: 'image-x-generic-symbolic',
             name: 'HomePage',
         });
 
@@ -538,7 +538,7 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
         amountToKeepRow.add_suffix(amountToKeepSpinButton);
 
         const confirmAmountToKeepButton = new Gtk.Button({
-            icon_name: 'emblem-ok-symbolic',
+            icon_name: 'object-select-symbolic',
             sensitive: false,
             valign: Gtk.Align.CENTER,
             tooltip_text: _('Apply'),

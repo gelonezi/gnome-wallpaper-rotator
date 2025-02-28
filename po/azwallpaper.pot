@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-27 08:42-0500\n"
+"POT-Creation-Date: 2025-02-28 09:03-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -70,6 +70,10 @@ msgstr ""
 
 #: extension.js:262
 msgid "Current Slide"
+msgstr ""
+
+#: extension.js:270 extension.js:278 prefs.js:283
+msgid "None"
 msgstr ""
 
 #: extension.js:300
@@ -165,10 +169,6 @@ msgstr ""
 
 #: prefs.js:278
 msgid "Wallpaper Options"
-msgstr ""
-
-#: prefs.js:283
-msgid "None"
 msgstr ""
 
 #: prefs.js:284
@@ -422,7 +422,7 @@ msgstr ""
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: prefs.js:920 supportNotifier.js:67 updateNotifier.js:66
+#: prefs.js:920 updateNotifier.js:66
 msgid "Donate"
 msgstr ""
 
@@ -431,7 +431,7 @@ msgstr ""
 msgid "Help Support %s"
 msgstr ""
 
-#: prefs.js:931 supportNotifier.js:58 updateNotifier.js:57
+#: prefs.js:931 updateNotifier.js:57
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
@@ -470,15 +470,15 @@ msgid "Slideshow directory contains no images!"
 msgstr ""
 
 #. TRANSLATORS: This will display as "ProjectName v21 Released!" as an example.
-#: supportNotifier.js:57 updateNotifier.js:56
+#: updateNotifier.js:56
 #, javascript-format
 msgid "%s v%s Released!"
 msgstr ""
 
-#: supportNotifier.js:68 updateNotifier.js:67
+#: updateNotifier.js:67
 msgid "What's new?"
 msgstr ""
 
-#: supportNotifier.js:69 updateNotifier.js:68
+#: updateNotifier.js:68
 msgid "Dismiss"
 msgstr ""

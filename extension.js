@@ -224,7 +224,7 @@ const SlideshowQuickMenu = GObject.registerClass(
 class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
     _init(extension) {
         super._init({
-            icon_name: 'emblem-photos-symbolic',
+            icon_name: 'image-x-generic-symbolic',
             title: _('Slideshow'),
             checked: true,
         });
@@ -237,7 +237,7 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
         const backgroundApps = quickSettings._backgroundApps?.quickSettingsItems?.at(-1) ?? null;
         quickSettings.menu.insertItemBefore(this, backgroundApps);
 
-        this.menu.setHeader('emblem-photos-symbolic', _('Wallpaper Slideshow'));
+        this.menu.setHeader('image-x-generic-symbolic', _('Wallpaper Slideshow'));
 
         const currentSlideInfo = new SlideInfoMenuItem(slideshow);
         this.menu.addMenuItem(currentSlideInfo);
@@ -267,7 +267,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
             this.vertical = true;
 
         this.subLabel = new St.Label({
-            text: slideshow.getCurrentSlide().name ?? '',
+            text: slideshow.getCurrentSlide().name ?? _('None'),
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
             style_class: 'device-subtitle',
@@ -275,7 +275,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
         this.add_child(this.subLabel);
 
         slideshow.connectObject('notify::slide-index', () => {
-            this.subLabel.text = slideshow.getCurrentSlide().name ?? '';
+            this.subLabel.text = slideshow.getCurrentSlide().name ?? _('None');
         }, this);
 
         this.connect('activate', () => {
