@@ -1,4 +1,4 @@
-<b><span size="large">Version 11 (2025-02-27)</span></b>
+<b><span size="large">Version 11 (2025-03-01)</span></b>
 
 • Use async file operations to gather wallpaper files and info.
 • Add new wallpaper queue sorting options.

@@ -1,10 +1,10 @@
 {
   "name": "Wallpaper Slideshow",
-  "description": "Wallpaper slideshow extension for GNOME. Optionally downloads BING wallpaper of the day.\n Automatically changes the wallpaper (background) at a user defined interval.",
+  "description": "Wallpaper slideshow extension for GNOME. Optionally downloads BING wallpaper of the day.\n Automatically changes the wallpaper at a user defined interval.",
   "uuid": "azwallpaper@azwallpaper.gitlab.com",
   "gettext-domain": "azwallpaper",
   "settings-schema": "org.gnome.shell.extensions.azwallpaper",
-  "version": 10,
+  "version": 11,
   "shell-version": ["45", "46", "47", "48"],
   "url": "https://gitlab.com/AndrewZaech/azwallpaper",
   "donations": {
