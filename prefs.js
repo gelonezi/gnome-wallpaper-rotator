@@ -11,9 +11,7 @@ import * as Constants from './constants.js';
 
 import {ExtensionPreferences, gettext as _, ngettext} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
-function createOpenDirectoyButton(parent, directory) {
-    const file = Gio.file_new_for_path(directory);
-    const fileUri = file.get_uri();
+function createOpenDirectoryButton(parent, settings, setting) {
     const button = new Gtk.Button({
         icon_name: 'folder-open-symbolic',
         tooltip_text: _('Open directory...'),
@@ -21,13 +19,16 @@ function createOpenDirectoyButton(parent, directory) {
     });
 
     button.connect('clicked', () => {
+        const directory = settings.get_string(setting);
+        const file = Gio.file_new_for_path(directory);
+        const fileUri = file.get_uri();
         Gtk.show_uri(parent.get_root(), fileUri, Gdk.CURRENT_TIME);
     });
 
     return button;
 }
 
-function  createFileChooserButton(parent, settings, setting, parentRow) {
+function createFileChooserButton(parent, settings, setting, parentRow) {
     const fileChooserButton = new Gtk.Button({
         icon_name: 'folder-new-symbolic',
         tooltip_text: _('Choose new directory...'),
@@ -136,7 +137,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
             subtitle: this._settings.get_string('slideshow-directory'),
         });
         const fileChooserButton = createFileChooserButton(this, this._settings, 'slideshow-directory', slideShowDirRow);
-        const openDirectoryButton = createOpenDirectoyButton(this, this._settings.get_string('slideshow-directory'));
+        const openDirectoryButton = createOpenDirectoryButton(this, this._settings, 'slideshow-directory');
         slideShowDirRow.add_prefix(openDirectoryButton);
         slideShowDirRow.add_suffix(fileChooserButton);
         slideShowGroup.add(slideShowDirRow);
@@ -404,7 +405,7 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
             subtitle: this._settings.get_string('bing-download-directory'),
         });
         const fileChooserButton = createFileChooserButton(this, this._settings, 'bing-download-directory', bingDlRow);
-        const openDirectoryButton = createOpenDirectoyButton(this, this._settings.get_string('bing-download-directory'));
+        const openDirectoryButton = createOpenDirectoryButton(this, this._settings, 'bing-download-directory');
         bingDlRow.add_suffix(fileChooserButton);
         bingDlRow.add_prefix(openDirectoryButton);
         bingDLGroup.add(bingDlRow);
