@@ -28,7 +28,7 @@ function createOpenDirectoryButton(parent, settings, setting) {
     return button;
 }
 
-function createFileChooserButton(parent, settings, setting, parentRow) {
+function createFileChooserButton(parent, settings, setting) {
     const fileChooserButton = new Gtk.Button({
         icon_name: 'folder-new-symbolic',
         tooltip_text: _('Choose new directory...'),
@@ -48,7 +48,6 @@ function createFileChooserButton(parent, settings, setting, parentRow) {
             if (response === Gtk.ResponseType.ACCEPT) {
                 const filePath = dialog.get_file().get_path();
                 settings.set_string(setting, filePath);
-                parentRow.subtitle = filePath;
                 dialog.destroy();
             } else if (response === Gtk.ResponseType.CANCEL) {
                 dialog.destroy();
@@ -57,7 +56,6 @@ function createFileChooserButton(parent, settings, setting, parentRow) {
         dialog.show();
     });
 
-    parentRow.activatable_widget = fileChooserButton;
     return fileChooserButton;
 }
 
@@ -136,10 +134,13 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
             title: _('Slideshow Directory'),
             subtitle: this._settings.get_string('slideshow-directory'),
         });
-        const fileChooserButton = createFileChooserButton(this, this._settings, 'slideshow-directory', slideShowDirRow);
+        this._settings.bind('slideshow-directory', slideShowDirRow, 'subtitle', Gio.SettingsBindFlags.DEFAULT);
+
+        const fileChooserButton = createFileChooserButton(this, this._settings, 'slideshow-directory');
         const openDirectoryButton = createOpenDirectoryButton(this, this._settings, 'slideshow-directory');
         slideShowDirRow.add_prefix(openDirectoryButton);
         slideShowDirRow.add_suffix(fileChooserButton);
+        slideShowDirRow.activatable_widget = fileChooserButton;
         slideShowGroup.add(slideShowDirRow);
 
         const queueSortingList = new Gtk.StringList();
@@ -400,15 +401,18 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
         });
         this.add(bingDLGroup);
 
-        const bingDlRow = new Adw.ActionRow({
+        const bingDirectoryRow = new Adw.ActionRow({
             title: _('Download Directory'),
             subtitle: this._settings.get_string('bing-download-directory'),
         });
-        const fileChooserButton = createFileChooserButton(this, this._settings, 'bing-download-directory', bingDlRow);
+        this._settings.bind('bing-download-directory', bingDirectoryRow, 'subtitle', Gio.SettingsBindFlags.DEFAULT);
+
+        const fileChooserButton = createFileChooserButton(this, this._settings, 'bing-download-directory');
         const openDirectoryButton = createOpenDirectoryButton(this, this._settings, 'bing-download-directory');
-        bingDlRow.add_suffix(fileChooserButton);
-        bingDlRow.add_prefix(openDirectoryButton);
-        bingDLGroup.add(bingDlRow);
+        bingDirectoryRow.add_suffix(fileChooserButton);
+        bingDirectoryRow.add_prefix(openDirectoryButton);
+        bingDirectoryRow.activatable_widget = fileChooserButton;
+        bingDLGroup.add(bingDirectoryRow);
 
         const notifyOnErrorRow = new Adw.SwitchRow({
             title: _('Notify on Download Error'),
