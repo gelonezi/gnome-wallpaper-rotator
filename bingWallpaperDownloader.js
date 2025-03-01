@@ -40,20 +40,20 @@ export const BingWallpaperDownloader = class {
 
         if (!this._bingWallpapersDirectory) {
             this._setToDefaultDownloadDirectory();
-            notify(_('No user defined directory found for BING wallpaper downloads'),
-                _('Directory set to - %s').format(this._bingWallpapersDirectory));
+            Logger.log(`BING Downloader - Download Directory ${this._bingWallpapersDirectory}`);
         } else {
             const dir = Gio.File.new_for_path(this._bingWallpapersDirectory);
             if (!dir.query_exists(null)) {
                 const success = dir.make_directory(null);
                 if (!success) {
+                    Logger.log(`BING Downloader - Failed to create directory: ${this._bingWallpapersDirectory}`);
                     this._setToDefaultDownloadDirectory();
-                    notify(_('Failed to create user defined directory for BING wallpaper downloads'),
+                    Logger.log(`BING Downloader - Set to default directory: ${this._bingWallpapersDirectory}`);
+                    notify(_('Error creating download directory!'),
                         _('Directory set to - %s').format(this._bingWallpapersDirectory));
                 }
             }
         }
-        Logger.log(`BING Downloader - Download Directory ${this._bingWallpapersDirectory}`);
     }
 
     setBingParams() {

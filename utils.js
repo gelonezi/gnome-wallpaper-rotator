@@ -20,7 +20,6 @@ const PROJECT_NAME = _('Wallpaper Slideshow');
  */
 export function notify(title, body, actionLabel = null, actionCallback = null) {
     const extension = Extension.lookupByURL(import.meta.url);
-    title = `${_(PROJECT_NAME)}: ${_(title)}`;
     const gicon = Gio.icon_new_for_string(`${extension.path}/media/azwallpaper-logo.svg`);
 
     const source = getSource(PROJECT_NAME, 'application-x-addon-symbolic');
