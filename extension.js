@@ -267,7 +267,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
             this.vertical = true;
 
         this.subLabel = new St.Label({
-            text: slideshow.getCurrentSlide().name ?? _('None'),
+            text: this._getFileName(slideshow.getCurrentSlide().name) ?? _('None'),
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
             style_class: 'device-subtitle',
@@ -275,7 +275,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
         this.add_child(this.subLabel);
 
         slideshow.connectObject('notify::slide-index', () => {
-            this.subLabel.text = slideshow.getCurrentSlide().name ?? _('None');
+            this.subLabel.text = this._getFileName(slideshow.getCurrentSlide().name) ?? _('None');
         }, this);
 
         this.connect('activate', () => {
@@ -291,6 +291,22 @@ class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
                 console.log(e, `Failed to open URI: ${fileUri}`);
             }
         });
+    }
+
+    _getFileName(filename) {
+        if (!filename) return null;
+        
+        const isBingWallpaper = /-(\d{3,4}x\d{3,4}|UHD)(?=\.[^/.]+$)/.test(filename);
+        if (isBingWallpaper) {
+            let cleanName = filename.replace(/-\d{3,4}x\d{3,4}|-UHD(?=\.[^/.]+$)/, '').replace(/\.[^/.]+$/, '');
+            cleanName = cleanName.replace(/([a-z])([A-Z])/g, '$1 $2');
+            cleanName = cleanName.replace(/([a-z])(\d)/g, '$1 $2');
+            cleanName = cleanName.replace(/(\d)([a-zA-Z])/g, '$1 $2');
+            
+            return cleanName;
+        }
+    	
+        return filename.replace(/\.[^/.]+$/, '');
     }
 });
 
