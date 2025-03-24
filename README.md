@@ -33,6 +33,8 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 **@[sean288](https://gitlab.com/sean288) - !12**
 
+**@[meybonomme](https://gitlab.com/meybonomme) - !13**
+
 
 #### Translators:
 
