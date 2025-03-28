@@ -26,9 +26,9 @@ export function notify(title, body, actionLabel = null, actionCallback = null) {
     Main.messageTray.add(source);
 
     const notification = getNotification(source, title, body, gicon);
-    notification.urgency = MessageTray.Urgency.CRITICAL;
 
     if (actionLabel && actionCallback) {
+        notification.urgency = MessageTray.Urgency.CRITICAL;
         notification.addAction(actionLabel, () => {
             actionCallback();
             notification.destroy();

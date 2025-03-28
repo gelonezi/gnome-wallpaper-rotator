@@ -63,7 +63,7 @@ function insertWallpaper(wallpaperQueue, newWallpaper, sortType) {
             comparison = collator.compare(newWallpaper.name, wallpaperQueue[mid].name);
             break;
         default:
-            return;
+            return false;
         }
 
         if (comparison < 0)
@@ -73,13 +73,15 @@ function insertWallpaper(wallpaperQueue, newWallpaper, sortType) {
     }
 
     wallpaperQueue.splice(low, 0, newWallpaper);
+    return low;
 }
 
 export class Slideshow extends GObject.Object {
     static [GObject.properties] = {
         'slide-index': GObject.ParamSpec.int('slide-index', 'slide-index', 'slide-index',
-            GObject.ParamFlags.READWRITE,
-            0, GLib.MAXINT32, 0),
+            GObject.ParamFlags.READWRITE, 0, GLib.MAXINT32, 0),
+        'queue-length': GObject.ParamSpec.int('queue-length', 'queue-length', 'queue-length',
+            GObject.ParamFlags.READWRITE, 0, GLib.MAXINT32, 0),
     };
 
     static {
@@ -91,6 +93,7 @@ export class Slideshow extends GObject.Object {
         this._extension = extension;
         this._settings = this._extension.settings;
         this._wallpaperQueue = this._settings.get_value('slideshow-queue').deep_unpack();
+        this.queueLength = this._wallpaperQueue.length;
         this.slideIndex = this._settings.get_int('slideshow-current-slide-index');
         this._backgroundSettings = new Gio.Settings({schema: 'org.gnome.desktop.background'});
 
@@ -152,15 +155,14 @@ export class Slideshow extends GObject.Object {
             return;
 
         const wallpapers = await this._getWallpapersFromDirectory().catch(e => console.log(e));
-        this._updateQueue(this._wallpaperQueue, wallpapers);
+        this._updateQueue(wallpapers);
 
         const isQueueEmpty = this._isQueueEmpty();
         const slideIndexInRange = this._isIndexInRange();
         // If the queue is empty or slideIndex out of range, create a new queue.
         if (isQueueEmpty || !slideIndexInRange) {
-            this._sortSlideshowQueue(wallpapers);
-            this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', wallpapers));
-            this._wallpaperQueue = wallpapers;
+            this._sortSlideshowQueue();
+            this._saveWallpaperQueue(this._wallpaperQueue);
             this.slideIndex = 0;
         }
 
@@ -175,41 +177,41 @@ export class Slideshow extends GObject.Object {
             this._initiate();
     }
 
-    _sortSlideshowQueue(wallpaperQueue) {
+    _sortSlideshowQueue() {
         const collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
         const sortType = this._settings.get_enum('slideshow-queue-sort-type');
 
         switch (sortType) {
         case SlideshowSortType.RANDOM:
-            shuffle(wallpaperQueue);
+            shuffle(this._wallpaperQueue);
             break;
         case SlideshowSortType.A_Z:
-            wallpaperQueue.sort((a, b) => collator.compare(a.name, b.name));
+            this._wallpaperQueue.sort((a, b) => collator.compare(a.name, b.name));
             break;
         case SlideshowSortType.Z_A:
-            wallpaperQueue.sort((a, b) => collator.compare(b.name, a.name));
+            this._wallpaperQueue.sort((a, b) => collator.compare(b.name, a.name));
             break;
         case SlideshowSortType.NEWEST:
-            wallpaperQueue.sort((a, b) => b.date - a.date);
+            this._wallpaperQueue.sort((a, b) => b.date - a.date);
             break;
         case SlideshowSortType.OLDEST:
-            wallpaperQueue.sort((a, b) => a.date - b.date);
+            this._wallpaperQueue.sort((a, b) => a.date - b.date);
             break;
         default:
-            shuffle(wallpaperQueue);
+            shuffle(this._wallpaperQueue);
             break;
         }
     }
 
-    _updateQueue(currentQueue, directoryImages) {
+    _updateQueue(directoryImages) {
         Logger.log('Checking slideshow queue validity...');
 
-        if (currentQueue.length === 0 || directoryImages === 0) {
+        if (this._wallpaperQueue.length === 0 || directoryImages === 0) {
             Logger.log('Slideshow queue empty! Attempting to create new slideshow queue...');
             return;
         }
         const sortType = this._settings.get_enum('slideshow-queue-sort-type');
-        const currentQueueMap = new Map(currentQueue.map(img => [img.name, img]));
+        const currentQueueMap = new Map(this._wallpaperQueue.map(img => [img.name, img]));
         const directoryImagesMap = new Map(directoryImages.map(img => [img.name, img]));
 
         const toAdd = [...directoryImagesMap.values()].filter(img => !currentQueueMap.has(img.name));
@@ -217,23 +219,24 @@ export class Slideshow extends GObject.Object {
 
         toAdd.forEach(img => {
             if (sortType === SlideshowSortType.RANDOM) {
-                const randomIndex = Math.floor(Math.random() * (currentQueue.length + 1));
-                currentQueue.splice(randomIndex, 0, img);
+                const randomIndex = Math.floor(Math.random() * (this._wallpaperQueue.length + 1));
+                this._wallpaperQueue.splice(randomIndex, 0, img);
                 Logger.log(`New image detected in directory. Adding ${img.name} at ${randomIndex}`);
             } else {
-                insertWallpaper(currentQueue, img, sortType);
+                insertWallpaper(this._wallpaperQueue, img, sortType);
                 Logger.log(`New image detected in directory. Adding ${img.name} into sorted array.`);
             }
         });
 
         toRemove.forEach(img => {
-            const index = currentQueue.findIndex(q => q.name === img.name);
+            const index = this._wallpaperQueue.findIndex(q => q.name === img.name);
             if (index !== -1) {
-                currentQueue.splice(index, 1);
+                this._wallpaperQueue.splice(index, 1);
                 Logger.log(`Image removed from directory. Removing ${img.name} from queue.`);
             }
         });
 
+        this._saveWallpaperQueue(this._wallpaperQueue);
         Logger.log('Queue validity check done!');
     }
 
@@ -299,6 +302,7 @@ export class Slideshow extends GObject.Object {
         if (this._wallpaperQueue[0].name === currentWallaper && sortType === SlideshowSortType.RANDOM) {
             const duplicate = this._wallpaperQueue.shift();
             this._wallpaperQueue.push(duplicate);
+            this._saveWallpaperQueue(this._wallpaperQueue);
         }
         this._changeSlide();
         this._startSlideshowTimer();
@@ -355,6 +359,10 @@ export class Slideshow extends GObject.Object {
         return {path, name};
     }
 
+    getSlideshowLength() {
+        return this._wallpaperQueue.length;
+    }
+
     _setWallpaper() {
         const wallpaper = this._wallpaperQueue[this.slideIndex].name;
         Logger.log(`Current wallpaper "${wallpaper}"`);
@@ -393,7 +401,7 @@ export class Slideshow extends GObject.Object {
         if (needsReshuffle) {
             Logger.log('Reshuffling queue.');
             shuffle(this._wallpaperQueue);
-            this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', this._wallpaperQueue));
+            this._saveWallpaperQueue(this._wallpaperQueue);
         }
 
         if (!slideIndexInRange) {
@@ -492,10 +500,10 @@ export class Slideshow extends GObject.Object {
             case Gio.FileMonitorEvent.DELETED:
             case Gio.FileMonitorEvent.MOVED_OUT:
                 if (fileInQueue) {
-                    this._wallpaperQueue.splice(index, 1);
-                    this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', this._wallpaperQueue));
-                    Logger.log(`Remove "${fileName}" from index:${index}`);
-                } else if (currentWallpaper === fileName) {
+                    this._removeFromQueue(fileName, index);
+                    this._saveWallpaperQueue(this._wallpaperQueue);
+                }
+                if (currentWallpaper === fileName) {
                     // The deleted file was the current wallpaper, go to next slide in queue
                     this.goToNextSlide();
                 } else if (file.get_path() === slideshowDirectoryPath) {
@@ -511,16 +519,8 @@ export class Slideshow extends GObject.Object {
                     break;
                 }
 
-                // insert new file into wallpapers queue
-                if (sortType === SlideshowSortType.RANDOM) {
-                    const randomIndex = Math.floor(Math.random() * this._wallpaperQueue.length);
-                    this._wallpaperQueue.splice(randomIndex, 0, newWallpaperData);
-                    Logger.log(`Insert "${fileName}" at index:${randomIndex}`);
-                } else {
-                    insertWallpaper(this._wallpaperQueue, newWallpaperData, sortType);
-                }
-
-                this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', this._wallpaperQueue));
+                this._addToQueue(fileName, newWallpaperData);
+                this._saveWallpaperQueue(this._wallpaperQueue);
 
                 break;
             }
@@ -534,31 +534,23 @@ export class Slideshow extends GObject.Object {
                         Logger.log(`Rename "${fileName}" at index:${index} to "${newFileName}"`);
                         this._wallpaperQueue.splice(index, 1, newWallpaperData);
                     } else {
-                        Logger.log(`File "${fileName}" renamed. Remove and insert new named file into sorted array.`);
-                        this._wallpaperQueue.splice(index, 1);
-                        insertWallpaper(this._wallpaperQueue, newWallpaperData, sortType);
+                        Logger.log(`File "${fileName}" has been renamed.`);
+                        this._removeFromQueue(fileName, index);
+                        this._addToQueue(newFileName, newWallpaperData);
                     }
                 } else if (fileInQueue && !fileInfo.isImage) {
                     // Remove the old file from the queue
-                    this._wallpaperQueue.splice(index, 1);
-                    Logger.log(`Remove "${fileName}" from index:${index}`);
+                    this._removeFromQueue(fileName, index);
                     Logger.log(`"${newFileName}" is not a valid image.`);
                 } else if (fileInfo.isImage) {
                     // The old file wasn't in queue, but the renamed file's type is valid.
-                    // Add it to queue.
-                    if (sortType === SlideshowSortType.RANDOM) {
-                        const randomIndex = Math.floor(Math.random() * this._wallpaperQueue.length);
-                        this._wallpaperQueue.splice(randomIndex, 0, newWallpaperData);
-                        Logger.log(`Insert "${newFileName}" at index:${randomIndex}`);
-                    } else {
-                        insertWallpaper(this._wallpaperQueue, newWallpaperData, sortType);
-                    }
+                    this._addToQueue(newFileName, newWallpaperData);
                 } else {
                     Logger.log(`"${newFileName}" is not a valid image.`);
                     break;
                 }
 
-                this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', this._wallpaperQueue));
+                this._saveWallpaperQueue(this._wallpaperQueue);
 
                 if (currentWallpaper === fileName) {
                     // The renamed file was the current wallpaper, go to next slide in queue
@@ -575,6 +567,36 @@ export class Slideshow extends GObject.Object {
                 break;
             }
         });
+    }
+
+    _removeFromQueue(fileName, index) {
+        this._wallpaperQueue.splice(index, 1);
+        Logger.log(`Remove "${fileName}" from index:${index}`);
+
+        if (index < this.slideIndex)
+            this.slideIndex--;
+    }
+
+    _addToQueue(fileName, newWallpaperData) {
+        let index;
+        const sortType = this._settings.get_enum('slideshow-queue-sort-type');
+
+        if (sortType === SlideshowSortType.RANDOM) {
+            index = Math.floor(Math.random() * this._wallpaperQueue.length);
+            this._wallpaperQueue.splice(index, 0, newWallpaperData);
+        } else {
+            index = insertWallpaper(this._wallpaperQueue, newWallpaperData, sortType);
+        }
+
+        Logger.log(`Insert "${fileName}" at index:${index}`);
+
+        if (index && index < this.slideIndex)
+            this.slideIndex++;
+    }
+
+    _saveWallpaperQueue(wallpaperQueue) {
+        this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', wallpaperQueue));
+        this.queueLength = wallpaperQueue.length;
     }
 
     _onDurationChange() {
@@ -642,6 +664,48 @@ export class Slideshow extends GObject.Object {
         return remainingTime;
     }
 
+    _getTimeRemainingString() {
+        const timer = this._getTimerDelay();
+        const hours = Math.floor(timer / 3600);
+        const minutes = Math.floor((timer % 3600) / 60);
+        const seconds = timer % 60;
+
+        const timeString = [];
+        if (hours > 0)
+            timeString.push(_('%s hours').format(hours));
+        if (minutes > 0 || hours > 0)
+            timeString.push(_('%s minutes').format(minutes));
+        timeString.push(_('%s seconds').format(seconds));
+
+        return timeString.join(', ');
+    }
+
+    pause() {
+        Logger.log('Pause slideshow.');
+
+        this.saveTimer();
+        this._endSlideshowTimer();
+
+        const currentSlidePath = this._settings.get_string('slideshow-current-wallpaper');
+        const bodyText = _('Slideshow paused on slide %s').format(currentSlidePath);
+        notify(_('Slideshow Paused'), bodyText);
+    }
+
+    resume() {
+        const timer = this._getTimerDelay();
+        this._slideshowStartTime = Date.now();
+        this._settings.set_uint64('slideshow-time-of-slide-start', this._slideshowStartTime);
+
+        Logger.log('Resuming slideshow...');
+        this._setWallpaper();
+        Logger.log(`Next slide in ${timer} seconds.`);
+        this._startSlideshowTimer(timer, true);
+
+        const timeRemaining = this._getTimeRemainingString();
+        const bodyText = _('Next slide in %s').format(timeRemaining);
+        notify(_('Slideshow Resumed'), bodyText);
+    }
+
     async _restart() {
         this._wallpaperQueue = [];
         this.slideIndex = -1;
@@ -657,7 +721,7 @@ export class Slideshow extends GObject.Object {
         Logger.log('Reset slideshow');
         this._wallpaperQueue = [];
         this.slideIndex = -1;
-        this._settings.set_value('slideshow-queue', new GLib.Variant('aa{ss}', []));
+        this._saveWallpaperQueue([]);
         this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
         this._settings.set_uint64('slideshow-time-of-slide-start', 0);
 

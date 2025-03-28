@@ -228,10 +228,15 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
             title: _('Slideshow'),
             checked: true,
         });
-
-        this.connect('clicked', () => this.menu.open());
-
         const {slideshow} = extension;
+
+        this.connect('clicked', () => {
+            this.checked = !this.checked;
+            if (this.checked)
+                slideshow.resume();
+            else
+                slideshow.pause();
+        });
 
         const quickSettings = Main.panel.statusArea.quickSettings;
         const backgroundApps = quickSettings._backgroundApps?.quickSettingsItems?.at(-1) ?? null;
@@ -257,25 +262,54 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
 });
 
 const SlideInfoMenuItem = GObject.registerClass(
-class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
+class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
     _init(slideshow) {
-        super._init(_('Current Slide'));
+        super._init();
 
         if (ShellVersion >= 48)
             this.orientation = Clutter.Orientation.VERTICAL;
         else
             this.vertical = true;
 
-        this.subLabel = new St.Label({
-            text: this._getFileName(slideshow.getCurrentSlide().name) ?? _('None'),
+        const headerBox = new St.BoxLayout();
+        this.add_child(headerBox);
+
+        const headerLabel = new St.Label({
+            text: _('Current Slide'),
+            x_expand: true,
+            y_expand: true,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        headerBox.add_child(headerLabel);
+
+        const currentSlideLabel = new St.Label({
+            text: this._getSlideIndexString(slideshow),
+            x_expand: true,
+            y_expand: true,
+            x_align: Clutter.ActorAlign.END,
+            y_align: Clutter.ActorAlign.CENTER,
+            style_class: 'device-subtitle',
+        });
+        headerBox.add_child(currentSlideLabel);
+
+        const {name} = slideshow.getCurrentSlide();
+        const slideNameLabel = new St.Label({
+            text: this._getPrettyName(name) ?? _('None'),
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
             style_class: 'device-subtitle',
         });
-        this.add_child(this.subLabel);
+        this.add_child(slideNameLabel);
 
         slideshow.connectObject('notify::slide-index', () => {
-            this.subLabel.text = this._getFileName(slideshow.getCurrentSlide().name) ?? _('None');
+            const {name: newSlideName} = slideshow.getCurrentSlide();
+            slideNameLabel.text = this._getPrettyName(newSlideName) ?? _('None');
+            currentSlideLabel.text = this._getSlideIndexString(slideshow);
+        }, this);
+
+
+        slideshow.connectObject('notify::queue-length', () => {
+            currentSlideLabel.text = this._getSlideIndexString(slideshow);
         }, this);
 
         this.connect('activate', () => {
@@ -293,19 +327,26 @@ class SlideInfoMenuItem extends PopupMenu.PopupMenuItem {
         });
     }
 
-    _getFileName(filename) {
-        if (!filename) return null;
-        
+    _getSlideIndexString(slideshow) {
+        const slideshowLength = slideshow.getSlideshowLength();
+        if (!slideshowLength)
+            return '0/0';
+        return `${slideshow.slideIndex + 1}/${slideshow.getSlideshowLength()}`;
+    }
+
+    _getPrettyName(filename) {
+        if (!filename)
+            return null;
+
         const isBingWallpaper = /-(\d{3,4}x\d{3,4}|UHD)(?=\.[^/.]+$)/.test(filename);
         if (isBingWallpaper) {
             let cleanName = filename.replace(/-\d{3,4}x\d{3,4}|-UHD(?=\.[^/.]+$)/, '').replace(/\.[^/.]+$/, '');
             cleanName = cleanName.replace(/([a-z])([A-Z])/g, '$1 $2');
             cleanName = cleanName.replace(/([a-z])(\d)/g, '$1 $2');
             cleanName = cleanName.replace(/(\d)([a-zA-Z])/g, '$1 $2');
-            
             return cleanName;
         }
-    	
+
         return filename.replace(/\.[^/.]+$/, '');
     }
 });
