@@ -2,6 +2,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import {Logger} from './extension.js';
@@ -360,11 +361,20 @@ export class Slideshow extends GObject.Object {
         Logger.log(`Currently on slide #${this.slideIndex + 1} out of ${this._wallpaperQueue.length}`);
         this._settings.set_string('slideshow-current-wallpaper', wallpaper);
 
-        const directoryPath = this._settings.get_string('slideshow-directory');
-        const filePath = GLib.build_filenamev([directoryPath, wallpaper]);
-        const uri = `file://${filePath}`;
-        this._backgroundSettings.set_string('picture-uri', uri);
-        this._backgroundSettings.set_string('picture-uri-dark', uri);
+        this._setPictureUriSettings(wallpaper);
+    }
+
+    _setPictureUriSettings(fileName) {
+        const directory = this._settings.get_string('slideshow-directory');
+        const filePath = GLib.build_filenamev([directory, fileName]);
+
+        // Workaround for animation bug when changing wallpaper in overview
+        // https://gitlab.com/AndrewZaech/azwallpaper/-/issues/9#note_2421255117
+        if (Main.overview.visible)
+            Main.layoutManager.screenTransition.run();
+
+        this._backgroundSettings.set_string('picture-uri', `file://${filePath}`);
+        this._backgroundSettings.set_string('picture-uri-dark', `file://${filePath}`);
     }
 
     _changeSlide() {
@@ -639,12 +649,8 @@ export class Slideshow extends GObject.Object {
         this._clearFileMonitor();
         await this._loadSlideshowQueue();
 
-        const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
-        const currentSlidePath = this._settings.get_string('slideshow-current-wallpaper');
-        const filePath = GLib.build_filenamev([slideshowDirectoryPath, currentSlidePath]);
-
-        this._backgroundSettings.set_string('picture-uri', `file://${filePath}`);
-        this._backgroundSettings.set_string('picture-uri-dark', `file://${filePath}`);
+        const fileName = this._settings.get_string('slideshow-current-wallpaper');
+        this._setPictureUriSettings(fileName);
     }
 
     async _reset() {
