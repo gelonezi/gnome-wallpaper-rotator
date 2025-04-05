@@ -1,4 +1,4 @@
-# Portuguese translation for azwallpaper.
+# Portuguese translation for Wallpaper Slideshow..
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the Wallpaper Slideshow package.
 # freaK <EMAIL@ADDRESS>, 2025.
@@ -95,7 +95,7 @@ msgstr "Opções da Apresentação de Fundos de Ecrã"
 
 #: prefs.js:134
 msgid "Slideshow Directory"
-msgstr "Apresentação de Fundos de Ecrã"
+msgstr "Pasta da Apresentação de Fundos de Ecrã"
 
 #: prefs.js:147
 msgid "Random"
@@ -324,8 +324,8 @@ msgstr "O histórico anterior é limpo quando esta opção é desativada."
 #, javascript-format
 msgid "Keep %s most recent wallpaper"
 msgid_plural "Keep %s most recent wallpapers"
-msgstr[0] "Manter %s fundo de ecrã mais recente"
-msgstr[1] "Mantenha %s papéis de parede mais recentes"
+msgstr[0] "Manter o %s fundo de ecrã mais recente"
+msgstr[1] "Mantenha os %s fundos de ecrã mais recentes"
 
 #: prefs.js:549
 msgid "Apply"
