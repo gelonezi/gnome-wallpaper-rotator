@@ -13,6 +13,27 @@ const PROJECT_NAME = _('Wallpaper Slideshow');
 
 /**
  *
+ * @param {string} filename
+ */
+export function getPrettyFileName(filename) {
+    if (!filename)
+        return null;
+
+    const isBingWallpaper = /-(\d{3,4}x\d{3,4}|UHD)(?=\.[^/.]+$)/.test(filename);
+    if (isBingWallpaper) {
+        let cleanName = filename.replace(/-\d{3,4}x\d{3,4}|-UHD(?=\.[^/.]+$)/, '').replace(/\.[^/.]+$/, '');
+        cleanName = cleanName.replace(/([a-z])([A-Z])/g, '$1 $2');
+        cleanName = cleanName.replace(/([a-z])(\d)/g, '$1 $2');
+        cleanName = cleanName.replace(/(\d)([a-zA-Z])/g, '$1 $2');
+
+        return cleanName;
+    }
+
+    return filename.replace(/\.[^/.]+$/, '');
+}
+
+/**
+ *
  * @param {string} title notification title
  * @param {string} body notification body
  * @param {string} actionLabel the label for the action

@@ -13,6 +13,7 @@ import {Extension, gettext as _, InjectionManager} from 'resource:///org/gnome/s
 import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
 
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
+import {getPrettyFileName} from './utils.js';
 import {Slideshow} from './slideshow.js';
 import {UpdateNotification} from './updateNotifier.js';
 
@@ -228,10 +229,12 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
             title: _('Slideshow'),
             checked: true,
         });
+
         const {slideshow} = extension;
 
         this.connect('clicked', () => {
             this.checked = !this.checked;
+
             if (this.checked)
                 slideshow.resume();
             else
@@ -294,7 +297,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
 
         const {name} = slideshow.getCurrentSlide();
         const slideNameLabel = new St.Label({
-            text: this._getPrettyName(name) ?? _('None'),
+            text: getPrettyFileName(name) ?? _('None'),
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
             style_class: 'device-subtitle',
@@ -303,7 +306,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
 
         slideshow.connectObject('notify::slide-index', () => {
             const {name: newSlideName} = slideshow.getCurrentSlide();
-            slideNameLabel.text = this._getPrettyName(newSlideName) ?? _('None');
+            slideNameLabel.text = getPrettyFileName(newSlideName) ?? _('None');
             currentSlideLabel.text = this._getSlideIndexString(slideshow);
         }, this);
 
@@ -332,22 +335,6 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
         if (!slideshowLength)
             return '0/0';
         return `${slideshow.slideIndex + 1}/${slideshow.getSlideshowLength()}`;
-    }
-
-    _getPrettyName(filename) {
-        if (!filename)
-            return null;
-
-        const isBingWallpaper = /-(\d{3,4}x\d{3,4}|UHD)(?=\.[^/.]+$)/.test(filename);
-        if (isBingWallpaper) {
-            let cleanName = filename.replace(/-\d{3,4}x\d{3,4}|-UHD(?=\.[^/.]+$)/, '').replace(/\.[^/.]+$/, '');
-            cleanName = cleanName.replace(/([a-z])([A-Z])/g, '$1 $2');
-            cleanName = cleanName.replace(/([a-z])(\d)/g, '$1 $2');
-            cleanName = cleanName.replace(/(\d)([a-zA-Z])/g, '$1 $2');
-            return cleanName;
-        }
-
-        return filename.replace(/\.[^/.]+$/, '');
     }
 });
 

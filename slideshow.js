@@ -6,7 +6,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {Logger} from './extension.js';
 import {SlideshowSortType} from './constants.js';
-import {notify} from './utils.js';
+import {getPrettyFileName, notify} from './utils.js';
 
 Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
 Gio._promisify(Gio.File.prototype, 'enumerate_children_async', 'enumerate_children_finish');
@@ -681,7 +681,8 @@ export class Slideshow extends GObject.Object {
         this._endSlideshowTimer();
 
         const currentSlidePath = this._settings.get_string('slideshow-current-wallpaper');
-        const bodyText = _('Slideshow paused on slide %s').format(currentSlidePath);
+        const prettyFileName = getPrettyFileName(currentSlidePath);
+        const bodyText = _('Slideshow paused on slide %s').format(prettyFileName);
         notify(_('Slideshow Paused'), bodyText);
     }
 
