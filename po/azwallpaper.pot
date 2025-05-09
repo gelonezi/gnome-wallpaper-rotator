@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-01 08:43-0500\n"
+"POT-Creation-Date: 2025-05-09 07:20-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,35 +44,31 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#: extension.js:153 prefs.js:250
+#: extension.js:154 prefs.js:250
 msgid "Previous Wallpaper"
 msgstr ""
 
-#: extension.js:160 prefs.js:259
+#: extension.js:161 prefs.js:259
 msgid "Next Wallpaper"
 msgstr ""
 
-#: extension.js:167 extension.js:250
+#: extension.js:168 extension.js:258
 msgid "Slideshow Settings"
 msgstr ""
 
-#: extension.js:228 prefs.js:120
+#: extension.js:229 prefs.js:120
 msgid "Slideshow"
 msgstr ""
 
-#: extension.js:240 prefs.js:570 prefs.js:930 utils.js:12
+#: extension.js:248 prefs.js:570 prefs.js:930 utils.js:12
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: extension.js:262
+#: extension.js:281
 msgid "Current Slide"
 msgstr ""
 
-#: extension.js:270 extension.js:278 prefs.js:285
-msgid "None"
-msgstr ""
-
-#: extension.js:300
+#: extension.js:344
 msgid "Change Current Slide"
 msgstr ""
 
@@ -165,6 +161,10 @@ msgstr ""
 
 #: prefs.js:280
 msgid "Wallpaper Options"
+msgstr ""
+
+#: prefs.js:285 utils.js:20
+msgid "None"
 msgstr ""
 
 #: prefs.js:286
@@ -418,7 +418,7 @@ msgstr ""
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: prefs.js:925 updateNotifier.js:66
+#: prefs.js:925 updateNotifier.js:64
 msgid "Donate"
 msgstr ""
 
@@ -427,7 +427,7 @@ msgstr ""
 msgid "Help Support %s"
 msgstr ""
 
-#: prefs.js:936 updateNotifier.js:57
+#: prefs.js:936 updateNotifier.js:55
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
@@ -449,32 +449,65 @@ msgid ""
 "%s going. It is truly appreciated!"
 msgstr ""
 
-#: slideshow.js:139 slideshow.js:168
+#: slideshow.js:142 slideshow.js:170
 msgid "Change directory in settings to begin slideshow."
 msgstr ""
 
-#: slideshow.js:139
+#: slideshow.js:142
 msgid "Slideshow directory does not exist!"
 msgstr ""
 
-#: slideshow.js:140 slideshow.js:169
+#: slideshow.js:143 slideshow.js:171
 msgid "Open Settings"
 msgstr ""
 
-#: slideshow.js:168
+#: slideshow.js:170
 msgid "Slideshow directory contains no images!"
 msgstr ""
 
+#: slideshow.js:669
+#, javascript-format
+msgid "%s hours"
+msgstr ""
+
+#: slideshow.js:671
+#, javascript-format
+msgid "%s minutes"
+msgstr ""
+
+#: slideshow.js:672
+#, javascript-format
+msgid "%s seconds"
+msgstr ""
+
+#: slideshow.js:685
+#, javascript-format
+msgid "Slideshow paused on slide %s"
+msgstr ""
+
+#: slideshow.js:686
+msgid "Slideshow Paused"
+msgstr ""
+
+#: slideshow.js:700
+#, javascript-format
+msgid "Next slide in %s"
+msgstr ""
+
+#: slideshow.js:701
+msgid "Slideshow Resumed"
+msgstr ""
+
 #. TRANSLATORS: This will display as "ProjectName v21 Released!" as an example.
-#: updateNotifier.js:56
+#: updateNotifier.js:54
 #, javascript-format
 msgid "%s v%s Released!"
 msgstr ""
 
-#: updateNotifier.js:67
+#: updateNotifier.js:65
 msgid "What's new?"
 msgstr ""
 
-#: updateNotifier.js:68
+#: updateNotifier.js:66
 msgid "Dismiss"
 msgstr ""

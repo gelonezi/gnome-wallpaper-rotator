@@ -1,4 +1,8 @@
-*.mo
-*.po~
+.~
+*~
 *.zip
-schemas/gschemas.compiled
+gschemas.compiled
+*.mo
+node_modules/
+lint/
+.eslintrc.yml

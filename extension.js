@@ -297,7 +297,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
 
         const {name} = slideshow.getCurrentSlide();
         const slideNameLabel = new St.Label({
-            text: getPrettyFileName(name) ?? _('None'),
+            text: getPrettyFileName(name),
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER,
             style_class: 'device-subtitle',
@@ -306,7 +306,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
 
         slideshow.connectObject('notify::slide-index', () => {
             const {name: newSlideName} = slideshow.getCurrentSlide();
-            slideNameLabel.text = getPrettyFileName(newSlideName) ?? _('None');
+            slideNameLabel.text = getPrettyFileName(newSlideName);
             currentSlideLabel.text = this._getSlideIndexString(slideshow);
         }, this);
 

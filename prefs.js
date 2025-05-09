@@ -371,7 +371,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
             wrap: true,
             value,
             orientation: Gtk.Orientation.VERTICAL,
-            width_request: 40,
+            width_chars: 2,
         });
         return spinButton;
     }

@@ -12,12 +12,12 @@ const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
 const PROJECT_NAME = _('Wallpaper Slideshow');
 
 /**
- *
  * @param {string} filename
+ * @description Clean up the filename by removing resolution tags and file extensions, and adding spaces for readability.
  */
 export function getPrettyFileName(filename) {
     if (!filename)
-        return null;
+        return _('None');
 
     const isBingWallpaper = /-(\d{3,4}x\d{3,4}|UHD)(?=\.[^/.]+$)/.test(filename);
     if (isBingWallpaper) {
