@@ -124,12 +124,19 @@ export class Slideshow extends GObject.Object {
         Logger.log('Initiate slideshow.');
         this._createFileMonitor();
 
+        this._setWallpaper();
+
+        const isPaused = this._settings.get_boolean('slideshow-pause');
+        if (isPaused) {
+            Logger.log('Slideshow is paused. Not initiating slideshow.');
+            return;
+        }
+
         const timer = this._getTimerDelay();
         this._slideshowStartTime = Date.now();
         this._settings.set_uint64('slideshow-time-of-slide-start', this._slideshowStartTime);
 
         Logger.log('Starting slideshow...');
-        this._setWallpaper();
         Logger.log(`Next slide in ${timer} seconds.`);
         this._startSlideshowTimer(timer, true);
     }
@@ -677,7 +684,7 @@ export class Slideshow extends GObject.Object {
     pause() {
         Logger.log('Pause slideshow.');
 
-        this.saveTimer();
+        this.saveTimer(true);
         this._endSlideshowTimer();
 
         const currentSlidePath = this._settings.get_string('slideshow-current-wallpaper');
@@ -725,7 +732,10 @@ export class Slideshow extends GObject.Object {
         await this._loadSlideshowQueue();
     }
 
-    saveTimer() {
+    saveTimer(forceSave = false) {
+        if (this._settings.get_boolean('slideshow-pause') && !forceSave)
+            return; // Don't save the timer if the slideshow is paused, unless forced
+
         const slideShowEndTime = Date.now();
         const elapsedTime = Math.floor((slideShowEndTime - this._slideshowStartTime) / 1000);
 

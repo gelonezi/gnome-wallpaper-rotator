@@ -115,9 +115,6 @@ export default class AzWallpaper extends Extension {
         global.disconnectObject(this);
         this._settings.disconnectObject(this);
 
-        this._logger.destroy();
-        this._logger = null;
-
         if (this._quickMenuItem) {
             this._quickMenuItem.destroy();
             this._quickMenuItem = null;
@@ -129,6 +126,8 @@ export default class AzWallpaper extends Extension {
         this._bingWallpaperDownloader = null;
         this._slideshow.destroy();
         this._slideshow = null;
+        this._logger.destroy();
+        this._logger = null;
         this._settings = null;
     }
 
@@ -224,22 +223,17 @@ export class Logger {
 const SlideshowQuickMenu = GObject.registerClass(
 class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
     _init(extension) {
+        const {settings} = extension;
         super._init({
             icon_name: 'image-x-generic-symbolic',
             title: _('Slideshow'),
-            checked: true,
+            checked: !settings.get_boolean('slideshow-pause'),
         });
 
-        const {slideshow} = extension;
+        this._slideshow = extension.slideshow;
+        this._settings = settings;
 
-        this.connect('clicked', () => {
-            this.checked = !this.checked;
-
-            if (this.checked)
-                slideshow.resume();
-            else
-                slideshow.pause();
-        });
+        this._settings.connectObject('changed::slideshow-pause', () => this._updatePauseState(), this);
 
         const quickSettings = Main.panel.statusArea.quickSettings;
         const backgroundApps = quickSettings._backgroundApps?.quickSettingsItems?.at(-1) ?? null;
@@ -247,11 +241,13 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
 
         this.menu.setHeader('image-x-generic-symbolic', _('Wallpaper Slideshow'));
 
-        const currentSlideInfo = new SlideInfoMenuItem(slideshow);
+        const currentSlideInfo = new SlideInfoMenuItem(this._slideshow);
         this.menu.addMenuItem(currentSlideInfo);
 
-        const slideControlsMenuItem = new SlideControlsMenuItem(extension);
-        this.menu.addMenuItem(slideControlsMenuItem);
+        this._slideControlsMenuItem = new SlideControlsMenuItem(this, extension);
+        this.menu.addMenuItem(this._slideControlsMenuItem);
+
+        this.connect('clicked', () => this.togglePause());
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -261,6 +257,24 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
             extension.openPreferences();
         });
         this.menu.addMenuItem(settingsMenuItem);
+    }
+
+    togglePause() {
+        const isPaused = this._settings.get_boolean('slideshow-pause');
+        const newPaused = !isPaused;
+
+        this._settings.set_boolean('slideshow-pause', newPaused);
+    }
+
+    _updatePauseState() {
+        const isPaused = this._settings.get_boolean('slideshow-pause');
+        this._slideControlsMenuItem.setPaused(isPaused);
+        this.checked = !isPaused;
+
+        if (isPaused)
+            this._slideshow.pause();
+        else
+            this._slideshow.resume();
     }
 });
 
@@ -340,14 +354,14 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
 
 const SlideControlsMenuItem = GObject.registerClass(
 class SlideControlsMenuItem extends PopupMenu.PopupMenuItem {
-    _init(extension) {
-        super._init(_('Change Current Slide'), {
+    _init(quickMenuToggle, extension) {
+        super._init(_('Slide Controls'), {
             activate: false,
             hover: false,
         });
         this.track_hover = false;
-
-        const {slideshow} = extension;
+        this._settings = extension.settings;
+        this._slideshow = extension.slideshow;
 
         const goNextButton = new St.Button({
             icon_name: 'media-seek-forward-symbolic',
@@ -355,8 +369,18 @@ class SlideControlsMenuItem extends PopupMenu.PopupMenuItem {
             x_align: Clutter.ActorAlign.END,
         });
         goNextButton.connect('clicked', () => {
-            slideshow.goToNextSlide();
+            this._slideshow.goToNextSlide();
         });
+
+        this._playPauseButton = new St.Button({
+            style_class: 'icon-button',
+            x_align: Clutter.ActorAlign.END,
+        });
+        this._playPauseButton.connect('clicked', () => {
+            quickMenuToggle.togglePause();
+        });
+
+        this.setPaused(this._settings.get_boolean('slideshow-pause'));
 
         const goPrevButton = new St.Button({
             icon_name: 'media-seek-backward-symbolic',
@@ -365,10 +389,16 @@ class SlideControlsMenuItem extends PopupMenu.PopupMenuItem {
             x_align: Clutter.ActorAlign.END,
         });
         goPrevButton.connect('clicked', () => {
-            slideshow.goToPreviousSlide();
+            this._slideshow.goToPreviousSlide();
         });
 
         this.add_child(goPrevButton);
+        this.add_child(this._playPauseButton);
         this.add_child(goNextButton);
+    }
+
+    setPaused(paused) {
+        const iconName = paused ? 'start' : 'pause';
+        this._playPauseButton.icon_name = `media-playback-${iconName}-symbolic`;
     }
 });

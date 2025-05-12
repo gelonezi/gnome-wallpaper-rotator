@@ -253,6 +253,23 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
             this._settings.set_int('slideshow-change-slide-event', 0);
             this._settings.set_int('slideshow-change-slide-event', 1);
         });
+
+        const iconName = this._settings.get_boolean('slideshow-pause') ? 'start' : 'pause';
+        const playPauseSlideButton = new Gtk.Button({
+            icon_name: `media-playback-${iconName}-symbolic`,
+            valign: Gtk.Align.CENTER,
+            tooltip_text: _('Play/Pause'),
+        });
+        this._settings.connect('changed::slideshow-pause', () => {
+            const isPaused = this._settings.get_boolean('slideshow-pause');
+            const icon = isPaused ? 'start' : 'pause';
+            playPauseSlideButton.icon_name = `media-playback-${icon}-symbolic`;
+        });
+        playPauseSlideButton.connect('clicked', () => {
+            const isPaused = this._settings.get_boolean('slideshow-pause');
+            const newPaused = !isPaused;
+            this._settings.set_boolean('slideshow-pause', newPaused);
+        });
         const nextSlideButton = new Gtk.Button({
             icon_name: 'media-seek-forward-symbolic',
             valign: Gtk.Align.CENTER,
@@ -264,6 +281,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
 
         slideControlsRow.add_suffix(prevSlideButton);
+        slideControlsRow.add_suffix(playPauseSlideButton);
         slideControlsRow.add_suffix(nextSlideButton);
         slideShowGroup.add(slideControlsRow);
 
