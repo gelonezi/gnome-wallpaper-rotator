@@ -663,6 +663,7 @@ class AboutPage extends Adw.PreferencesPage {
             use_markup: true,
             xalign: Gtk.Align.START,
             justify: Gtk.Justification.LEFT,
+            wrap: true,
             margin_top: 14,
             margin_bottom: 14,
             margin_start: 14,

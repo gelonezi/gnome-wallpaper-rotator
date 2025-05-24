@@ -734,7 +734,7 @@ export class Slideshow extends GObject.Object {
 
     saveTimer(forceSave = false) {
         if (this._settings.get_boolean('slideshow-pause') && !forceSave)
-            return; // Don't save the timer if the slideshow is paused, unless forced
+            return; // Don't update the timer if the slideshow is paused, unless forced
 
         const slideShowEndTime = Date.now();
         const elapsedTime = Math.floor((slideShowEndTime - this._slideshowStartTime) / 1000);
