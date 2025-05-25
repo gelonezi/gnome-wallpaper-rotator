@@ -143,8 +143,8 @@ export class Slideshow extends GObject.Object {
 
     _isValidDirectory() {
         const slideshowDirectory = this._settings.get_string('slideshow-directory');
-
         const directory = Gio.file_new_for_path(slideshowDirectory);
+
         if (!slideshowDirectory || !directory.query_exists(null)) {
             notify(_('Slideshow directory does not exist!'), _('Change directory in settings to begin slideshow.'),
                 _('Open Settings'), () => this._extension.openPreferences());
@@ -212,7 +212,7 @@ export class Slideshow extends GObject.Object {
     _updateQueue(directoryImages) {
         Logger.log('Checking slideshow queue validity...');
 
-        if (this._wallpaperQueue.length === 0 || directoryImages === 0) {
+        if (directoryImages.length === 0) {
             Logger.log('Slideshow queue empty! Attempting to create new slideshow queue...');
             return;
         }
