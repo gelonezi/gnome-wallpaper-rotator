@@ -577,7 +577,7 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
 });
 
 var AboutPage = GObject.registerClass(
-class AboutPage extends Adw.PreferencesPage {
+class AzWallpaperAboutPage extends Adw.PreferencesPage {
     _init(settings, metadata, path) {
         super._init({
             title: _('About'),

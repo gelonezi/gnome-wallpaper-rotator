@@ -311,7 +311,7 @@ export class Slideshow extends GObject.Object {
             this._saveWallpaperQueue(this._wallpaperQueue);
         }
         this._changeSlide();
-        this._startSlideshowTimer();
+        this._maybeStartSlideshow();
     }
 
     /**
@@ -339,7 +339,7 @@ export class Slideshow extends GObject.Object {
         this._endSlideshowTimer();
         this.slideIndex = (this.slideIndex - 1 + this._wallpaperQueue.length) % this._wallpaperQueue.length;
         this._changeSlide();
-        this._startSlideshowTimer();
+        this._maybeStartSlideshow();
     }
 
     /**
@@ -352,7 +352,7 @@ export class Slideshow extends GObject.Object {
         this._endSlideshowTimer();
         this.slideIndex = (this.slideIndex + 1) % this._wallpaperQueue.length;
         this._changeSlide();
-        this._startSlideshowTimer();
+        this._maybeStartSlideshow();
     }
 
     getCurrentSlide() {
@@ -418,6 +418,12 @@ export class Slideshow extends GObject.Object {
         const slideDuration = this._getSlideDuration();
         this._settings.set_int('slideshow-timer-remaining', slideDuration);
         return true;
+    }
+
+    _maybeStartSlideshow(delay, runOnce) {
+        const isPaused = this._settings.get_boolean('slideshow-pause');
+        if (!isPaused)
+            this._startSlideshowTimer(delay, runOnce);
     }
 
     _startSlideshowTimer(delay = this._getSlideDuration(), runOnce = false) {
@@ -606,7 +612,7 @@ export class Slideshow extends GObject.Object {
         this._settings.set_int('slideshow-timer-remaining', this._getSlideDuration());
         this._settings.set_uint64('slideshow-time-of-slide-start', Date.now());
         const timer = this._getTimerDelay();
-        this._startSlideshowTimer(timer, true);
+        this._maybeStartSlideshow(timer, true);
         this._slideshowStartTime = Date.now();
     }
 
