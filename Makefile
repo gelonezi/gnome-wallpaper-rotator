@@ -15,18 +15,14 @@ else
 	INSTALLBASE = $(DESTDIR)/usr/share/gnome-shell/extensions
 endif
 
-INSTALLNAME = azwallpaper@azwallpaper.gitlab.com
-
 # The command line passed variable VERSION is used to set the version string
-# in the metadata and in the generated zip-file. If no VERSION is passed, the
-# version is pulled from the latest git tag and the current commit SHA1 is 
-# added to the metadata
+# in the generated zip-file. If no VERSION is passed,
+# the current commit SHA1 is added to the metadata
 ifdef VERSION
-	FILESUFFIX = _v$(VERSION)
+	VSTRING = _$(VERSION)
 else
 	COMMIT = $(shell git rev-parse HEAD)
-	VERSION = 
-	FILESUFFIX =
+	VSTRING =
 endif
 
 all: extension
@@ -56,19 +52,19 @@ mergepo: potfile
 install: install-local
 
 install-local: _build
-	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
-	mkdir -p $(INSTALLBASE)/$(INSTALLNAME)
-	cp -r ./_build/* $(INSTALLBASE)/$(INSTALLNAME)/
+	rm -rf $(INSTALLBASE)/$(UUID)
+	mkdir -p $(INSTALLBASE)/$(UUID)
+	cp -r ./_build/* $(INSTALLBASE)/$(UUID)/
 	-rm -fR _build
 	echo done
 
 prefs enable disable reset info show:
-	gnome-extensions $@ $(INSTALLNAME)
+	gnome-extensions $@ $(UUID)
 
 zip-file: _build
 	cd _build ; \
-	zip -qr "$(UUID)$(FILESUFFIX).zip" .
-	mv _build/$(UUID)$(FILESUFFIX).zip ./
+	zip -qr "$(UUID)$(VSTRING).zip" .
+	mv _build/$(UUID)$(VSTRING).zip ./
 	-rm -fR _build
 
 _build: all
@@ -88,6 +84,4 @@ _build: all
 	done;
 ifneq ($(COMMIT),)
 	sed -i '/"version": .*,/a "commit": "$(COMMIT)",'  _build/metadata.json;
-else ifneq ($(VERSION),)
-	sed -i 's/"version": .*,/"version": $(VERSION),/'  _build/metadata.json;
 endif
