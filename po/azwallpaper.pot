@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-12 07:23-0400\n"
+"POT-Creation-Date: 2025-07-14 08:35-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -60,7 +60,7 @@ msgstr ""
 msgid "Slideshow"
 msgstr ""
 
-#: extension.js:242 prefs.js:588 prefs.js:948 utils.js:12
+#: extension.js:242 prefs.js:588 prefs.js:949
 msgid "Wallpaper Slideshow"
 msgstr ""
 
@@ -163,7 +163,7 @@ msgstr ""
 msgid "Wallpaper Options"
 msgstr ""
 
-#: prefs.js:303 utils.js:20
+#: prefs.js:303
 msgid "None"
 msgstr ""
 
@@ -335,114 +335,114 @@ msgstr ""
 msgid "What's New"
 msgstr ""
 
-#: prefs.js:691
+#: prefs.js:692
 msgid "Message Tray Update Notification"
 msgstr ""
 
-#: prefs.js:692
+#: prefs.js:693
 #, javascript-format
 msgid "Show a notification when %s receives an update."
 msgstr ""
 
-#: prefs.js:700
+#: prefs.js:701
 msgid "Git Commit"
 msgstr ""
 
-#: prefs.js:710
+#: prefs.js:711
 msgid "GNOME Version"
 msgstr ""
 
-#: prefs.js:719
+#: prefs.js:720
 msgid "OS Name"
 msgstr ""
 
-#: prefs.js:732
+#: prefs.js:733
 msgid "Windowing System"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' on GitLab
-#: prefs.js:743
+#: prefs.js:744
 #, javascript-format
 msgid "%s on GitLab"
 msgstr ""
 
-#: prefs.js:746
+#: prefs.js:747
 msgid "Report an Issue"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' Settings
-#: prefs.js:756
+#: prefs.js:757
 #, javascript-format
 msgid "%s Settings"
 msgstr ""
 
-#: prefs.js:759
+#: prefs.js:760
 msgid "Load"
 msgstr ""
 
-#: prefs.js:764
+#: prefs.js:765
 msgid "Load Settings"
 msgstr ""
 
-#: prefs.js:790
+#: prefs.js:791
 msgid "Save"
 msgstr ""
 
-#: prefs.js:795
+#: prefs.js:796
 msgid "Save Settings"
 msgstr ""
 
-#: prefs.js:825
+#: prefs.js:826
 msgid "Enable Debug Mode"
 msgstr ""
 
-#: prefs.js:826
+#: prefs.js:827
 msgid "Show extensive messages in logs for debugging."
 msgstr ""
 
-#: prefs.js:832 prefs.js:833
+#: prefs.js:833 prefs.js:834
 msgid "Legal"
 msgstr ""
 
-#: prefs.js:839
+#: prefs.js:840
 msgid "This program comes with absolutely no warranty."
 msgstr ""
 
-#: prefs.js:841
+#: prefs.js:842
 msgid "GNU General Public License, version 2 or later"
 msgstr ""
 
 #. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
-#: prefs.js:841
+#: prefs.js:842
 #, javascript-format
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: prefs.js:943 updateNotifier.js:64
+#: prefs.js:944 updateNotifier.js:85
 msgid "Donate"
 msgstr ""
 
-#: prefs.js:953
+#: prefs.js:954
 #, javascript-format
 msgid "Help Support %s"
 msgstr ""
 
-#: prefs.js:954 updateNotifier.js:55
+#: prefs.js:955 updateNotifier.js:73
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
 "continued development, please consider making a donation."
 msgstr ""
 
-#: prefs.js:958
+#: prefs.js:959
 msgid "Donate via PayPal"
 msgstr ""
 
-#: prefs.js:961
+#: prefs.js:962
 msgid "Donate via Buy Me a Coffee"
 msgstr ""
 
-#: prefs.js:973
+#: prefs.js:974
 #, javascript-format
 msgid ""
 "A huge thank you to everyone who has supported %s! Your support helps keep "
@@ -465,49 +465,53 @@ msgstr ""
 msgid "Slideshow directory contains no images!"
 msgstr ""
 
-#: slideshow.js:676
+#: slideshow.js:682
 #, javascript-format
 msgid "%s hours"
 msgstr ""
 
-#: slideshow.js:678
+#: slideshow.js:684
 #, javascript-format
 msgid "%s minutes"
 msgstr ""
 
-#: slideshow.js:679
+#: slideshow.js:685
 #, javascript-format
 msgid "%s seconds"
 msgstr ""
 
-#: slideshow.js:692
+#: slideshow.js:698
 #, javascript-format
 msgid "Slideshow paused on slide %s"
 msgstr ""
 
-#: slideshow.js:693
+#: slideshow.js:699
 msgid "Slideshow Paused"
 msgstr ""
 
-#: slideshow.js:707
+#: slideshow.js:713
 #, javascript-format
 msgid "Next slide in %s"
 msgstr ""
 
-#: slideshow.js:708
+#: slideshow.js:714
 msgid "Slideshow Resumed"
 msgstr ""
 
 #. TRANSLATORS: This will display as "ProjectName v21 Released!" as an example.
-#: updateNotifier.js:54
+#: updateNotifier.js:68
 #, javascript-format
 msgid "%s v%s Released!"
 msgstr ""
 
-#: updateNotifier.js:65
+#: updateNotifier.js:71
+msgid "Check out what's new."
+msgstr ""
+
+#: updateNotifier.js:88
 msgid "What's new?"
 msgstr ""
 
-#: updateNotifier.js:66
+#: updateNotifier.js:89
 msgid "Dismiss"
 msgstr ""
