@@ -1,18 +1,37 @@
-# Basic Makefile
-
 UUID = azwallpaper@azwallpaper.gitlab.com
-BASE_MODULES = LICENSE metadata.json README.md RELEASENOTES utils.js
-TRANSLATABLE_MODULES = bingWallpaperDownloader.js constants.js extension.js prefs.js slideshow.js updateNotifier.js
+
+BASE_MODULES = \
+	LICENSE \
+	README.md \
+	src/metadata.json \
+	src/RELEASENOTES \
+	src/utils.js \
+	$(NULL)
+
+TRANSLATABLE_MODULES = \
+	src/bingWallpaperDownloader.js \
+	src/constants.js \
+	src/extension.js \
+	src/prefs.js \
+	src/slideshow.js \
+	src/updateNotifier.js \
+	$(NULL)
+
+MODULES = $(BASE_MODULES) $(TRANSLATABLE_MODULES)
 
 TOLOCALIZE = $(TRANSLATABLE_MODULES)
+
 EXTRA_DIRECTORIES = media
 
 MSGSRC = $(wildcard po/*.po)
 
 ifeq ($(strip $(DESTDIR)),)
+	INSTALLTYPE = local
 	INSTALLBASE = $(HOME)/.local/share/gnome-shell/extensions
 else
-	INSTALLBASE = $(DESTDIR)/usr/share/gnome-shell/extensions
+	INSTALLTYPE = system
+	SHARE_PREFIX = $(DESTDIR)/usr/share
+	INSTALLBASE = $(SHARE_PREFIX)/gnome-shell/extensions
 endif
 
 # The command line passed variable VERSION is used to set the version string
@@ -44,7 +63,7 @@ mergepo: potfile
 
 ./po/azwallpaper.pot: $(TOLOCALIZE)
 	mkdir -p po
-	xgettext -k_ -kN_ --from-code utf-8 --add-comments=TRANSLATORS -o po/azwallpaper.pot --sort-by-file --package-name "Wallpaper Slideshow" $(TOLOCALIZE)
+	xgettext -k_ -kN_ --from-code utf-8 -o po/azwallpaper.pot --sort-by-file --add-comments=TRANSLATORS --package-name "Wallpaper Slideshow" $(TOLOCALIZE)
 
 ./po/%.mo: ./po/%.po
 	msgfmt -c $< -o $@
@@ -55,6 +74,13 @@ install-local: _build
 	rm -rf $(INSTALLBASE)/$(UUID)
 	mkdir -p $(INSTALLBASE)/$(UUID)
 	cp -r ./_build/* $(INSTALLBASE)/$(UUID)/
+ifeq ($(INSTALLTYPE),system)
+	# system-wide settings and locale files
+	rm -r $(INSTALLBASE)/$(UUID)/schemas $(INSTALLBASE)/$(UUID)/locale
+	mkdir -p $(SHARE_PREFIX)/glib-2.0/schemas $(SHARE_PREFIX)/locale
+	cp -r ./schemas/*gschema.* $(SHARE_PREFIX)/glib-2.0/schemas
+	cp -r ./_build/locale/* $(SHARE_PREFIX)/locale
+endif
 	-rm -fR _build
 	echo done
 
@@ -70,7 +96,7 @@ zip-file: _build
 _build: all
 	-rm -fR ./_build
 	mkdir -p _build
-	cp $(BASE_MODULES) $(TRANSLATABLE_MODULES) _build
+	cp $(MODULES) _build
 	cp -r $(EXTRA_DIRECTORIES) _build
 	mkdir -p _build/schemas
 	cp schemas/*.xml _build/schemas/
@@ -83,5 +109,5 @@ _build: all
 		cp $$l $$lf/LC_MESSAGES/azwallpaper.mo; \
 	done;
 ifneq ($(COMMIT),)
-	sed -i '/"version": .*,/a "commit": "$(COMMIT)",'  _build/metadata.json;
+	sed -i '/"version": .*,/a \  "commit": "$(COMMIT)",'  _build/metadata.json;
 endif

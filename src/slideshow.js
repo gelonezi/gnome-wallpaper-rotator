@@ -28,7 +28,7 @@ async function getFileInfo(file) {
     let info;
     try {
         info = await file.query_info_async('standard::content-type,time::created', Gio.FileQueryInfoFlags.NONE, 0, null);
-    } catch (e) {
+    } catch {
         return false;
     }
 
@@ -268,6 +268,7 @@ export class Slideshow extends GObject.Object {
 
         let infos;
         do {
+            // eslint-disable-next-line no-await-in-loop
             infos = await fileEnum.next_files_async(100, GLib.PRIORITY_DEFAULT, null);
             fileInfos.push(...infos);
         } while (infos.length > 0);

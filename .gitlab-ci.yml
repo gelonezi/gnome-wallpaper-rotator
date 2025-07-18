@@ -1,9 +1,11 @@
-# Triggered when a new tag (e.g., v1.0) is created in the repository.
+# Triggered when a new tag (e.g., v1.0) is created in the repository or a merge request is initiated.
 # Stages:
+# - Review: Runs ESLint and make install for code quality checks on merge requests.
 # - Build: Uses the Makefile to compile the extension and create a zip file for upload to extensions.gnome.org.
 # - Release: Creates a GitLab release for the tag, using release notes from the RELEASENOTES file.
 
 stages:
+  - review
   - build
   - release
 
@@ -16,18 +18,37 @@ variables:
   rules:
     - if: $CI_COMMIT_TAG
 
+review_job:
+  stage: review
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+  image: fedora:latest
+  script:
+    - dnf install -y gettext git glib2 make nodejs
+    - npm ci
+    - touch eslint_output.log make_install.log
+    - echo "Running ESLint..."
+    - npm run lint:ci > eslint_output.log 2>&1 || { echo "ERROR ESLint failed."; cat eslint_output.log; exit 1; }
+    - echo "Running make install..."
+    - make install 2> make_install.log || { echo "ERROR make install failed."; cat make_install.log; exit 1; }
+  artifacts:
+    when: on_failure
+    paths:
+      - eslint_output.log
+      - make_install.log
+
 build_job:
   stage: build
   extends: .run_on_tag
-  image: ubuntu:latest
+  image: fedora:latest
   script:
-    - apt-get update
-    - apt-get install -y gettext git libglib2.0-bin make zip
+    - dnf install -y gettext git glib2 make zip
     - echo "Running make install..."
-    - make install VERSION=${VERSION}
-    - echo "Creating the zip file..."
+    - make install VERSION=${VERSION} || { echo "ERROR make install failed."; exit 1; }
+    - echo "Creating a zip file..."
     - make zip-file
   artifacts:
+    when: on_success
     name: "${NAME} ${VERSION}"
     paths:
       - "${UUID}_${VERSION}.zip"

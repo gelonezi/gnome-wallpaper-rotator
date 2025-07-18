@@ -283,7 +283,7 @@ export const BingWallpaperDownloader = class {
             try {
                 Logger.log(`BING Downloader - Delete ${fileName}`);
                 file.delete(null);
-            } catch (e) {
+            } catch {
                 Logger.log(`BING Downloader - Error gathering ${fileName} info.`);
                 continue;
             }
