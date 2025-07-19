@@ -1,19 +1,13 @@
+.PHONY: all clean extension potfile mergepo install prefs enable disable reset info show zip-file
+
 UUID = azwallpaper@azwallpaper.gitlab.com
 
 PACKAGE_FILES = \
-	media/ \
+	media \
 	LICENSE \
 	README.md \
 	RELEASENOTES.md \
 	src/*
-
-TOLOCALIZE = \
-	src/bingWallpaperDownloader.js \
-	src/constants.js \
-	src/extension.js \
-	src/prefs.js \
-	src/slideshow.js \
-	src/updateNotifier.js
 
 MSGSRC = $(wildcard po/*.po)
 
@@ -46,23 +40,25 @@ extension: ./schemas/gschemas.compiled $(MSGSRC:.po=.mo)
 ./schemas/gschemas.compiled: ./schemas/org.gnome.shell.extensions.azwallpaper.gschema.xml
 	glib-compile-schemas ./schemas/
 
-potfile: ./po/azwallpaper.pot
+potfile:
+	mkdir -p po
+	find src/ -name '*.js' | xargs \
+	xgettext -k_ -kN_ \
+		--from-code=UTF-8 \
+		--output=po/azwallpaper.pot \
+		--sort-by-file \
+		--add-comments=TRANSLATORS \
+		--package-name "Wallpaper Slideshow"
 
 mergepo: potfile
 	for l in $(MSGSRC); do \
-		msgmerge -U $$l ./po/azwallpaper.pot; \
+		msgmerge -NU $$l ./po/azwallpaper.pot; \
 	done;
-
-./po/azwallpaper.pot: $(TOLOCALIZE)
-	mkdir -p po
-	xgettext -k_ -kN_ --from-code utf-8 -o po/azwallpaper.pot --sort-by-file --add-comments=TRANSLATORS --package-name "Wallpaper Slideshow" $(TOLOCALIZE)
 
 ./po/%.mo: ./po/%.po
 	msgfmt -c $< -o $@
 
-install: install-local
-
-install-local: _build
+install: _build
 	rm -rf $(INSTALLBASE)/$(UUID)
 	mkdir -p $(INSTALLBASE)/$(UUID)
 	cp -r ./_build/* $(INSTALLBASE)/$(UUID)/
