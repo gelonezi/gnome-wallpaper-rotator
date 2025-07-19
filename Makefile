@@ -1,27 +1,19 @@
 UUID = azwallpaper@azwallpaper.gitlab.com
 
-BASE_MODULES = \
+PACKAGE_FILES = \
+	media/ \
 	LICENSE \
 	README.md \
-	src/metadata.json \
-	src/RELEASENOTES \
-	src/utils.js \
-	$(NULL)
+	RELEASENOTES.md \
+	src/*
 
-TRANSLATABLE_MODULES = \
+TOLOCALIZE = \
 	src/bingWallpaperDownloader.js \
 	src/constants.js \
 	src/extension.js \
 	src/prefs.js \
 	src/slideshow.js \
-	src/updateNotifier.js \
-	$(NULL)
-
-MODULES = $(BASE_MODULES) $(TRANSLATABLE_MODULES)
-
-TOLOCALIZE = $(TRANSLATABLE_MODULES)
-
-EXTRA_DIRECTORIES = media
+	src/updateNotifier.js
 
 MSGSRC = $(wildcard po/*.po)
 
@@ -96,8 +88,7 @@ zip-file: _build
 _build: all
 	-rm -fR ./_build
 	mkdir -p _build
-	cp $(MODULES) _build
-	cp -r $(EXTRA_DIRECTORIES) _build
+	cp -r $(PACKAGE_FILES) _build
 	mkdir -p _build/schemas
 	cp schemas/*.xml _build/schemas/
 	cp schemas/gschemas.compiled _build/schemas/
