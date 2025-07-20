@@ -938,7 +938,7 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
 });
 
 var DonatePage = GObject.registerClass(
-class DonatePage extends Adw.PreferencesPage {
+class AzWallpaperDonatePage extends Adw.PreferencesPage {
     _init(metadata) {
         super._init({
             title: _('Donate'),
