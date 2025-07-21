@@ -3,8 +3,9 @@
 UUID = azwallpaper@azwallpaper.gitlab.com
 
 PACKAGE_FILES = \
-	media \
 	LICENSE \
+	media \
+	metadata.json \
 	README.md \
 	RELEASENOTES.md \
 	src/*
