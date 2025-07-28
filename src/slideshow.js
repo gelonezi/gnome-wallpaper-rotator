@@ -27,14 +27,15 @@ function shuffle(array) {
 async function getFileInfo(file) {
     let info;
     try {
-        info = await file.query_info_async('standard::content-type,time::created', Gio.FileQueryInfoFlags.NONE, 0, null);
+        info = await file.query_info_async('standard::content-type,time::created,standard::is-hidden', Gio.FileQueryInfoFlags.NONE, 0, null);
     } catch {
         return false;
     }
 
     const contentType = info.get_content_type();
     const date = info.get_attribute_uint64('time::created').toString();
-    const isImage = contentType.startsWith('image/');
+    const isHidden = info.get_is_hidden();
+    const isImage = contentType.startsWith('image/') && !isHidden;
     return {isImage, date};
 }
 
@@ -507,6 +508,7 @@ export class Slideshow extends GObject.Object {
             switch (eventType) {
             case Gio.FileMonitorEvent.DELETED:
             case Gio.FileMonitorEvent.MOVED_OUT:
+                Logger.log(`${fileName} - deleted.`);
                 if (fileInQueue) {
                     this._removeFromQueue(fileName, index);
                     this._saveWallpaperQueue(this._wallpaperQueue);
@@ -520,6 +522,7 @@ export class Slideshow extends GObject.Object {
                 break;
             case Gio.FileMonitorEvent.CREATED:
             case Gio.FileMonitorEvent.MOVED_IN: {
+                Logger.log(`${fileName} - created.`);
                 const fileInfo = await getFileInfo(file);
                 const newWallpaperData = {name: fileName, date: fileInfo.date};
                 if (!fileInfo.isImage) {
@@ -533,13 +536,14 @@ export class Slideshow extends GObject.Object {
                 break;
             }
             case Gio.FileMonitorEvent.RENAMED: {
+                Logger.log(`${fileName} - renamed.`);
                 const fileInfo = await getFileInfo(otherFile);
                 const newWallpaperData = {name: newFileName, date: fileInfo.date};
 
                 if (fileInQueue && fileInfo.isImage) {
                     // Replace the old file with the new file
                     if (sortType === SlideshowSortType.RANDOM) {
-                        Logger.log(`Rename "${fileName}" at index:${index} to "${newFileName}"`);
+                        Logger.log(`Renamed "${fileName}" at index:${index} to "${newFileName}"`);
                         this._wallpaperQueue.splice(index, 1, newWallpaperData);
                     } else {
                         Logger.log(`File "${fileName}" has been renamed.`);
@@ -552,6 +556,7 @@ export class Slideshow extends GObject.Object {
                     Logger.log(`"${newFileName}" is not a valid image.`);
                 } else if (fileInfo.isImage) {
                     // The old file wasn't in queue, but the renamed file's type is valid.
+                    Logger.log(`Renamed "${fileName}" to "${newFileName}".`);
                     this._addToQueue(newFileName, newWallpaperData);
                 } else {
                     Logger.log(`"${newFileName}" is not a valid image.`);
@@ -572,6 +577,7 @@ export class Slideshow extends GObject.Object {
                 break;
             }
             default:
+                Logger.log(`${fileName} - changed. Do Nothing.`);
                 break;
             }
         });
@@ -586,8 +592,25 @@ export class Slideshow extends GObject.Object {
     }
 
     _addToQueue(fileName, newWallpaperData) {
-        let index;
         const sortType = this._settings.get_enum('slideshow-queue-sort-type');
+        const existingIndex = this._wallpaperQueue.findIndex(item => item.name === fileName);
+
+        if (existingIndex !== -1) {
+            // If the wallpaper is already in queue, update the wallpaper data.
+            Logger.log(`"${fileName}" already in queue at index ${existingIndex}. Update data.`);
+            if (sortType === SlideshowSortType.RANDOM) {
+                this._wallpaperQueue.splice(existingIndex, 1, newWallpaperData);
+            } else {
+                this._removeFromQueue(fileName, existingIndex);
+                let index = insertWallpaper(this._wallpaperQueue, newWallpaperData, sortType);
+                Logger.log(`Reinserted "${fileName}" at index:${index}`);
+                if (index && index < this.slideIndex)
+                    this.slideIndex++;
+            }
+            return;
+        }
+
+        let index;
 
         if (sortType === SlideshowSortType.RANDOM) {
             index = Math.floor(Math.random() * this._wallpaperQueue.length);
