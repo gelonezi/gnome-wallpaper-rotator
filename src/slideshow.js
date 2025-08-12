@@ -384,8 +384,14 @@ export class Slideshow extends GObject.Object {
         const directory = this._settings.get_string('slideshow-directory');
         const filePath = GLib.build_filenamev([directory, fileName]);
 
-        this._backgroundSettings.set_string('picture-uri', `file://${filePath}`);
-        this._backgroundSettings.set_string('picture-uri-dark', `file://${filePath}`);
+        try {
+            const uri = GLib.filename_to_uri(filePath, null);
+
+            this._backgroundSettings.set_string('picture-uri', uri);
+            this._backgroundSettings.set_string('picture-uri-dark', uri);
+        } catch (e) {
+            console.log(`Wallpaper Slideshow Error: Failed to convert slide path to URI: ${filePath}, error: ${e.message}`);
+        }
     }
 
     _changeSlide() {
