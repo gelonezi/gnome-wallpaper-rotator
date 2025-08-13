@@ -1,4 +1,4 @@
-<b><span size="large">Version 13.1 (2025-07-14)</span></b>
+<b><span size="large">Version 13.2 (2025-08-13)</span></b>
 
-- Fix bug causing slideshow to resume when set to pause.
-- Update Notifcation: only show donate button on major version release.
+- Resolve issue causing duplicate wallpapers in the slideshow queue.
+- Fix extension crash triggered by special characters in image filenames.
