@@ -654,6 +654,9 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
             const fileContent = GLib.file_get_contents(`${path}/RELEASENOTES.md`)[1];
             const decoder = new TextDecoder('utf-8');
             releaseNotes = decoder.decode(fileContent);
+            releaseNotes = releaseNotes.replace(/^(?:(\t| {4}))?- /gm,
+                (_match, indent) => indent ? `${indent}◦ ` : '• '
+            );
         } catch {
             releaseNotes = "Failed to load 'What's New' content.";
         }
