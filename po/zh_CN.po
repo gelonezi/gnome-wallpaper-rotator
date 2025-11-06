@@ -1,0 +1,524 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Wallpaper Slideshow package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 浅夏随风 <yesionio@outlook.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Wallpaper Slideshow\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-19 09:39-0400\n"
+"PO-Revision-Date: 2025-11-06 15:12+0800\n"
+"Last-Translator: 浅夏随风 <yesionio@outlook.com>\n"
+"Language-Team: Chinese (China)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Generator: Gtranslator 49.0\n"
+
+#: src/bingWallpaperDownloader.js:52
+msgid "Error creating download directory!"
+msgstr "创建下载目录时发生错误！"
+
+#: src/bingWallpaperDownloader.js:53
+#, javascript-format
+msgid "Directory set to - %s"
+msgstr "目录设置到 - %s"
+
+#: src/bingWallpaperDownloader.js:141
+msgid "BING wallpaper download failed."
+msgstr "BING 壁纸下载失败。"
+
+#: src/bingWallpaperDownloader.js:141
+#, javascript-format
+msgid "Error: %s"
+msgstr "错误：%s"
+
+#: src/bingWallpaperDownloader.js:141
+msgid "JSON data null"
+msgstr "JSON 数据为 null"
+
+#: src/bingWallpaperDownloader.js:142
+msgid "Try again?"
+msgstr "重试吗？"
+
+#: src/extension.js:153 src/prefs.js:250
+msgid "Previous Wallpaper"
+msgstr "上一张壁纸"
+
+#: src/extension.js:160 src/prefs.js:276
+msgid "Next Wallpaper"
+msgstr "下一张壁纸"
+
+#: src/extension.js:167 src/extension.js:254
+msgid "Slideshow Settings"
+msgstr "Slideshow 设置"
+
+#: src/extension.js:229 src/prefs.js:120
+msgid "Slideshow"
+msgstr "Slideshow"
+
+#: src/extension.js:242 src/prefs.js:588 src/prefs.js:949 src/utils.js:12
+msgid "Wallpaper Slideshow"
+msgstr "Wallpaper Slideshow"
+
+#: src/extension.js:295
+msgid "Current Slide"
+msgstr "当前 Slide"
+
+#: src/extension.js:358 src/prefs.js:244
+msgid "Slide Controls"
+msgstr "Slide 控制"
+
+#: src/prefs.js:17
+msgid "Open directory..."
+msgstr "打开目录..."
+
+#: src/prefs.js:34
+msgid "Choose new directory..."
+msgstr "选择新目录..."
+
+#: src/prefs.js:40
+msgid "Select a directory"
+msgstr "选择一个目录"
+
+#: src/prefs.js:129
+msgid "Slideshow Options"
+msgstr "Slideshow 选项"
+
+#: src/prefs.js:134
+msgid "Slideshow Directory"
+msgstr "Slideshow 目录"
+
+#: src/prefs.js:147
+msgid "Random"
+msgstr "随机"
+
+#: src/prefs.js:148
+msgid "A-Z (Ascending Order)"
+msgstr "A-Z (顺序)"
+
+#: src/prefs.js:149
+msgid "Z-A (Descending Order)"
+msgstr "Z-A (倒序)"
+
+#: src/prefs.js:150
+msgid "Newest First (Date)"
+msgstr "新的在前 (日期)"
+
+#: src/prefs.js:151
+msgid "Oldest First (Date)"
+msgstr "旧的在前 (日期)"
+
+#: src/prefs.js:154
+msgid "Slideshow Queue Sorting"
+msgstr "Slideshow 队列排序中"
+
+#: src/prefs.js:165
+msgid "Shuffle Slideshow on Completion"
+msgstr ""
+
+#: src/prefs.js:175
+msgid "Slide Duration"
+msgstr ""
+
+#: src/prefs.js:176
+msgid "Hours"
+msgstr "时"
+
+#: src/prefs.js:176
+msgid "Minutes"
+msgstr "分"
+
+#: src/prefs.js:176
+msgid "Seconds"
+msgstr "秒"
+
+#: src/prefs.js:234
+msgid "Use Absolute Time Elapsed for Slide Duration"
+msgstr ""
+
+#: src/prefs.js:235
+msgid ""
+"Disabled: Slide duration counts down only while the extension is active.\n"
+"Enabled: Slide duration counts down even when the extension is inactive "
+"(e.g., Lock Screen, Power Off, etc.)."
+msgstr ""
+
+#: src/prefs.js:245
+msgid "Control the current wallpaper in the slideshow"
+msgstr ""
+
+#: src/prefs.js:261
+msgid "Play/Pause"
+msgstr "播放/暂停"
+
+#: src/prefs.js:289
+msgid "Show Slide Controls in Quick Settings Menu"
+msgstr "在快速设置菜单中显示幻灯片控制"
+
+#: src/prefs.js:298
+msgid "Wallpaper Options"
+msgstr "壁纸选项"
+
+#: src/prefs.js:303 src/utils.js:20
+msgid "None"
+msgstr "None"
+
+#: src/prefs.js:304
+msgid "Wallpaper"
+msgstr "壁纸"
+
+#: src/prefs.js:305
+msgid "Centered"
+msgstr "居中"
+
+#: src/prefs.js:306
+msgid "Scaled"
+msgstr "比例"
+
+#: src/prefs.js:307
+msgid "Streched"
+msgstr "拉伸"
+
+#: src/prefs.js:308
+msgid "Zoom"
+msgstr "缩放"
+
+#: src/prefs.js:309
+msgid "Spanned"
+msgstr ""
+
+#: src/prefs.js:312
+msgid "Image Adjustment"
+msgstr "图像调整"
+
+#: src/prefs.js:322
+msgid "Background Color Options"
+msgstr "背景色选项"
+
+#: src/prefs.js:323
+msgid ""
+"The background fill type and colors to be shown when the wallpaper does not "
+"fill the screen"
+msgstr "当壁纸未填满屏幕时显示的背景填充类型和颜色"
+
+#: src/prefs.js:328
+msgid "Solid"
+msgstr ""
+
+#: src/prefs.js:329
+msgid "Vertical Gradient"
+msgstr "垂直渐变"
+
+#: src/prefs.js:330
+msgid "Horizontal Gradient"
+msgstr "水平渐变"
+
+#: src/prefs.js:333
+msgid "Fill Type"
+msgstr "填充类型"
+
+#: src/prefs.js:354
+msgid "Primary Color"
+msgstr "主要颜色"
+
+#: src/prefs.js:372
+msgid "Secondary Color"
+msgstr "次要颜色"
+
+#: src/prefs.js:373
+msgid "Only shown if 'Fill Type' is a gradient."
+msgstr "仅当‘填充类型’为渐变时显示"
+
+#: src/prefs.js:402
+msgid "Bing Wallpapers"
+msgstr "Bing 壁纸"
+
+#: src/prefs.js:417
+msgid "Download BING wallpaper of the day"
+msgstr "下载当天 BING 壁纸"
+
+#: src/prefs.js:423
+msgid "Download Directory"
+msgstr "下载目录"
+
+#: src/prefs.js:436
+msgid "Notify on Download Error"
+msgstr "下载错误时通知"
+
+#: src/prefs.js:437
+msgid ""
+"Displays a notification with error message and option to retry download."
+msgstr "显示带有错误消息和重试下载选项的通知。"
+
+#: src/prefs.js:453
+msgid "Image Resolution"
+msgstr "图像分辨率"
+
+#. TRANSLATORS: Markets are specific regions, defined by their language codes.
+#. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
+#: src/prefs.js:480
+msgid "Market Location"
+msgstr "Market 区域"
+
+#. TRANSLATORS: Markets are specific regions, defined by their language codes.
+#. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
+#: src/prefs.js:483
+msgid ""
+"The market where the BING wallpaper comes from.\n"
+"Wallpapers may vary in different markets."
+msgstr ""
+"BING 壁纸来自的 market。\n"
+"壁纸在不同的 market 可能有所不同"
+
+#: src/prefs.js:514
+msgid "Images to Download"
+msgstr "下载多少图像"
+
+#: src/prefs.js:515
+msgid ""
+"You can download up to 7 previous wallpapers plus the current wallpaper of "
+"the day."
+msgstr "您可以下载多达 7 张以前的壁纸加上当天的当前壁纸。"
+
+#: src/prefs.js:522
+msgid "Delete Previously Downloaded Wallpapers"
+msgstr "删除上一次下载的壁纸"
+
+#: src/prefs.js:523
+msgid ""
+"Stores a download history of wallpapers and limits how many wallpapers to "
+"keep."
+msgstr "保留壁纸的下载历史记录并限制要保留的壁纸数量。"
+
+#: src/prefs.js:524
+msgid "Only works for wallpapers downloaded when this setting is enabled."
+msgstr "仅适用于启用此设置时下载的壁纸。"
+
+#: src/prefs.js:525
+msgid "Previous download history is cleared when this setting is disabled."
+msgstr "禁用此设置时，将清除以前的下载历史记录。"
+
+#: src/prefs.js:537 src/prefs.js:555
+#, javascript-format
+msgid "Keep %s most recent wallpaper"
+msgid_plural "Keep %s most recent wallpapers"
+msgstr[0] "保留最多 %s 张最近的壁纸"
+msgstr[1] "保留最多 %s 张最近的壁纸"
+
+#: src/prefs.js:567
+msgid "Apply"
+msgstr "应用"
+
+#: src/prefs.js:583
+msgid "About"
+msgstr "关于"
+
+#: src/prefs.js:589
+msgid "Optionally downloads BING wallpaper of the day."
+msgstr "可选下载当天的 BING 壁纸。"
+
+#. TRANSLATORS: 'PROJECT_NAME' Version
+#: src/prefs.js:635
+#, javascript-format
+msgid "%s Version"
+msgstr "%s 版本"
+
+#. TRANSLATORS: 'PROJECT_NAME' - Release Notes
+#: src/prefs.js:644
+#, javascript-format
+msgid "%s - Release Notes"
+msgstr "%s - 发行注记"
+
+#: src/prefs.js:646
+msgid "What's New"
+msgstr "新内容"
+
+#: src/prefs.js:692
+msgid "Message Tray Update Notification"
+msgstr "在消息栏中显示更新通知"
+
+#: src/prefs.js:693
+#, javascript-format
+msgid "Show a notification when %s receives an update."
+msgstr "当接收到 %s 更新时显示通知"
+
+#: src/prefs.js:701
+msgid "Git Commit"
+msgstr "Git 提交"
+
+#: src/prefs.js:711
+msgid "GNOME Version"
+msgstr "GNOME 版本"
+
+#: src/prefs.js:720
+msgid "OS Name"
+msgstr "操作系统名称"
+
+#: src/prefs.js:733
+msgid "Windowing System"
+msgstr "窗口系统"
+
+#. TRANSLATORS: 'PROJECT_NAME' on GitLab
+#: src/prefs.js:744
+#, javascript-format
+msgid "%s on GitLab"
+msgstr "%s 在 GitLab"
+
+#: src/prefs.js:747
+msgid "Report an Issue"
+msgstr "报告问题"
+
+#. TRANSLATORS: 'PROJECT_NAME' Settings
+#: src/prefs.js:757
+#, javascript-format
+msgid "%s Settings"
+msgstr "%s 设置"
+
+#: src/prefs.js:760
+msgid "Load"
+msgstr "加载"
+
+#: src/prefs.js:765
+msgid "Load Settings"
+msgstr "加载设置"
+
+#: src/prefs.js:791
+msgid "Save"
+msgstr "保存"
+
+#: src/prefs.js:796
+msgid "Save Settings"
+msgstr "保存设置"
+
+#: src/prefs.js:826
+msgid "Enable Debug Mode"
+msgstr "启用调试模式"
+
+#: src/prefs.js:827
+msgid "Show extensive messages in logs for debugging."
+msgstr "在日志中显示大量消息以进行调试。"
+
+#: src/prefs.js:833 src/prefs.js:834
+msgid "Legal"
+msgstr "法律信息"
+
+#: src/prefs.js:840
+msgid "This program comes with absolutely no warranty."
+msgstr "This program comes with absolutely no warranty."
+
+#: src/prefs.js:842
+msgid "GNU General Public License, version 2 or later"
+msgstr "GNU General Public License, version 2 or later"
+
+#. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
+#: src/prefs.js:842
+#, javascript-format
+msgid "See the <a href=\"%s\">%s</a> for details."
+msgstr "See the <a href=\"%s\">%s</a> for details."
+
+#: src/prefs.js:944 src/updateNotifier.js:85
+msgid "Donate"
+msgstr "捐赠"
+
+#: src/prefs.js:954
+#, javascript-format
+msgid "Help Support %s"
+msgstr "帮助支持 %s"
+
+#: src/prefs.js:955 src/updateNotifier.js:73
+#, javascript-format
+msgid ""
+"Thank you for using %s! If you enjoy it and would like to help support its "
+"continued development, please consider making a donation."
+msgstr ""
+"Thank you for using %s! If you enjoy it and would like to help support its "
+"continued development, please consider making a donation."
+
+#: src/prefs.js:959
+msgid "Donate via PayPal"
+msgstr "通过 PayPal 捐赠"
+
+#: src/prefs.js:962
+msgid "Donate via Buy Me a Coffee"
+msgstr "Donate via Buy Me a Coffee"
+
+#: src/prefs.js:974
+#, javascript-format
+msgid ""
+"A huge thank you to everyone who has supported %s! Your support helps keep "
+"%s going. It is truly appreciated!"
+msgstr ""
+"A huge thank you to everyone who has supported %s! Your support helps keep "
+"%s going. It is truly appreciated!"
+
+#: src/slideshow.js:149 src/slideshow.js:177
+msgid "Change directory in settings to begin slideshow."
+msgstr "在设置中修改目录来开始使用 slideshow"
+
+#: src/slideshow.js:149
+msgid "Slideshow directory does not exist!"
+msgstr "Slideshow 的目录尚不存在"
+
+#: src/slideshow.js:150 src/slideshow.js:178
+msgid "Open Settings"
+msgstr "打开设置"
+
+#: src/slideshow.js:177
+msgid "Slideshow directory contains no images!"
+msgstr "Slideshow 目录中没有图片"
+
+#: src/slideshow.js:683
+#, javascript-format
+msgid "%s hours"
+msgstr "%s 时"
+
+#: src/slideshow.js:685
+#, javascript-format
+msgid "%s minutes"
+msgstr "%s 分"
+
+#: src/slideshow.js:686
+#, javascript-format
+msgid "%s seconds"
+msgstr "%s 秒"
+
+#: src/slideshow.js:699
+#, javascript-format
+msgid "Slideshow paused on slide %s"
+msgstr "Slideshow paused on slide %s"
+
+#: src/slideshow.js:700
+msgid "Slideshow Paused"
+msgstr "Slideshow 已暂停"
+
+#: src/slideshow.js:714
+#, javascript-format
+msgid "Next slide in %s"
+msgstr ""
+
+#: src/slideshow.js:715
+msgid "Slideshow Resumed"
+msgstr ""
+
+#. TRANSLATORS: This will display as "ProjectName v21 Released!" as an example.
+#: src/updateNotifier.js:68
+#, javascript-format
+msgid "%s v%s Released!"
+msgstr "%s v%s 已发布!"
+
+#: src/updateNotifier.js:71
+msgid "Check out what's new."
+msgstr ""
+
+#: src/updateNotifier.js:88
+msgid "What's new?"
+msgstr ""
+
+#: src/updateNotifier.js:89
+msgid "Dismiss"
+msgstr ""
