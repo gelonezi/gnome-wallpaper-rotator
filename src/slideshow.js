@@ -381,16 +381,34 @@ export class Slideshow extends GObject.Object {
     }
 
     _setPictureUriSettings(fileName) {
+        this._removeChangedIdleId();
+
         const directory = this._settings.get_string('slideshow-directory');
         const filePath = GLib.build_filenamev([directory, fileName]);
+        const startTime = Date.now();
 
-        try {
-            const uri = GLib.filename_to_uri(filePath, null);
+        this._changedIdleId = GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            try {
+                const uri = GLib.filename_to_uri(filePath, null);
+                this._backgroundSettings.set_string('picture-uri', uri);
+                this._backgroundSettings.set_string('picture-uri-dark', uri);
+            } catch (e) {
+                console.log(`Wallpaper Slideshow Error: Failed to convert slide path to URI: ${filePath}, error: ${e.message}`);
+            }
 
-            this._backgroundSettings.set_string('picture-uri', uri);
-            this._backgroundSettings.set_string('picture-uri-dark', uri);
-        } catch (e) {
-            console.log(`Wallpaper Slideshow Error: Failed to convert slide path to URI: ${filePath}, error: ${e.message}`);
+            const endTime = Date.now();
+            const duration = endTime - startTime;
+            Logger.log(`Wallpaper change event took ${duration}ms to complete.`);
+
+            this._changedIdleId = null;
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _removeChangedIdleId() {
+        if (this._changedIdleId) {
+            GLib.source_remove(this._changedIdleId);
+            this._changedIdleId = null;
         }
     }
 
@@ -440,7 +458,7 @@ export class Slideshow extends GObject.Object {
         if (!runOnce)
             Logger.log(`Next slide in ${delay} seconds.`);
 
-        this._slideshowId = GLib.timeout_add_seconds(GLib.PRIORITY_LOW, delay, () => {
+        this._slideshowId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, delay, () => {
             this.slideIndex++;
             const success = this._changeSlide();
             if (!success) {
@@ -459,6 +477,7 @@ export class Slideshow extends GObject.Object {
     }
 
     _endSlideshowTimer() {
+        this._removeChangedIdleId();
         if (this._slideshowId) {
             GLib.source_remove(this._slideshowId);
             this._slideshowId = null;
