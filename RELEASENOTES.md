@@ -1,17 +1,6 @@
-<b><span size="large">v13.3</span></b>
+<b><span size="large">v14.0</span></b>
 
-- Add GNOME 49 Support
-
-<b><span size="large">v13.2</span></b>
-
-- Resolve issue causing duplicate wallpapers in the slideshow queue.
-- Fix extension crash triggered by special characters in image filenames.
-
-<b><span size="large">v13.1</span></b>
-
-- Fix bug causing slideshow to resume when set to pause.
-- Update Notifcation: only show donate button on major version release.
-
-<b><span size="large">v13.0</span></b>
-
-- Fix bug which caused a failure to detect images in slideshow directory.
+- Slideshow: implement a GLib.idle_add() when changing wallpaper image.
+    - Resolves lag issues when changing wallpapers with large file sizes.
+- Fix an issue where inserting new images into the queue while paused caused the current wallpaper to change unexpectedly on resume.
+- Slideshow directory monitor: file event handling improvements for reliability across all file operations.

@@ -4,8 +4,8 @@
   "uuid": "azwallpaper@azwallpaper.gitlab.com",
   "gettext-domain": "azwallpaper",
   "settings-schema": "org.gnome.shell.extensions.azwallpaper",
-  "version": 16,
-  "version-name": "13.3",
+  "version": 17,
+  "version-name": "14.0",
   "shell-version": ["45", "46", "47", "48", "49"],
   "url": "https://gitlab.com/AndrewZaech/azwallpaper",
   "donations": {
