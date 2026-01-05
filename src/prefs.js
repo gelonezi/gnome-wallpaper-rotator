@@ -304,7 +304,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         adjustmentList.append(_('Wallpaper'));
         adjustmentList.append(_('Centered'));
         adjustmentList.append(_('Scaled'));
-        adjustmentList.append(_('Streched'));
+        adjustmentList.append(_('Stretched'));
         adjustmentList.append(_('Zoom'));
         adjustmentList.append(_('Spanned'));
 

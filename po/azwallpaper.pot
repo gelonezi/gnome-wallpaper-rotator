@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-19 09:39-0400\n"
+"POT-Creation-Date: 2026-01-04 18:21-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -52,23 +52,23 @@ msgstr ""
 msgid "Next Wallpaper"
 msgstr ""
 
-#: src/extension.js:167 src/extension.js:254
+#: src/extension.js:167 src/extension.js:256
 msgid "Slideshow Settings"
 msgstr ""
 
-#: src/extension.js:229 src/prefs.js:120
+#: src/extension.js:231 src/prefs.js:120
 msgid "Slideshow"
 msgstr ""
 
-#: src/extension.js:242 src/prefs.js:588 src/prefs.js:949 src/utils.js:12
+#: src/extension.js:244 src/prefs.js:588 src/prefs.js:952 src/utils.js:12
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: src/extension.js:295
+#: src/extension.js:297
 msgid "Current Slide"
 msgstr ""
 
-#: src/extension.js:358 src/prefs.js:244
+#: src/extension.js:360 src/prefs.js:244
 msgid "Slide Controls"
 msgstr ""
 
@@ -143,8 +143,8 @@ msgstr ""
 #: src/prefs.js:235
 msgid ""
 "Disabled: Slide duration counts down only while the extension is active.\n"
-"Enabled: Slide duration counts down even when the extension is inactive (e."
-"g., Lock Screen, Power Off, etc.)."
+"Enabled: Slide duration counts down even when the extension is inactive "
+"(e.g., Lock Screen, Power Off, etc.)."
 msgstr ""
 
 #: src/prefs.js:245
@@ -180,7 +180,7 @@ msgid "Scaled"
 msgstr ""
 
 #: src/prefs.js:307
-msgid "Streched"
+msgid "Stretched"
 msgstr ""
 
 #: src/prefs.js:308
@@ -335,166 +335,166 @@ msgstr ""
 msgid "What's New"
 msgstr ""
 
-#: src/prefs.js:692
+#: src/prefs.js:695
 msgid "Message Tray Update Notification"
 msgstr ""
 
-#: src/prefs.js:693
+#: src/prefs.js:696
 #, javascript-format
 msgid "Show a notification when %s receives an update."
 msgstr ""
 
-#: src/prefs.js:701
+#: src/prefs.js:704
 msgid "Git Commit"
 msgstr ""
 
-#: src/prefs.js:711
+#: src/prefs.js:714
 msgid "GNOME Version"
 msgstr ""
 
-#: src/prefs.js:720
+#: src/prefs.js:723
 msgid "OS Name"
 msgstr ""
 
-#: src/prefs.js:733
+#: src/prefs.js:736
 msgid "Windowing System"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' on GitLab
-#: src/prefs.js:744
+#: src/prefs.js:747
 #, javascript-format
 msgid "%s on GitLab"
 msgstr ""
 
-#: src/prefs.js:747
+#: src/prefs.js:750
 msgid "Report an Issue"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' Settings
-#: src/prefs.js:757
+#: src/prefs.js:760
 #, javascript-format
 msgid "%s Settings"
 msgstr ""
 
-#: src/prefs.js:760
+#: src/prefs.js:763
 msgid "Load"
 msgstr ""
 
-#: src/prefs.js:765
+#: src/prefs.js:768
 msgid "Load Settings"
 msgstr ""
 
-#: src/prefs.js:791
+#: src/prefs.js:794
 msgid "Save"
 msgstr ""
 
-#: src/prefs.js:796
+#: src/prefs.js:799
 msgid "Save Settings"
 msgstr ""
 
-#: src/prefs.js:826
+#: src/prefs.js:829
 msgid "Enable Debug Mode"
 msgstr ""
 
-#: src/prefs.js:827
+#: src/prefs.js:830
 msgid "Show extensive messages in logs for debugging."
 msgstr ""
 
-#: src/prefs.js:833 src/prefs.js:834
+#: src/prefs.js:836 src/prefs.js:837
 msgid "Legal"
 msgstr ""
 
-#: src/prefs.js:840
+#: src/prefs.js:843
 msgid "This program comes with absolutely no warranty."
 msgstr ""
 
-#: src/prefs.js:842
+#: src/prefs.js:845
 msgid "GNU General Public License, version 2 or later"
 msgstr ""
 
 #. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
-#: src/prefs.js:842
+#: src/prefs.js:845
 #, javascript-format
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: src/prefs.js:944 src/updateNotifier.js:85
+#: src/prefs.js:947 src/updateNotifier.js:85
 msgid "Donate"
 msgstr ""
 
-#: src/prefs.js:954
+#: src/prefs.js:957
 #, javascript-format
 msgid "Help Support %s"
 msgstr ""
 
-#: src/prefs.js:955 src/updateNotifier.js:73
+#: src/prefs.js:958 src/updateNotifier.js:73
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
 "continued development, please consider making a donation."
 msgstr ""
 
-#: src/prefs.js:959
+#: src/prefs.js:962
 msgid "Donate via PayPal"
 msgstr ""
 
-#: src/prefs.js:962
+#: src/prefs.js:965
 msgid "Donate via Buy Me a Coffee"
 msgstr ""
 
-#: src/prefs.js:974
+#: src/prefs.js:977
 #, javascript-format
 msgid ""
 "A huge thank you to everyone who has supported %s! Your support helps keep "
 "%s going. It is truly appreciated!"
 msgstr ""
 
-#: src/slideshow.js:149 src/slideshow.js:177
+#: src/slideshow.js:150 src/slideshow.js:178
 msgid "Change directory in settings to begin slideshow."
 msgstr ""
 
-#: src/slideshow.js:149
+#: src/slideshow.js:150
 msgid "Slideshow directory does not exist!"
 msgstr ""
 
-#: src/slideshow.js:150 src/slideshow.js:178
+#: src/slideshow.js:151 src/slideshow.js:179
 msgid "Open Settings"
 msgstr ""
 
-#: src/slideshow.js:177
+#: src/slideshow.js:178
 msgid "Slideshow directory contains no images!"
 msgstr ""
 
-#: src/slideshow.js:683
+#: src/slideshow.js:728
 #, javascript-format
 msgid "%s hours"
 msgstr ""
 
-#: src/slideshow.js:685
+#: src/slideshow.js:730
 #, javascript-format
 msgid "%s minutes"
 msgstr ""
 
-#: src/slideshow.js:686
+#: src/slideshow.js:731
 #, javascript-format
 msgid "%s seconds"
 msgstr ""
 
-#: src/slideshow.js:699
+#: src/slideshow.js:744
 #, javascript-format
 msgid "Slideshow paused on slide %s"
 msgstr ""
 
-#: src/slideshow.js:700
+#: src/slideshow.js:745
 msgid "Slideshow Paused"
 msgstr ""
 
-#: src/slideshow.js:714
+#: src/slideshow.js:759
 #, javascript-format
 msgid "Next slide in %s"
 msgstr ""
 
-#: src/slideshow.js:715
+#: src/slideshow.js:760
 msgid "Slideshow Resumed"
 msgstr ""
 
