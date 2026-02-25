@@ -1,0 +1,542 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the Wallpaper Slideshow package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Wallpaper Slideshow\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-04 18:21-0500\n"
+"PO-Revision-Date: 2026-02-24 21:48+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 3.8\n"
+
+#: src/bingWallpaperDownloader.js:52
+msgid "Error creating download directory!"
+msgstr "Erreur lors de la création du répertoire de téléchargement!"
+
+#: src/bingWallpaperDownloader.js:53
+#, javascript-format
+msgid "Directory set to - %s"
+msgstr "Répertoire défini comme %s"
+
+#: src/bingWallpaperDownloader.js:141
+msgid "BING wallpaper download failed."
+msgstr "Échec du téléchargement du fond d'écran BING."
+
+#: src/bingWallpaperDownloader.js:141
+#, javascript-format
+msgid "Error: %s"
+msgstr "Erreur: %s"
+
+#: src/bingWallpaperDownloader.js:141
+msgid "JSON data null"
+msgstr "Données JSON vides"
+
+#: src/bingWallpaperDownloader.js:142
+msgid "Try again?"
+msgstr "Réessayer ?"
+
+#: src/extension.js:153 src/prefs.js:250
+msgid "Previous Wallpaper"
+msgstr "Fond d'écran précédent"
+
+#: src/extension.js:160 src/prefs.js:276
+msgid "Next Wallpaper"
+msgstr "Fond d'écran suivant"
+
+#: src/extension.js:167 src/extension.js:256
+msgid "Slideshow Settings"
+msgstr "Paramètres Slideshow"
+
+#: src/extension.js:231 src/prefs.js:120
+msgid "Slideshow"
+msgstr "Slideshow"
+
+#: src/extension.js:244 src/prefs.js:588 src/prefs.js:952 src/utils.js:12
+msgid "Wallpaper Slideshow"
+msgstr "Fond d'écran Slideshow"
+
+#: src/extension.js:297
+msgid "Current Slide"
+msgstr "Diapositive actuelle"
+
+#: src/extension.js:360 src/prefs.js:244
+msgid "Slide Controls"
+msgstr "Commandes diapositives"
+
+#: src/prefs.js:17
+msgid "Open directory..."
+msgstr "Ouvrir le répertoire..."
+
+#: src/prefs.js:34
+msgid "Choose new directory..."
+msgstr "Choisissez un nouveau répertoire..."
+
+#: src/prefs.js:40
+msgid "Select a directory"
+msgstr "Sélectionner un répertoire"
+
+#: src/prefs.js:129
+msgid "Slideshow Options"
+msgstr "Options Slideshow"
+
+#: src/prefs.js:134
+msgid "Slideshow Directory"
+msgstr "Répertoire Slideshow"
+
+#: src/prefs.js:147
+msgid "Random"
+msgstr "Aléatoire"
+
+#: src/prefs.js:148
+msgid "A-Z (Ascending Order)"
+msgstr "A-Z (ordre croissant)"
+
+#: src/prefs.js:149
+msgid "Z-A (Descending Order)"
+msgstr "Z-A (ordre décroissant)"
+
+#: src/prefs.js:150
+msgid "Newest First (Date)"
+msgstr "Les plus récents en premier (date)"
+
+#: src/prefs.js:151
+msgid "Oldest First (Date)"
+msgstr "Les plus anciens en premier (date)"
+
+#: src/prefs.js:154
+msgid "Slideshow Queue Sorting"
+msgstr "Tri de la file d'attente Slideshow"
+
+#: src/prefs.js:165
+msgid "Shuffle Slideshow on Completion"
+msgstr "Slideshow mélanger à la fin"
+
+#: src/prefs.js:175
+msgid "Slide Duration"
+msgstr "Durée de la diapositive"
+
+#: src/prefs.js:176
+msgid "Hours"
+msgstr "Heures"
+
+#: src/prefs.js:176
+msgid "Minutes"
+msgstr "Minutes"
+
+#: src/prefs.js:176
+msgid "Seconds"
+msgstr "Secondes"
+
+#: src/prefs.js:234
+msgid "Use Absolute Time Elapsed for Slide Duration"
+msgstr "Utiliser le temps écoulé absolu pour la durée du diaporama"
+
+#: src/prefs.js:235
+msgid ""
+"Disabled: Slide duration counts down only while the extension is active.\n"
+"Enabled: Slide duration counts down even when the extension is inactive "
+"(e.g., Lock Screen, Power Off, etc.)."
+msgstr ""
+"Désactivé : la durée du diaporama ne défile que lorsque l'extension est "
+"active.\n"
+"Activé : la durée du diaporama défile même lorsque l'extension est inactive "
+"(par exemple, écran verrouillé, mise hors tension, etc.)."
+
+#: src/prefs.js:245
+msgid "Control the current wallpaper in the slideshow"
+msgstr "Contrôler le fond d'écran actuel dans le diaporama"
+
+#: src/prefs.js:261
+msgid "Play/Pause"
+msgstr "Lecture/Pause"
+
+#: src/prefs.js:289
+msgid "Show Slide Controls in Quick Settings Menu"
+msgstr ""
+"Afficher les commandes des diapositives dans le menu des réglages rapides"
+
+#: src/prefs.js:298
+msgid "Wallpaper Options"
+msgstr "Options Fond d'écran"
+
+#: src/prefs.js:303 src/utils.js:20
+msgid "None"
+msgstr "Aucun"
+
+#: src/prefs.js:304
+msgid "Wallpaper"
+msgstr "Fond d'écran"
+
+#: src/prefs.js:305
+msgid "Centered"
+msgstr "Centré"
+
+#: src/prefs.js:306
+msgid "Scaled"
+msgstr "À l'échelle"
+
+#: src/prefs.js:307
+msgid "Stretched"
+msgstr "Étiré"
+
+#: src/prefs.js:308
+msgid "Zoom"
+msgstr "Zoom"
+
+#: src/prefs.js:309
+msgid "Spanned"
+msgstr "Etendu"
+
+#: src/prefs.js:312
+msgid "Image Adjustment"
+msgstr "Ajustements Image"
+
+#: src/prefs.js:322
+msgid "Background Color Options"
+msgstr "Options de couleur d'arrière-plan"
+
+#: src/prefs.js:323
+msgid ""
+"The background fill type and colors to be shown when the wallpaper does not "
+"fill the screen"
+msgstr ""
+"Le type et les couleurs de remplissage de l'arrière-plan à afficher lorsque "
+"le fond d'écran ne remplit pas l'écran"
+
+#: src/prefs.js:328
+msgid "Solid"
+msgstr "Solide"
+
+#: src/prefs.js:329
+msgid "Vertical Gradient"
+msgstr "Gradient vertical"
+
+#: src/prefs.js:330
+msgid "Horizontal Gradient"
+msgstr "Gradient horizontal"
+
+#: src/prefs.js:333
+msgid "Fill Type"
+msgstr "Type de remplissage"
+
+#: src/prefs.js:354
+msgid "Primary Color"
+msgstr "Couleur primaire"
+
+#: src/prefs.js:372
+msgid "Secondary Color"
+msgstr "Couleur secondaire"
+
+#: src/prefs.js:373
+msgid "Only shown if 'Fill Type' is a gradient."
+msgstr "Afficher uniquement si le « Type de remplissage » est un gradient."
+
+#: src/prefs.js:402
+msgid "Bing Wallpapers"
+msgstr "Fonds d'écran Bing"
+
+#: src/prefs.js:417
+msgid "Download BING wallpaper of the day"
+msgstr "Télécharger le fond d'écran BING du jour"
+
+#: src/prefs.js:423
+msgid "Download Directory"
+msgstr "Télécharger le répertoire"
+
+#: src/prefs.js:436
+msgid "Notify on Download Error"
+msgstr "Notifier en cas d'erreur de téléchargement"
+
+#: src/prefs.js:437
+msgid ""
+"Displays a notification with error message and option to retry download."
+msgstr ""
+"Afficher une notification avec un message d'erreur et une option pour "
+"réessayer le téléchargement."
+
+#: src/prefs.js:453
+msgid "Image Resolution"
+msgstr "Résolution d'image"
+
+#. TRANSLATORS: Markets are specific regions, defined by their language codes.
+#. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
+#: src/prefs.js:480
+msgid "Market Location"
+msgstr "Emplacement de la plateforme"
+
+#. TRANSLATORS: Markets are specific regions, defined by their language codes.
+#. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
+#: src/prefs.js:483
+msgid ""
+"The market where the BING wallpaper comes from.\n"
+"Wallpapers may vary in different markets."
+msgstr ""
+"La plateforme d'où provient le papier peint BING.\n"
+"Les papiers peints peuvent varier selon les plateformes."
+
+#: src/prefs.js:514
+msgid "Images to Download"
+msgstr "Images à télécharger"
+
+#: src/prefs.js:515
+msgid ""
+"You can download up to 7 previous wallpapers plus the current wallpaper of "
+"the day."
+msgstr ""
+"Vous pouvez télécharger jusqu'à 7 fonds d'écran précédents ainsi que le "
+"fond d'écran actuel du jour."
+
+#: src/prefs.js:522
+msgid "Delete Previously Downloaded Wallpapers"
+msgstr "Supprimer les fonds d'écran précédemment téléchargés"
+
+#: src/prefs.js:523
+msgid ""
+"Stores a download history of wallpapers and limits how many wallpapers to "
+"keep."
+msgstr ""
+"Enregistre l'historique des téléchargements de fonds d'écran et limite le "
+"nombre de fonds d'écran à conserver."
+
+#: src/prefs.js:524
+msgid "Only works for wallpapers downloaded when this setting is enabled."
+msgstr ""
+"Ne fonctionne que pour les fonds d'écran téléchargés lorsque ce paramètre "
+"est activé."
+
+#: src/prefs.js:525
+msgid "Previous download history is cleared when this setting is disabled."
+msgstr ""
+"L'historique des téléchargements précédents est effacé lorsque ce paramètre "
+"est désactivé."
+
+#: src/prefs.js:537 src/prefs.js:555
+#, javascript-format
+msgid "Keep %s most recent wallpaper"
+msgid_plural "Keep %s most recent wallpapers"
+msgstr[0] "Conserver le fond d'écran le plus récent %s"
+msgstr[1] "Conserver les %s fonds d'écran les plus récents"
+
+#: src/prefs.js:567
+msgid "Apply"
+msgstr "Appliquer"
+
+#: src/prefs.js:583
+msgid "About"
+msgstr "À propos"
+
+#: src/prefs.js:589
+msgid "Optionally downloads BING wallpaper of the day."
+msgstr "Télécharger éventuellement le fond d'écran BING du jour."
+
+#. TRANSLATORS: 'PROJECT_NAME' Version
+#: src/prefs.js:635
+#, javascript-format
+msgid "%s Version"
+msgstr "%s Version"
+
+#. TRANSLATORS: 'PROJECT_NAME' - Release Notes
+#: src/prefs.js:644
+#, javascript-format
+msgid "%s - Release Notes"
+msgstr "%s - Notes de mise à jour"
+
+#: src/prefs.js:646
+msgid "What's New"
+msgstr "Quoi de neuf"
+
+#: src/prefs.js:695
+msgid "Message Tray Update Notification"
+msgstr "Notification de mise à jour de réception des messages"
+
+#: src/prefs.js:696
+#, javascript-format
+msgid "Show a notification when %s receives an update."
+msgstr "Afficher une notification lorsque %s reçoit une mise à jour."
+
+#: src/prefs.js:704
+msgid "Git Commit"
+msgstr "Commit Git"
+
+#: src/prefs.js:714
+msgid "GNOME Version"
+msgstr "Version de Gnome"
+
+#: src/prefs.js:723
+msgid "OS Name"
+msgstr "Nom du Système d'Exploitation"
+
+#: src/prefs.js:736
+msgid "Windowing System"
+msgstr "Système de fenêtrage"
+
+#. TRANSLATORS: 'PROJECT_NAME' on GitLab
+#: src/prefs.js:747
+#, javascript-format
+msgid "%s on GitLab"
+msgstr "%s sur GitLab"
+
+#: src/prefs.js:750
+msgid "Report an Issue"
+msgstr "Signaler un problème"
+
+#. TRANSLATORS: 'PROJECT_NAME' Settings
+#: src/prefs.js:760
+#, javascript-format
+msgid "%s Settings"
+msgstr "Paramètres %s"
+
+#: src/prefs.js:763
+msgid "Load"
+msgstr "Charger"
+
+#: src/prefs.js:768
+msgid "Load Settings"
+msgstr "Charger les Paramètres"
+
+#: src/prefs.js:794
+msgid "Save"
+msgstr "Enregistrer"
+
+#: src/prefs.js:799
+msgid "Save Settings"
+msgstr "Enregistrer les paramètres"
+
+#: src/prefs.js:829
+msgid "Enable Debug Mode"
+msgstr "Activer le mode débogage"
+
+#: src/prefs.js:830
+msgid "Show extensive messages in logs for debugging."
+msgstr ""
+"Afficher des messages détaillés dans les journaux à des fins de débogage."
+
+#: src/prefs.js:836 src/prefs.js:837
+msgid "Legal"
+msgstr "Juridique"
+
+#: src/prefs.js:843
+msgid "This program comes with absolutely no warranty."
+msgstr "Ce programme est fourni sans aucune garantie."
+
+#: src/prefs.js:845
+msgid "GNU General Public License, version 2 or later"
+msgstr "Licence publique générale GNU, version 2 ou ultérieure"
+
+#. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
+#: src/prefs.js:845
+#, javascript-format
+msgid "See the <a href=\"%s\">%s</a> for details."
+msgstr "Pour plus d'informations, consultez le <a href=\"%s\">%s</a>."
+
+#: src/prefs.js:947 src/updateNotifier.js:85
+msgid "Donate"
+msgstr "Faire un don"
+
+#: src/prefs.js:957
+#, javascript-format
+msgid "Help Support %s"
+msgstr "Aidez-nous à soutenir %s"
+
+#: src/prefs.js:958 src/updateNotifier.js:73
+#, javascript-format
+msgid ""
+"Thank you for using %s! If you enjoy it and would like to help support its "
+"continued development, please consider making a donation."
+msgstr ""
+"Merci d'utiliser %s ! Si vous appréciez ce logiciel et souhaitez contribuer "
+"à son développement continu, pensez à faire un don."
+
+#: src/prefs.js:962
+msgid "Donate via PayPal"
+msgstr "Faire un don via PayPal"
+
+#: src/prefs.js:965
+msgid "Donate via Buy Me a Coffee"
+msgstr "Faire un don via Buy Me a Coffee"
+
+#: src/prefs.js:977
+#, javascript-format
+msgid ""
+"A huge thank you to everyone who has supported %s! Your support helps keep "
+"%s going. It is truly appreciated!"
+msgstr ""
+"Un grand merci à tous ceux qui ont soutenu %s ! Votre soutien aide %s à "
+"continuer. Nous vous en sommes vraiment reconnaissants !"
+
+#: src/slideshow.js:150 src/slideshow.js:178
+msgid "Change directory in settings to begin slideshow."
+msgstr "Modifier le répertoire dans les paramètres pour lancer le diaporama."
+
+#: src/slideshow.js:150
+msgid "Slideshow directory does not exist!"
+msgstr "Le répertoire Slideshow  n'existe pas!"
+
+#: src/slideshow.js:151 src/slideshow.js:179
+msgid "Open Settings"
+msgstr "Ouvrir les paramètres"
+
+#: src/slideshow.js:178
+msgid "Slideshow directory contains no images!"
+msgstr "Le répertoire Slideshow ne contient aucune image!"
+
+#: src/slideshow.js:728
+#, javascript-format
+msgid "%s hours"
+msgstr "%s heures"
+
+#: src/slideshow.js:730
+#, javascript-format
+msgid "%s minutes"
+msgstr "%s minutes"
+
+#: src/slideshow.js:731
+#, javascript-format
+msgid "%s seconds"
+msgstr "%s secondes"
+
+#: src/slideshow.js:744
+#, javascript-format
+msgid "Slideshow paused on slide %s"
+msgstr "Diaporama mis en pause sur la diapositive %s"
+
+#: src/slideshow.js:745
+msgid "Slideshow Paused"
+msgstr "Slideshow en pause"
+
+#: src/slideshow.js:759
+#, javascript-format
+msgid "Next slide in %s"
+msgstr "Diapositive suivante dans %s"
+
+#: src/slideshow.js:760
+msgid "Slideshow Resumed"
+msgstr "Diaporama repris"
+
+#. TRANSLATORS: This will display as "ProjectName v21 Released!" as an example.
+#: src/updateNotifier.js:68
+#, javascript-format
+msgid "%s v%s Released!"
+msgstr "%s v%s publié!"
+
+#: src/updateNotifier.js:71
+msgid "Check out what's new."
+msgstr "Découvrez les nouveautés."
+
+#: src/updateNotifier.js:88
+msgid "What's new?"
+msgstr "Quoi de neuf ?"
+
+#: src/updateNotifier.js:89
+msgid "Dismiss"
+msgstr "Rejeter"
