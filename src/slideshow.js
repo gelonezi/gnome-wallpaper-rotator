@@ -82,6 +82,8 @@ export class Slideshow extends GObject.Object {
             GObject.ParamFlags.READWRITE, 0, GLib.MAXINT32, 0),
         'queue-length': GObject.ParamSpec.int('queue-length', 'queue-length', 'queue-length',
             GObject.ParamFlags.READWRITE, 0, GLib.MAXINT32, 0),
+        'paused': GObject.ParamSpec.boolean('paused', 'paused', 'paused',
+            GObject.ParamFlags.READWRITE, false),
     };
 
     static {
@@ -103,6 +105,8 @@ export class Slideshow extends GObject.Object {
             Gio.SettingsBindFlags.DEFAULT
         );
 
+        this._updatePauseState();
+
         this._loadSlideshowQueue().catch(e => console.log(e));
 
         this._settings.connectObject('changed::slideshow-queue-sort-type', () => {
@@ -111,10 +115,43 @@ export class Slideshow extends GObject.Object {
             this._loadSlideshowQueue();
         }, this);
 
+        this.connect('notify::paused', () => this._onPausedChanged());
+
         this._settings.connectObject('changed::slideshow-slide-duration', () => this._onDurationChange(), this);
         this._settings.connectObject('changed::slideshow-use-absolute-time-for-duration', () => this._onDurationChange(), this);
         this._settings.connectObject('changed::slideshow-directory', () => this._reset(), this);
         this._settings.connectObject('changed::slideshow-change-slide-event', () => this._onChangeSlideEvent(), this);
+
+        this._settings.connectObject('changed::slideshow-pause', () => this._updatePauseState(), this);
+        this._settings.connectObject('changed::slideshow-pause-on-fullscreen', () => this._updatePauseState(), this);
+        global.display.connectObject('in-fullscreen-changed', () => this._updatePauseState(), this);
+    }
+
+    _updatePauseState() {
+        const manualPaused = this._settings.get_boolean('slideshow-pause');
+        const pauseOnFullscreen = this._settings.get_boolean('slideshow-pause-on-fullscreen');
+        const hasFullscreen = this._anyMonitorFullscreen();
+
+        const shouldPause = manualPaused || (pauseOnFullscreen && hasFullscreen);
+
+        if (shouldPause !== this.paused)
+            this.paused = shouldPause;
+    }
+
+    _onPausedChanged() {
+        if (this.paused)
+            this._pause();
+        else
+            this._resume();
+    }
+
+    _anyMonitorFullscreen() {
+        const display = global.display;
+        for (let i = 0; i < display.get_n_monitors(); i++) {
+            if (display.get_monitor_in_fullscreen(i))
+                return true;
+        }
+        return false;
     }
 
     _initiate() {
@@ -127,8 +164,7 @@ export class Slideshow extends GObject.Object {
 
         this._setWallpaper();
 
-        const isPaused = this._settings.get_boolean('slideshow-pause');
-        if (isPaused) {
+        if (this.paused) {
             Logger.log('Slideshow is paused. Not initiating slideshow.');
             return;
         }
@@ -438,8 +474,7 @@ export class Slideshow extends GObject.Object {
     }
 
     _maybeStartSlideshow(delay, runOnce) {
-        const isPaused = this._settings.get_boolean('slideshow-pause');
-        if (!isPaused)
+        if (!this.paused)
             this._startSlideshowTimer(delay, runOnce);
     }
 
@@ -733,11 +768,16 @@ export class Slideshow extends GObject.Object {
         return timeString.join(', ');
     }
 
-    pause() {
+    _pause() {
         Logger.log('Pause slideshow.');
 
         this.saveTimer(true);
         this._endSlideshowTimer();
+
+
+        const showNotification = this._settings.get_boolean('slideshow-pause-notifications');
+        if (!showNotification)
+            return;
 
         const currentSlidePath = this._settings.get_string('slideshow-current-wallpaper');
         const prettyFileName = getPrettyFileName(currentSlidePath);
@@ -745,7 +785,7 @@ export class Slideshow extends GObject.Object {
         notify(_('Slideshow Paused'), bodyText);
     }
 
-    resume() {
+    _resume() {
         const timer = this._getTimerDelay();
         this._slideshowStartTime = Date.now();
         this._settings.set_uint64('slideshow-time-of-slide-start', this._slideshowStartTime);
@@ -754,6 +794,10 @@ export class Slideshow extends GObject.Object {
         this._setWallpaper();
         Logger.log(`Next slide in ${timer} seconds.`);
         this._startSlideshowTimer(timer, true);
+
+        const showNotification = this._settings.get_boolean('slideshow-pause-notifications');
+        if (!showNotification)
+            return;
 
         const timeRemaining = this._getTimeRemainingString();
         const bodyText = _('Next slide in %s').format(timeRemaining);
@@ -785,7 +829,7 @@ export class Slideshow extends GObject.Object {
     }
 
     saveTimer(forceSave = false) {
-        if (this._settings.get_boolean('slideshow-pause') && !forceSave)
+        if (this.paused && !forceSave)
             return; // Don't update the timer if the slideshow is paused, unless forced
 
         const slideShowEndTime = Date.now();
@@ -803,6 +847,8 @@ export class Slideshow extends GObject.Object {
     destroy() {
         Gio.Settings.unbind(this, 'slide-index');
         this._settings.disconnectObject(this);
+        global.display.disconnectObject(this);
+
         this.saveTimer();
         this._endSlideshowTimer();
         this._clearFileMonitor();

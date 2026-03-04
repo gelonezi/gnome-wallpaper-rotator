@@ -126,7 +126,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         this._backgroundSettings = new Gio.Settings({schema: 'org.gnome.desktop.background'});
 
         const slideShowGroup = new Adw.PreferencesGroup({
-            title: _('Slideshow Options'),
+            title: _('Configure Slideshow'),
         });
         this.add(slideShowGroup);
 
@@ -195,6 +195,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         const slideDurationGrid = new Gtk.Grid({
             row_spacing: 2,
             column_spacing: 4,
+            valign: Gtk.Align.CENTER,
         });
         slideDurationRow.add_suffix(slideDurationGrid);
 
@@ -240,6 +241,30 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         slideShowGroup.add(slideDurationTypeRow);
 
+
+        const slideshowSettingGroup = new Adw.PreferencesGroup({
+            title: _('Slideshow Settings'),
+        });
+        this.add(slideshowSettingGroup);
+
+        const pauseFullscreenRow = new Adw.SwitchRow({
+            title: _('Pause Slideshow when Fullscreen Window Detected'),
+            active: this._settings.get_boolean('slideshow-pause-on-fullscreen'),
+        });
+        pauseFullscreenRow.connect('notify::active', widget => {
+            this._settings.set_boolean('slideshow-pause-on-fullscreen', widget.get_active());
+        });
+        slideshowSettingGroup.add(pauseFullscreenRow);
+
+        const pauseNotificationsRow = new Adw.SwitchRow({
+            title: _('Notify on Slideshow Pause/Resume'),
+            active: this._settings.get_boolean('slideshow-pause-notifications'),
+        });
+        pauseNotificationsRow.connect('notify::active', widget => {
+            this._settings.set_boolean('slideshow-pause-notifications', widget.get_active());
+        });
+        slideshowSettingGroup.add(pauseNotificationsRow);
+
         const slideControlsRow = new Adw.ActionRow({
             title: _('Slide Controls'),
             subtitle: _('Control the current wallpaper in the slideshow'),
@@ -283,7 +308,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         slideControlsRow.add_suffix(prevSlideButton);
         slideControlsRow.add_suffix(playPauseSlideButton);
         slideControlsRow.add_suffix(nextSlideButton);
-        slideShowGroup.add(slideControlsRow);
+        slideshowSettingGroup.add(slideControlsRow);
 
         const quickSettingsRow = new Adw.SwitchRow({
             title: _('Show Slide Controls in Quick Settings Menu'),
@@ -292,7 +317,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         quickSettingsRow.connect('notify::active', widget => {
             this._settings.set_boolean('slideshow-show-quick-settings-entry', widget.get_active());
         });
-        slideShowGroup.add(quickSettingsRow);
+        slideshowSettingGroup.add(quickSettingsRow);
 
         const wallpaperOptionsGroup = new Adw.PreferencesGroup({
             title: _('Wallpaper Options'),
@@ -388,7 +413,6 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
             valign: Gtk.Align.CENTER,
             wrap: true,
             value,
-            orientation: Gtk.Orientation.VERTICAL,
             width_chars: 2,
         });
         return spinButton;

@@ -229,13 +229,13 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
         super._init({
             icon_name: 'image-x-generic-symbolic',
             title: _('Slideshow'),
-            checked: !settings.get_boolean('slideshow-pause'),
+            checked: !extension.slideshow.paused,
         });
 
         this._slideshow = extension.slideshow;
         this._settings = settings;
 
-        this._settings.connectObject('changed::slideshow-pause', () => this._updatePauseState(), this);
+        this._slideshow.connectObject('notify::paused', () => this._updatePauseState(), this);
 
         const quickSettings = Main.panel.statusArea.quickSettings;
         const backgroundApps = quickSettings._backgroundApps?.quickSettingsItems?.at(-1) ?? null;
@@ -269,14 +269,9 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
     }
 
     _updatePauseState() {
-        const isPaused = this._settings.get_boolean('slideshow-pause');
+        const isPaused = this._slideshow.paused;
         this._slideControlsMenuItem.setPaused(isPaused);
         this.checked = !isPaused;
-
-        if (isPaused)
-            this._slideshow.pause();
-        else
-            this._slideshow.resume();
     }
 });
 
@@ -382,7 +377,7 @@ class SlideControlsMenuItem extends PopupMenu.PopupMenuItem {
             quickMenuToggle.togglePause();
         });
 
-        this.setPaused(this._settings.get_boolean('slideshow-pause'));
+        this.setPaused(this._slideshow.paused);
 
         const goPrevButton = new St.Button({
             icon_name: 'media-seek-backward-symbolic',
