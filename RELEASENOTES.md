@@ -1,3 +1,11 @@
+<b><span size="large">v14.1</span></b>
+
+- Add GNOME 50 support.
+- Slideshow: debounce wallpaper queue saves on FileMonitor events.
+    - Prevents GSettings set_value() spam during bulk file changes.
+- Add option to pause slideshow when fullscreen window detected.
+- Add option to show notifications when slideshow is paused.
+
 <b><span size="large">v14.0</span></b>
 
 - Slideshow: implement a GLib.idle_add() when changing wallpaper image.
