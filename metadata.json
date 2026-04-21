@@ -5,7 +5,7 @@
   "gettext-domain": "azwallpaper",
   "settings-schema": "org.gnome.shell.extensions.azwallpaper",
   "version": 19,
-  "version-name": "14.1",
+  "version-name": "14.2",
   "shell-version": ["45", "46", "47", "48", "49", "50"],
   "url": "https://gitlab.com/AndrewZaech/azwallpaper",
   "donations": {

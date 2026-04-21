@@ -1,3 +1,8 @@
+<b><span size="large">v14.2</span></b>
+
+- Use GResource to bundle extension svg files.
+- Remove 'Extension.lookupByURL(import.meta.url)' call for EGO review purposes.
+
 <b><span size="large">v14.1</span></b>
 
 - Add GNOME 50 support.
