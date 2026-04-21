@@ -23,6 +23,9 @@ export default class AzWallpaper extends Extension {
     enable() {
         this._settings = this.getSettings();
 
+        this._resource = Gio.Resource.load(`${this.path}/data/resources.gresource`);
+        Gio.resources_register(this._resource);
+
         this._logger = new Logger(this._settings);
 
         this._slideshow = new Slideshow(this);
@@ -128,6 +131,8 @@ export default class AzWallpaper extends Extension {
         this._slideshow = null;
         this._logger.destroy();
         this._logger = null;
+        Gio.resources_unregister(this._resource);
+        this._resource = null;
         this._settings = null;
     }
 

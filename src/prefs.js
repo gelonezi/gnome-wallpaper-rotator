@@ -62,7 +62,7 @@ function createFileChooserButton(parent, settings, setting) {
 export default class AzWallpaperPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
-        const iconPath = `${this.path}/media`;
+        const resourcePath = '/org/gnome/shell/extensions/azwallpaper/icons';
 
         let pageChangedId = settings.connect('changed::prefs-visible-page', () => {
             if (settings.get_string('prefs-visible-page') !== '')
@@ -78,8 +78,11 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
         window.set_default_size(750, 800);
 
         const iconTheme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default());
-        if (!iconTheme.get_search_path().includes(iconPath))
-            iconTheme.add_search_path(iconPath);
+        if (!iconTheme.get_resource_path().includes(resourcePath))
+            iconTheme.add_resource_path(resourcePath);
+
+        const resource = Gio.Resource.load(`${this.path}/data/resources.gresource`);
+        Gio.resources_register(resource);
 
         const slideShowPage = new SlideShowPage(settings);
         window.add(slideShowPage);
@@ -113,7 +116,7 @@ export default class AzWallpaperPrefs extends ExtensionPreferences {
     }
 }
 
-var SlideShowPage = GObject.registerClass(
+const SlideShowPage = GObject.registerClass(
 class azWallpaperSlideShowPage extends Adw.PreferencesPage {
     _init(settings) {
         super._init({
@@ -419,7 +422,7 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
     }
 });
 
-var BingPage = GObject.registerClass(
+const BingPage = GObject.registerClass(
 class azWallpaperBingPage extends Adw.PreferencesPage {
     _init(settings) {
         super._init({
@@ -600,7 +603,7 @@ class azWallpaperBingPage extends Adw.PreferencesPage {
     }
 });
 
-var AboutPage = GObject.registerClass(
+const AboutPage = GObject.registerClass(
 class AzWallpaperAboutPage extends Adw.PreferencesPage {
     _init(settings, metadata, path) {
         super._init({
@@ -964,7 +967,7 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
     }
 });
 
-var DonatePage = GObject.registerClass(
+const DonatePage = GObject.registerClass(
 class AzWallpaperDonatePage extends Adw.PreferencesPage {
     _init(metadata) {
         super._init({

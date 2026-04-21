@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gresources>
+  <gresource prefix='/org/gnome/shell/extensions/azwallpaper'>
+    <file compressed="true" preprocess="xml-stripblanks">icons/azwallpaper-logo.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/settings-bmc-logo.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks">icons/settings-paypal-logo.svg</file>
+  </gresource>
+</gresources>
