@@ -42,7 +42,7 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 | Language | Translators |
 | ------ | ------ |
-| **German** | **@[daPhipz](https://gitlab.com/daPhipz)** |
+| **German** | **@[daPhipz](https://gitlab.com/daPhipz), @[Amr-Ibra](https://gitlab.com/Amr-Ibra)** |
 | **French** | **@[leprous77](https://gitlab.com/leprous77)** |
 | **Occitan** | **@[Quentin](https://gitlab.com/quenty_occitania)** |
 | **Portuguese** | **@[gustavocsfreitas](https://gitlab.com/gustavocsfreitas)** |
