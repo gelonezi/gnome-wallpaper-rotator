@@ -13,7 +13,7 @@ import {Extension, gettext as _, InjectionManager} from 'resource:///org/gnome/s
 import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
 
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
-import {getPrettyFileName} from './utils.js';
+import {getPrettyFileName, showImageInFiles} from './utils.js';
 import {Slideshow} from './slideshow.js';
 import {UpdateNotification} from './updateNotifier.js';
 
@@ -169,9 +169,16 @@ export default class AzWallpaper extends Extension {
         });
         menu.addMenuItem(menuItem, 6);
 
+        menuItem = new PopupMenu.PopupMenuItem(_('Show Image in Files'));
+        menuItem.connect('activate', () => {
+            Logger.log('\'Show Image in Files\' clicked.');
+            showImageInFiles(this._slideshow.getCurrentSlide().path);
+        });
+        menu.addMenuItem(menuItem, 7);
+
         menuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
         menuItem.connect('activate', () => this.openPreferences());
-        menu.addMenuItem(menuItem, 7);
+        menu.addMenuItem(menuItem, 8);
     }
 
     _createQuickSettingsEntry() {
@@ -333,16 +340,7 @@ class SlideInfoMenuItem extends PopupMenu.PopupBaseMenuItem {
 
         this.connect('activate', () => {
             Main.panel.closeQuickSettings();
-            const filePath = slideshow.getCurrentSlide().path;
-            if (!filePath)
-                return;
-
-            const fileUri = Gio.File.new_for_path(filePath).get_uri();
-            try {
-                Gio.AppInfo.launch_default_for_uri(fileUri, null);
-            } catch (e) {
-                console.log(e, `Failed to open URI: ${fileUri}`);
-            }
+            showImageInFiles(slideshow.getCurrentSlide().path);
         });
     }
 
