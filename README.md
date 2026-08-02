@@ -37,6 +37,8 @@ Wallpaper Slideshow is provided free of charge. If you enjoy using this extensio
 
 **@[meybonomme](https://gitlab.com/meybonomme) - !13**
 
+**@[LeonRein](https://gitlab.com/LeonRein) - !19**
+
 
 #### Translators:
 
