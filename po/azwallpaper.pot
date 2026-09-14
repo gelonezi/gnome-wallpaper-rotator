@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 08:25-0400\n"
+"POT-Creation-Date: 2026-09-14 09:38-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,32 +44,24 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#: src/extension.js:158 src/prefs.js:278
-msgid "Previous Wallpaper"
+#: src/extension.js:170
+msgid "Show Image in Files"
 msgstr ""
 
-#: src/extension.js:165 src/prefs.js:304
-msgid "Next Wallpaper"
-msgstr ""
-
-#: src/extension.js:172 src/extension.js:261 src/prefs.js:249
+#: src/extension.js:177 src/extension.js:267 src/prefs.js:249
 msgid "Slideshow Settings"
 msgstr ""
 
-#: src/extension.js:236 src/prefs.js:123
+#: src/extension.js:241 src/extension.js:365 src/prefs.js:123
 msgid "Slideshow"
 msgstr ""
 
-#: src/extension.js:249 src/prefs.js:615 src/prefs.js:979 src/utils.js:11
+#: src/extension.js:254 src/prefs.js:615 src/prefs.js:979 src/utils.js:11
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: src/extension.js:297
+#: src/extension.js:302
 msgid "Current Slide"
-msgstr ""
-
-#: src/extension.js:360 src/prefs.js:272
-msgid "Slide Controls"
 msgstr ""
 
 #: src/prefs.js:17
@@ -155,12 +147,24 @@ msgstr ""
 msgid "Notify on Slideshow Pause/Resume"
 msgstr ""
 
+#: src/prefs.js:272
+msgid "Slide Controls"
+msgstr ""
+
 #: src/prefs.js:273
 msgid "Control the current wallpaper in the slideshow"
 msgstr ""
 
+#: src/prefs.js:278
+msgid "Previous Wallpaper"
+msgstr ""
+
 #: src/prefs.js:289
 msgid "Play/Pause"
+msgstr ""
+
+#: src/prefs.js:304
+msgid "Next Wallpaper"
 msgstr ""
 
 #: src/prefs.js:317
@@ -481,36 +485,36 @@ msgstr ""
 msgid "Failed to monitor slideshow directory!"
 msgstr ""
 
-#: src/slideshow.js:820
+#: src/slideshow.js:819
 #, javascript-format
 msgid "%s hours"
 msgstr ""
 
-#: src/slideshow.js:822
+#: src/slideshow.js:821
 #, javascript-format
 msgid "%s minutes"
 msgstr ""
 
-#: src/slideshow.js:823
+#: src/slideshow.js:822
 #, javascript-format
 msgid "%s seconds"
 msgstr ""
 
-#: src/slideshow.js:840
+#: src/slideshow.js:839
 #, javascript-format
 msgid "Slideshow paused on slide %s"
 msgstr ""
 
-#: src/slideshow.js:841
+#: src/slideshow.js:840
 msgid "Slideshow Paused"
 msgstr ""
 
-#: src/slideshow.js:859
+#: src/slideshow.js:858
 #, javascript-format
 msgid "Next slide in %s"
 msgstr ""
 
-#: src/slideshow.js:860
+#: src/slideshow.js:859
 msgid "Slideshow Resumed"
 msgstr ""
 
