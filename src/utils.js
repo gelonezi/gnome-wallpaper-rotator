@@ -47,7 +47,7 @@ export function showImageInFiles(path) {
     try {
         app.launch([file], global.create_app_launch_context(0, -1));
     } catch (e) {
-        console.log(e, `Failed to show "${path}" in the file manager.`);
+        console.log(`Wallpaper Slideshow - Failed to show "${path}" in the file manager: ${e}`);
     }
 }
 
