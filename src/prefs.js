@@ -8,6 +8,7 @@ import Gtk from 'gi://Gtk';
 import * as Config from 'resource:///org/gnome/Shell/Extensions/js/misc/config.js';
 
 import * as Constants from './constants.js';
+import {shouldAct} from './barColorMath.js';
 
 import {ExtensionPreferences, gettext as _, ngettext} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
@@ -352,6 +353,13 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         this.add(backgroundOptionsGroup);
 
+        const barColorsRow = new Adw.SwitchRow({
+            title: _('Match Background Colors to Wallpaper'),
+            subtitle: _("Takes the colors from the wallpaper's edges. Works while Image Adjustment is 'Scaled'."),
+        });
+        this._settings.bind('slideshow-bar-colors-from-image', barColorsRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        backgroundOptionsGroup.add(barColorsRow);
+
         const backgroundShadingType = new Gtk.StringList();
         backgroundShadingType.append(_('Solid'));
         backgroundShadingType.append(_('Vertical Gradient'));
@@ -403,6 +411,16 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         backgroundSecondaryColorRow.add_suffix(backgroundSecondaryColorButton);
         backgroundOptionsGroup.add(backgroundSecondaryColorRow);
+
+        const updateColorRowsSensitive = () => {
+            const sensitive = !shouldAct(this._settings.get_boolean('slideshow-bar-colors-from-image'),
+                this._backgroundSettings.get_string('picture-options'));
+            for (const row of [backgroundShadingTypeRow, backgroundColorRow, backgroundSecondaryColorRow])
+                row.sensitive = sensitive;
+        };
+        this._settings.connect('changed::slideshow-bar-colors-from-image', updateColorRowsSensitive);
+        this._backgroundSettings.connect('changed::picture-options', updateColorRowsSensitive);
+        updateColorRowsSensitive();
     }
 
     _createSpinButton(value, lower, upper) {
