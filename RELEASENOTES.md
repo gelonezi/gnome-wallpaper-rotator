@@ -1,3 +1,12 @@
+<b><span size="large">Wallpaper Rotator v1.0</span></b>
+
+- First release of this fork of Wallpaper Slideshow v14.3, under its own name and identifier.
+- Add option to take the background colours from the wallpaper's edges.
+- Add option to keep the image adjustment.
+- Add option to include subfolders, with an optional folder-name filter.
+- Add optional panel icon with slide controls.
+- All new options are off by default.
+
 <b><span size="large">v14.3</span></b>
 
 - Add GNOME 51 Support.

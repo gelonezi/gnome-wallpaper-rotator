@@ -1,55 +1,97 @@
------
-### Introduction
+# Wallpaper Rotator
 
-A GNOME Shell extension that adds a wallpaper slideshow and optionally downloads the BING wallpaper of the day.
+This repository is a fork of Wallpaper Slideshow, a GNOME Shell extension by
+Andrew Zaech, with four proposed features added. It is packaged under its own
+name and identifier, Wallpaper Rotator, so it can be installed beside the
+original without replacing it. The features are offered to the original
+project on separate branches.
 
------
+## Credits
 
-### Installation
+Wallpaper Slideshow is the work of Andrew Zaech:
 
-#### To install the most recent official release, visit Wallpaper Slideshow on the [Official GNOME Extensions](https://extensions.gnome.org/extension/6281/wallpaper-slideshow/) website.
+- Project: <https://gitlab.com/AndrewZaech/azwallpaper>
+- Listing on GNOME Extensions: <https://extensions.gnome.org/extension/6281/wallpaper-slideshow/>
 
-<a href="https://extensions.gnome.org/extension/6281/wallpaper-slideshow/"> <img src="https://gitlab.com/arcmenu/arcmenu-assets/raw/master/images/get-it-ego.png" width="240" style="margin-left: 4px"/></a>
+All of the slideshow functionality (the queue, the timer, the Bing wallpaper
+download, the settings window, the quick settings menu and the desktop menu)
+is his work. His translators and contributors are credited on his project
+page. To support him, use the links on the Donate page of the extension's
+settings, or on his project page.
 
-Alternatively, you can also build and install Wallpaper Slideshow from source. Please see the [Install From Source Guide](https://gitlab.com/AndrewZaech/azwallpaper/-/wikis/Install-From-Source-Guide).
+Thanks also to everyone who contributed to Wallpaper Slideshow and translated
+it; their translations still ship in this package (see
+[his README](https://gitlab.com/AndrewZaech/azwallpaper/-/blob/main/README.md)).
 
------
+## What this fork adds
 
-### Support Wallpaper Slideshow
+Each feature is off by default. With all four off, the extension behaves as
+Wallpaper Slideshow does.
 
-Wallpaper Slideshow is provided free of charge. If you enjoy using this extension and wish to help support the project, feel free to use the links below!
+- **Background colours from the wallpaper** (2026-11-20). While Image
+  Adjustment is Scaled, the colours of the bars beside or above and below
+  the image are taken from the image's own edges. Your own colours are kept
+  and put back when the option is switched off or the adjustment changes.
+  Off by default.
+- **Keep Image Adjustment** (2026-11-20). GNOME resets the adjustment to
+  Zoom when a wallpaper is picked in Settings or Files. With this option on,
+  the extension puts the chosen adjustment back. Off by default.
+- **Include Subfolders** (2026-11-20). The slideshow also uses images in the
+  subfolders of the chosen folder, optionally only those in folders with a
+  given name, such as `Trading Cards`. Off by default.
+- **Panel icon** (2026-11-20). An icon in the top panel with the current
+  image, previous, pause and next, "Show Image in Files" and the settings.
+  Off by default.
 
-[![Donate via Paypal](https://gitlab.com/arcmenu/arcmenu-assets/raw/master/images/paypal-badge.svg){width=170}](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+Wallpaper+Slideshow&currency_code=USD&source=url) [![Buy My a Coffee](https://gitlab.com/arcmenu/arcmenu-assets/raw/master/images/bmc-badge.svg){width=170}](https://buymeacoffee.com/azaech)
+## Install the package
 
------
+1. Download the zip file attached to the latest release on the
+   [Releases page](https://github.com/gelonezi/gnome-wallpaper-rotator/releases/latest)
+   of this repository.
+2. Install it, giving the path of the file you downloaded:
 
-### Credits:
+   ```bash
+   gnome-extensions install --force <downloaded zip>
+   ```
 
-**@[AndrewZaech](https://gitlab.com/AndrewZaech) - Project Maintainer and Developer**
+3. Log out and back in.
+4. Enable it:
 
-#### Other contributions via MR:
+   ```bash
+   gnome-extensions enable gnome-wallpaper-rotator@gelonezi.github.io
+   ```
 
-**@[daPhipz](https://gitlab.com/daPhipz) - !4, !5**
+If Wallpaper Slideshow is also installed, use the slideshow of only one of
+the two extensions, or they will both change the wallpaper.
 
-**@[adamthiede](https://gitlab.com/adamthiede) - !8**
+## Build from source
 
-**@[sean288](https://gitlab.com/sean288) - !12**
+```bash
+sudo apt install gettext make zip libglib2.0-bin
+make install
+```
 
-**@[meybonomme](https://gitlab.com/meybonomme) - !13**
+Then log out and back in, and enable it as above. `make zip-file` builds the
+zip instead.
 
-**@[LeonRein](https://gitlab.com/LeonRein) - !19**
+## Limits
 
+- The background colour setting is one for all monitors, and the colours
+  are worked out for the primary monitor's shape.
+- Background colours are only set while Image Adjustment is Scaled.
+- Tested on GNOME 50 only. Declared for GNOME 45 to 51, as upstream.
 
-#### Translators:
+## Branches
 
-| Language | Translators |
-| ------ | ------ |
-| **German** | **@[daPhipz](https://gitlab.com/daPhipz), @[Amr-Ibra](https://gitlab.com/Amr-Ibra)** |
-| **French** | **@[leprous77](https://gitlab.com/leprous77)** |
-| **Occitan** | **@[Quentin](https://gitlab.com/quenty_occitania)** |
-| **Portuguese** | **@[gustavocsfreitas](https://gitlab.com/gustavocsfreitas)** |
-| **Russian** | **@[kve1989](https://gitlab.com/kve1989), @[7up4](https://gitlab.com/7up4)** |
-| **Simplified Chinese** | **@[Yesionio](https://gitlab.com/Yesionio)** |
-| **Spanish** | **@[Fer](https://gitlab.com/Imparator)** |
+Each feature is also on its own branch, based directly on upstream and free
+of this fork's name and identifier, for review by the upstream author:
 
------
+- [`feature/bar-colors`](https://github.com/gelonezi/gnome-wallpaper-rotator/tree/feature/bar-colors)
+- [`feature/keep-image-adjustment`](https://github.com/gelonezi/gnome-wallpaper-rotator/tree/feature/keep-image-adjustment)
+- [`feature/subfolders`](https://github.com/gelonezi/gnome-wallpaper-rotator/tree/feature/subfolders)
+- [`feature/panel-indicator`](https://github.com/gelonezi/gnome-wallpaper-rotator/tree/feature/panel-indicator)
+
+## Licence
+
+GPL, as upstream: the licence text is in `LICENSE`, and the About page says
+GNU General Public License, version 2 or later.
