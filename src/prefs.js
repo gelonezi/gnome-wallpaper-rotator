@@ -146,6 +146,24 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         slideShowDirRow.activatable_widget = fileChooserButton;
         slideShowGroup.add(slideShowDirRow);
 
+        const includeSubfoldersRow = new Adw.SwitchRow({
+            title: _('Include Subfolders'),
+        });
+        this._settings.bind('slideshow-include-subfolders', includeSubfoldersRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        slideShowGroup.add(includeSubfoldersRow);
+
+        // Applied on demand, so the queue is not rebuilt on every keystroke.
+        const folderFilterRow = new Adw.EntryRow({
+            title: _('Only Folders Named'),
+            text: this._settings.get_string('slideshow-folder-filter'),
+            show_apply_button: true,
+        });
+        folderFilterRow.connect('apply', widget => {
+            this._settings.set_string('slideshow-folder-filter', widget.text);
+        });
+        this._settings.bind('slideshow-include-subfolders', folderFilterRow, 'sensitive', Gio.SettingsBindFlags.GET);
+        slideShowGroup.add(folderFilterRow);
+
         const queueSortingList = new Gtk.StringList();
         queueSortingList.append(_('Random'));
         queueSortingList.append(_('A-Z (Ascending Order)'));

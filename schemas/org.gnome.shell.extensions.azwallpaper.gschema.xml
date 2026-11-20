@@ -62,6 +62,14 @@
             <default>''</default>
             <summary>The directory of the slideshow wallpapers.</summary>
         </key>
+        <key type="b" name="slideshow-include-subfolders">
+            <default>false</default>
+            <summary>Also show images from the subfolders of the slideshow directory.</summary>
+        </key>
+        <key type="s" name="slideshow-folder-filter">
+            <default>''</default>
+            <summary>When subfolders are included, only show images whose folder has this name, ignoring case. Empty shows all.</summary>
+        </key>
         <key enum="org.gnome.shell.extensions.azwallpaper.slideshow-queue-sort-type" name="slideshow-queue-sort-type">
             <default>'Random'</default>
             <summary>How to order the slideshow queue.</summary>

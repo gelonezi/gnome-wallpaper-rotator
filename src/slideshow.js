@@ -6,6 +6,7 @@ import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {Logger} from './extension.js';
 import {SlideshowSortType} from './constants.js';
+import {matchesFolderFilter, scanImages} from './folderScan.js';
 import {getPrettyFileName, notify} from './utils.js';
 
 Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
@@ -28,16 +29,17 @@ function shuffle(array) {
 async function getFileInfo(file) {
     let info;
     try {
-        info = await file.query_info_async('standard::content-type,time::created,standard::is-hidden', Gio.FileQueryInfoFlags.NONE, 0, null);
+        info = await file.query_info_async('standard::type,standard::content-type,time::created,standard::is-hidden', Gio.FileQueryInfoFlags.NONE, 0, null);
     } catch {
-        return {isImage: false, date: null};
+        return {isImage: false, isDirectory: false, date: null};
     }
 
     const contentType = info.get_content_type();
     const date = info.get_attribute_uint64('time::created').toString();
     const isHidden = info.get_is_hidden();
     const isImage = contentType.startsWith('image/') && !isHidden;
-    return {isImage, date};
+    const isDirectory = info.get_file_type() === Gio.FileType.DIRECTORY;
+    return {isImage, isDirectory, date};
 }
 
 function insertWallpaper(wallpaperQueue, newWallpaper, sortType) {
@@ -100,6 +102,8 @@ export class Slideshow extends GObject.Object {
         this._queueSaveTimeout = null;
         this._queueDirty = false;
         this._initiated = false;
+        this._folders = [];
+        this._folderMonitors = new Map();
 
         this._settings.bind(
             'slideshow-current-slide-index', this,
@@ -122,6 +126,8 @@ export class Slideshow extends GObject.Object {
         this._settings.connectObject('changed::slideshow-slide-duration', () => this._onDurationChange(), this);
         this._settings.connectObject('changed::slideshow-use-absolute-time-for-duration', () => this._onDurationChange(), this);
         this._settings.connectObject('changed::slideshow-directory', () => this._reset(), this);
+        this._settings.connectObject('changed::slideshow-include-subfolders', () => this._reset(), this);
+        this._settings.connectObject('changed::slideshow-folder-filter', () => this._reset(), this);
         this._settings.connectObject('changed::slideshow-change-slide-event', () => this._onChangeSlideEvent(), this);
 
         this._settings.connectObject('changed::slideshow-pause', () => this._updatePauseState(), this);
@@ -227,17 +233,18 @@ export class Slideshow extends GObject.Object {
         if (!isValidDirectory)
             return;
 
-        if (initiate) {
-            const monitorSuccess = this._monitorDirectory();
-            if (!monitorSuccess)
-                return;
-        }
-
         const wallpapers = await this._getWallpapersFromDirectory()
             .catch(e => {
                 console.log(`Failed to load wallpapers from directory: ${e}`);
                 return [];
             });
+
+        // Monitor after scanning, so that every folder found is watched.
+        if (initiate) {
+            const monitorSuccess = this._monitorDirectory();
+            if (!monitorSuccess)
+                return;
+        }
 
         this._updateQueue(wallpapers);
 
@@ -311,40 +318,14 @@ export class Slideshow extends GObject.Object {
 
     async _getWallpapersFromDirectory() {
         Logger.log('Get Wallpaper List');
-        const wallpaperPaths = [];
-
         const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
-        const dir = Gio.file_new_for_path(slideshowDirectoryPath);
+        const {images, folders} = await scanImages(slideshowDirectoryPath, {
+            includeSubfolders: this._settings.get_boolean('slideshow-include-subfolders'),
+            folderFilter: this._settings.get_string('slideshow-folder-filter'),
+        });
 
-        const fileInfos = [];
-        let fileEnum;
-
-        try {
-            fileEnum = await dir.enumerate_children_async(
-                'standard::name,standard::type,standard::content-type,time::created',
-                Gio.FileQueryInfoFlags.NONE,
-                GLib.PRIORITY_DEFAULT, null);
-        } catch (e) {
-            console.log(e);
-            return [];
-        }
-
-        let infos;
-        do {
-            // eslint-disable-next-line no-await-in-loop
-            infos = await fileEnum.next_files_async(100, GLib.PRIORITY_DEFAULT, null);
-            fileInfos.push(...infos);
-        } while (infos.length > 0);
-
-        for (const info of fileInfos) {
-            const name = info.get_name();
-            const contentType = info.get_content_type();
-            const date = info.get_attribute_uint64('time::created').toString();
-            if (contentType.startsWith('image/'))
-                wallpaperPaths.push({name, date});
-        }
-
-        return wallpaperPaths;
+        this._folders = folders;
+        return images;
     }
 
     async _createNewSlideshowQueue() {
@@ -539,16 +520,12 @@ export class Slideshow extends GObject.Object {
     }
 
     _clearMonitorDirectory() {
-        if (this._fileMonitor) {
+        for (const {monitor, changedId} of this._folderMonitors.values()) {
             Logger.log('Clear FileMonitor');
-            if (this._fileMonitorChangedId) {
-                Logger.log('Disconnect FileMonitor ChangedId');
-                this._fileMonitor.disconnect(this._fileMonitorChangedId);
-                this._fileMonitorChangedId = null;
-            }
-            this._fileMonitor.cancel();
-            this._fileMonitor = null;
+            monitor.disconnect(changedId);
+            monitor.cancel();
         }
+        this._folderMonitors.clear();
     }
 
     _monitorDirectory() {
@@ -557,30 +534,26 @@ export class Slideshow extends GObject.Object {
         const sortType = this._settings.get_enum('slideshow-queue-sort-type');
         const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
         const dir = Gio.file_new_for_path(slideshowDirectoryPath);
+        const includeSubfolders = this._settings.get_boolean('slideshow-include-subfolders');
+        const folderFilter = includeSubfolders ? this._settings.get_string('slideshow-folder-filter') : '';
 
-        // monitor_directory() can throw if 'slideshow-directory' is malformed
-        try {
-            this._fileMonitor = dir.monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
-        } catch (e) {
-            notify(_('Failed to monitor slideshow directory!'), _('Error: %s').format(e));
-            return false;
-        }
-
-        this._fileMonitor.set_rate_limit(5000);
-
-        this._fileMonitorChangedId = this._fileMonitor.connect('changed', async (_monitor, file, otherFile, eventType) => {
+        const onChanged = async (_monitor, file, otherFile, eventType) => {
             const currentWallpaper = this._settings.get_string('slideshow-current-wallpaper');
-            const fileName = file.get_basename();
+            const fileName = dir.get_relative_path(file);
 
             const index = this._wallpaperQueue.findIndex(q => q.name === fileName);
             const fileInQueue = index >= 0;
 
-            const newFileName = otherFile?.get_basename();
+            const newFileName = otherFile ? dir.get_relative_path(otherFile) : undefined;
 
             switch (eventType) {
-            case Gio.FileMonitorEvent.CREATED:
+            case Gio.FileMonitorEvent.CREATED: {
                 Logger.log(`Slideshow Directory - ${fileName} created.`);
+                const fileInfo = includeSubfolders ? await getFileInfo(file) : null;
+                if (fileInfo?.isDirectory)
+                    this._restart();
                 break;
+            }
             case Gio.FileMonitorEvent.DELETED:
             case Gio.FileMonitorEvent.MOVED_OUT:
                 Logger.log(`Slideshow Directory - ${fileName} deleted/moved out.`);
@@ -589,8 +562,8 @@ export class Slideshow extends GObject.Object {
                     this._saveWallpaperQueue();
                 }
 
-                // The slideshow directory was deleted or moved.
-                if (file.get_path() === slideshowDirectoryPath)
+                // The slideshow directory, or one of its monitored subfolders, was deleted or moved.
+                if (this._folderMonitors.has(file.get_path()))
                     this._restart();
 
                 break;
@@ -603,7 +576,12 @@ export class Slideshow extends GObject.Object {
 
                 const fileInfo = await getFileInfo(file);
                 const fileData = {name: fileName, date: fileInfo.date};
-                if (!fileInfo.isImage) {
+                if (includeSubfolders && fileInfo.isDirectory && eventType === Gio.FileMonitorEvent.MOVED_IN) {
+                    this._restart();
+                    break;
+                }
+
+                if (!fileInfo.isImage || !matchesFolderFilter(fileName, folderFilter)) {
                     Logger.log(`Slideshow Directory - "${fileName}" is not a valid image.`);
                     break;
                 }
@@ -615,10 +593,16 @@ export class Slideshow extends GObject.Object {
             }
             case Gio.FileMonitorEvent.RENAMED: {
                 Logger.log(`Slideshow Directory - ${fileName} renamed.`);
+                if (this._folderMonitors.has(file.get_path())) {
+                    this._restart();
+                    break;
+                }
+
                 const fileInfo = await getFileInfo(otherFile);
                 const fileData = {name: newFileName, date: fileInfo.date};
+                const isImage = fileInfo.isImage && matchesFolderFilter(newFileName, folderFilter);
 
-                if (fileInQueue && fileInfo.isImage) {
+                if (fileInQueue && isImage) {
                     // Replace the old file with the new file
                     if (sortType === SlideshowSortType.RANDOM) {
                         Logger.log(`Slideshow Directory - Renamed "${fileName}" at index:${index} to "${newFileName}"`);
@@ -628,11 +612,11 @@ export class Slideshow extends GObject.Object {
                         this._removeFromQueue(fileName, index);
                         this._addToQueue(fileData);
                     }
-                } else if (fileInQueue && !fileInfo.isImage) {
+                } else if (fileInQueue && !isImage) {
                     // Remove the old file from the queue
                     this._removeFromQueue(fileName, index);
                     Logger.log(`Slideshow Directory - "${newFileName}" is not a valid image.`);
-                } else if (fileInfo.isImage) {
+                } else if (isImage) {
                     // The old file wasn't in queue, but the renamed file type is valid.
                     Logger.log(`Slideshow Directory - Renamed "${fileName}" to "${newFileName}".`);
                     this._addToQueue(fileData);
@@ -657,7 +641,23 @@ export class Slideshow extends GObject.Object {
             default:
                 break;
             }
-        });
+        };
+
+        for (const folder of this._folders) {
+            let monitor;
+            // monitor_directory() can throw if 'slideshow-directory' is malformed
+            try {
+                monitor = Gio.file_new_for_path(folder).monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
+            } catch (e) {
+                this._clearMonitorDirectory();
+                notify(_('Failed to monitor slideshow directory!'), _('Error: %s').format(e));
+                return false;
+            }
+
+            monitor.set_rate_limit(5000);
+            const changedId = monitor.connect('changed', onChanged);
+            this._folderMonitors.set(folder, {monitor, changedId});
+        }
 
         return true;
     }
