@@ -917,7 +917,7 @@ export class Slideshow extends GObject.Object {
             return;
 
         const currentSlidePath = this._settings.get_string('slideshow-current-wallpaper');
-        const prettyFileName = getPrettyFileName(currentSlidePath);
+        const prettyFileName = getPrettyFileName(currentSlidePath && GLib.path_get_basename(currentSlidePath));
         const bodyText = _('Slideshow paused on slide %s').format(prettyFileName);
         notify(_('Slideshow Paused'), bodyText);
     }
