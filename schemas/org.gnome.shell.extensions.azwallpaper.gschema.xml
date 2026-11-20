@@ -106,6 +106,14 @@
             <default>true</default>
             <summary>Adds an entry to the quick settings menu to control current slide and open settings.</summary>
         </key>
+        <key type="b" name="slideshow-bar-colors-from-image">
+            <default>false</default>
+            <summary>Take the background colours from the wallpaper's edges while Image Adjustment is Scaled.</summary>
+        </key>
+        <key type="as" name="slideshow-bar-colors-saved">
+            <default>[]</default>
+            <summary>The user's background colours, kept while the wallpaper colours are in use.</summary>
+        </key>
         <key type="b" name="slideshow-pause">
             <default>false</default>
             <summary>Pause the slideshow.</summary>

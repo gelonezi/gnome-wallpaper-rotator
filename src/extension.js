@@ -12,6 +12,7 @@ import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js'
 import {Extension, gettext as _, InjectionManager} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
 
+import {BarColorWatcher} from './barColors.js';
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
 import {getPrettyFileName, showImageInFiles} from './utils.js';
 import {Slideshow} from './slideshow.js';
@@ -29,6 +30,7 @@ export default class AzWallpaper extends Extension {
         this._logger = new Logger(this._settings);
 
         this._slideshow = new Slideshow(this);
+        this._barColorWatcher = new BarColorWatcher({settings: this._settings, log: msg => Logger.log(msg)});
         this._bingWallpaperDownloader = new BingWallpaperDownloader(this);
         this._injectionManager = new InjectionManager();
 
@@ -127,6 +129,8 @@ export default class AzWallpaper extends Extension {
         this._updateNotification = null;
         this._bingWallpaperDownloader.destroy();
         this._bingWallpaperDownloader = null;
+        this._barColorWatcher.destroy();
+        this._barColorWatcher = null;
         this._slideshow.destroy();
         this._slideshow = null;
         this._logger.destroy();
