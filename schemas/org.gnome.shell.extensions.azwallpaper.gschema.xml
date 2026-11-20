@@ -106,6 +106,14 @@
             <default>true</default>
             <summary>Adds an entry to the quick settings menu to control current slide and open settings.</summary>
         </key>
+        <key type="b" name="slideshow-keep-image-adjustment">
+            <default>false</default>
+            <summary>Restore the chosen image adjustment whenever something else changes it.</summary>
+        </key>
+        <key type="s" name="slideshow-image-adjustment">
+            <default>''</default>
+            <summary>The image adjustment to keep, as a picture-options nick. Empty means none chosen yet.</summary>
+        </key>
         <key type="b" name="slideshow-pause">
             <default>false</default>
             <summary>Pause the slideshow.</summary>

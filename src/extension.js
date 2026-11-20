@@ -13,6 +13,7 @@ import {Extension, gettext as _, InjectionManager} from 'resource:///org/gnome/s
 import * as LoginManager from 'resource:///org/gnome/shell/misc/loginManager.js';
 
 import {BingWallpaperDownloader} from './bingWallpaperDownloader.js';
+import {ImageAdjustmentKeeper} from './imageAdjustment.js';
 import {getPrettyFileName, showImageInFiles} from './utils.js';
 import {Slideshow} from './slideshow.js';
 import {UpdateNotification} from './updateNotifier.js';
@@ -29,6 +30,7 @@ export default class AzWallpaper extends Extension {
         this._logger = new Logger(this._settings);
 
         this._slideshow = new Slideshow(this);
+        this._imageAdjustmentKeeper = new ImageAdjustmentKeeper({settings: this._settings});
         this._bingWallpaperDownloader = new BingWallpaperDownloader(this);
         this._injectionManager = new InjectionManager();
 
@@ -127,6 +129,8 @@ export default class AzWallpaper extends Extension {
         this._updateNotification = null;
         this._bingWallpaperDownloader.destroy();
         this._bingWallpaperDownloader = null;
+        this._imageAdjustmentKeeper.destroy();
+        this._imageAdjustmentKeeper = null;
         this._slideshow.destroy();
         this._slideshow = null;
         this._logger.destroy();

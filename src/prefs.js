@@ -335,6 +335,8 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         adjustmentList.append(_('Stretched'));
         adjustmentList.append(_('Zoom'));
         adjustmentList.append(_('Spanned'));
+        // The nicks of picture-options, in the order of the list above.
+        const adjustmentNicks = ['none', 'wallpaper', 'centered', 'scaled', 'stretched', 'zoom', 'spanned'];
 
         const backgroundAdjustRow = new Adw.ComboRow({
             title: _('Image Adjustment'),
@@ -342,9 +344,18 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
             selected: this._backgroundSettings.get_enum('picture-options'),
         });
         backgroundAdjustRow.connect('notify::selected', widget => {
+            // Stored first, so the extension never sees the new adjustment before the new choice.
+            this._settings.set_string('slideshow-image-adjustment', adjustmentNicks[widget.selected]);
             this._backgroundSettings.set_enum('picture-options', widget.selected);
         });
         wallpaperOptionsGroup.add(backgroundAdjustRow);
+
+        const keepAdjustmentRow = new Adw.SwitchRow({
+            title: _('Keep Image Adjustment'),
+            subtitle: _('Restores the adjustment above when GNOME changes it, for example after choosing a wallpaper in Settings.'),
+        });
+        this._settings.bind('slideshow-keep-image-adjustment', keepAdjustmentRow, 'active', Gio.SettingsBindFlags.DEFAULT);
+        wallpaperOptionsGroup.add(keepAdjustmentRow);
 
         const backgroundOptionsGroup = new Adw.PreferencesGroup({
             title: _('Background Color Options'),
