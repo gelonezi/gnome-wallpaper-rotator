@@ -114,6 +114,14 @@
             <default>[]</default>
             <summary>The user's background colours, kept while the wallpaper colours are in use.</summary>
         </key>
+        <key type="b" name="slideshow-keep-image-adjustment">
+            <default>false</default>
+            <summary>Restore the chosen image adjustment whenever something else changes it.</summary>
+        </key>
+        <key type="s" name="slideshow-image-adjustment">
+            <default>''</default>
+            <summary>The image adjustment to keep, as a picture-options nick. Empty means none chosen yet.</summary>
+        </key>
         <key type="b" name="slideshow-pause">
             <default>false</default>
             <summary>Pause the slideshow.</summary>
