@@ -341,6 +341,15 @@ class azWallpaperSlideShowPage extends Adw.PreferencesPage {
         });
         slideshowSettingGroup.add(quickSettingsRow);
 
+        const panelIndicatorRow = new Adw.SwitchRow({
+            title: _('Show Slide Controls in the Top Panel'),
+            active: this._settings.get_boolean('slideshow-show-panel-indicator'),
+        });
+        panelIndicatorRow.connect('notify::active', widget => {
+            this._settings.set_boolean('slideshow-show-panel-indicator', widget.get_active());
+        });
+        slideshowSettingGroup.add(panelIndicatorRow);
+
         const wallpaperOptionsGroup = new Adw.PreferencesGroup({
             title: _('Wallpaper Options'),
         });

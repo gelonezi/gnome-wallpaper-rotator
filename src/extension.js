@@ -6,6 +6,7 @@ import St from 'gi://St';
 
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
 
@@ -37,6 +38,7 @@ export default class AzWallpaper extends Extension {
         this._injectionManager = new InjectionManager();
 
         this._createQuickSettingsEntry();
+        this._createPanelIndicator();
         this._updateNotification = new UpdateNotification(this);
 
         this._injectionManager.overrideMethod(Main.layoutManager, '_addBackgroundMenu', originalMethod => {
@@ -62,6 +64,7 @@ export default class AzWallpaper extends Extension {
                 this._settings.set_strv('bing-wallpapers-downloaded', []);
         }, this);
         this._settings.connectObject('changed::slideshow-show-quick-settings-entry', () => this._createQuickSettingsEntry(), this);
+        this._settings.connectObject('changed::slideshow-show-panel-indicator', () => this._createPanelIndicator(), this);
 
         if (!Main.layoutManager._startingUp) {
             this._startExtension();
@@ -125,6 +128,11 @@ export default class AzWallpaper extends Extension {
         if (this._quickMenuItem) {
             this._quickMenuItem.destroy();
             this._quickMenuItem = null;
+        }
+
+        if (this._panelIndicator) {
+            this._panelIndicator.destroy();
+            this._panelIndicator = null;
         }
 
         this._updateNotification.destroy();
@@ -197,6 +205,20 @@ export default class AzWallpaper extends Extension {
 
         if (showQuickSettingsEntry)
             this._quickMenuItem = new SlideshowQuickMenu(this);
+    }
+
+    _createPanelIndicator() {
+        const showPanelIndicator = this._settings.get_boolean('slideshow-show-panel-indicator');
+
+        if (this._panelIndicator) {
+            this._panelIndicator.destroy();
+            this._panelIndicator = null;
+        }
+
+        if (showPanelIndicator) {
+            this._panelIndicator = new SlideshowPanelIndicator(this);
+            Main.panel.addToStatusArea(this.uuid, this._panelIndicator);
+        }
     }
 
     openPreferences() {
@@ -290,6 +312,55 @@ class SlideshowQuickMenu extends QuickSettings.QuickMenuToggle {
     _updatePauseState() {
         const isPaused = this._slideshow.paused;
         this.checked = !isPaused;
+    }
+});
+
+const SlideshowPanelIndicator = GObject.registerClass(
+class SlideshowPanelIndicator extends PanelMenu.Button {
+    _init(extension) {
+        super._init(0.5, _('Wallpaper Slideshow'));
+
+        this._slideshow = extension.slideshow;
+        this._settings = extension.settings;
+
+        this._icon = new St.Icon({
+            icon_name: 'image-x-generic-symbolic',
+            style_class: 'system-status-icon',
+        });
+        this.add_child(this._icon);
+
+        this._slideshow.connectObject('notify::paused', () => this._updatePauseState(), this);
+        this._updatePauseState();
+
+        this.menu.addMenuItem(new SlideInfoMenuItem(this._slideshow));
+
+        const slideControlsMenuItem = new SlideControlsMenuItem(extension);
+        slideControlsMenuItem.connectObject('toggle-pause', () => this._togglePause(), this);
+        this.menu.addMenuItem(slideControlsMenuItem);
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+        const showInFilesMenuItem = new PopupMenu.PopupMenuItem(_('Show Image in Files'));
+        showInFilesMenuItem.connect('activate', () => {
+            const filePath = this._slideshow.getCurrentSlide().path;
+            showImageInFiles(filePath);
+        });
+        this.menu.addMenuItem(showInFilesMenuItem);
+
+        const settingsMenuItem = new PopupMenu.PopupMenuItem(_('Slideshow Settings'));
+        settingsMenuItem.connect('activate', () => extension.openPreferences());
+        this.menu.addMenuItem(settingsMenuItem);
+    }
+
+    _togglePause() {
+        const isPaused = this._settings.get_boolean('slideshow-pause');
+        const newPaused = !isPaused;
+
+        this._settings.set_boolean('slideshow-pause', newPaused);
+    }
+
+    _updatePauseState() {
+        this._icon.opacity = this._slideshow.paused ? 128 : 255;
     }
 });
 
