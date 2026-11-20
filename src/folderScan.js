@@ -52,19 +52,21 @@ async function listFolder(dir) {
  * @param {boolean} options.includeSubfolders whether to scan subfolders
  * @param {string} options.folderFilter only keep images whose folder has this name (subfolders only)
  * @param {Function} [options.onFolder] called with each folder's absolute path just before it is read
+ * @param {string} [options.startPath] scan only this folder under rootPath and its subfolders
  * @returns {Promise<{images: Array<{name: string, date: string}>, folders: string[]}>}
- * images with paths relative to rootPath, and the absolute path of every folder scanned, root first
+ * images with paths relative to rootPath, and the absolute path of every folder scanned, start folder first
  */
-export async function scanImages(rootPath, {includeSubfolders, folderFilter, onFolder}) {
+export async function scanImages(rootPath, {includeSubfolders, folderFilter, onFolder, startPath = rootPath}) {
     const root = Gio.file_new_for_path(rootPath);
+    const start = Gio.file_new_for_path(startPath);
     const filter = includeSubfolders ? folderFilter : '';
     const images = [];
-    const folders = [rootPath];
-    const pending = [root];
+    const folders = [startPath];
+    const pending = [start];
 
     while (pending.length > 0) {
         const dir = pending.shift();
-        onFolder?.(dir === root ? rootPath : dir.get_path());
+        onFolder?.(dir === start ? startPath : dir.get_path());
 
         let fileInfos;
         try {
@@ -72,12 +74,12 @@ export async function scanImages(rootPath, {includeSubfolders, folderFilter, onF
             fileInfos = await listFolder(dir);
         } catch (e) {
             // An unreadable subfolder is skipped quietly; only report the root, as before.
-            if (dir === root)
+            if (dir === start && startPath === rootPath)
                 console.log(e);
             continue;
         }
 
-        if (dir !== root)
+        if (dir !== start)
             folders.push(dir.get_path());
 
         for (const info of fileInfos) {

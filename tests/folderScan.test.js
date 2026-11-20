@@ -70,6 +70,15 @@ try {
     assertEqual(seen[0], root, 'onFolder sees the root first');
     assertEqual(seen.slice(1).sort(), ['Game One', 'Game One/Backgrounds', 'Game One/Trading Cards', 'Game Two', 'Game Two/trading cards', 'locked'].map(f => `${root}/${f}`),
         'onFolder sees every folder it tries to read, unreadable ones included');
+
+    const seenFromSub = [];
+    r = await scanImages(root, {includeSubfolders: true, folderFilter: '', startPath: `${root}/Game One`, onFolder: path => seenFromSub.push(path)});
+    assertEqual(names(r), ['Game One/Backgrounds/b1.png', 'Game One/Trading Cards/c1.png'], 'scan from a subfolder keeps names relative to the root');
+    assertEqual(seenFromSub.sort(), ['Game One', 'Game One/Backgrounds', 'Game One/Trading Cards'].map(f => `${root}/${f}`),
+        'scan from a subfolder reads only that subtree');
+
+    r = await scanImages(root, {includeSubfolders: true, folderFilter: 'Trading Cards', startPath: `${root}/Game One/Trading Cards`});
+    assertEqual(names(r), ['Game One/Trading Cards/c1.png'], 'filter applies to images directly in the start folder');
 } finally {
     GLib.chmod(`${root}/locked`, 0o755);
     deleteTree(Gio.File.new_for_path(root));

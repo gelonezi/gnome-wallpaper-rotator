@@ -10,8 +10,6 @@ import {matchesFolderFilter, scanImages} from './folderScan.js';
 import {getPrettyFileName, notify} from './utils.js';
 
 Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
-Gio._promisify(Gio.File.prototype, 'enumerate_children_async', 'enumerate_children_finish');
-Gio._promisify(Gio.FileEnumerator.prototype, 'next_files_async', 'next_files_finish');
 
 // Cap the slide duration to a minimun of 5 seconds
 const MIN_DURATION = 5;
@@ -29,17 +27,18 @@ function shuffle(array) {
 async function getFileInfo(file) {
     let info;
     try {
-        info = await file.query_info_async('standard::type,standard::content-type,time::created,standard::is-hidden', Gio.FileQueryInfoFlags.NONE, 0, null);
+        info = await file.query_info_async('standard::type,standard::content-type,time::created,standard::is-hidden,standard::is-symlink', Gio.FileQueryInfoFlags.NONE, 0, null);
     } catch {
-        return {isImage: false, isDirectory: false, date: null};
+        return {isImage: false, isFolder: false, date: null};
     }
 
     const contentType = info.get_content_type();
     const date = info.get_attribute_uint64('time::created').toString();
     const isHidden = info.get_is_hidden();
     const isImage = contentType.startsWith('image/') && !isHidden;
-    const isDirectory = info.get_file_type() === Gio.FileType.DIRECTORY;
-    return {isImage, isDirectory, date};
+    // A folder the slideshow scans: hidden folders and links to folders are skipped.
+    const isFolder = info.get_file_type() === Gio.FileType.DIRECTORY && !isHidden && !info.get_is_symlink();
+    return {isImage, isFolder, date};
 }
 
 function insertWallpaper(wallpaperQueue, newWallpaper, sortType) {
@@ -77,15 +76,6 @@ function insertWallpaper(wallpaperQueue, newWallpaper, sortType) {
     return low;
 }
 
-function insertNewWallpaper(wallpaperQueue, newWallpaper, sortType) {
-    if (sortType !== SlideshowSortType.RANDOM)
-        return insertWallpaper(wallpaperQueue, newWallpaper, sortType);
-
-    const index = Math.floor(Math.random() * (wallpaperQueue.length + 1));
-    wallpaperQueue.splice(index, 0, newWallpaper);
-    return index;
-}
-
 export class Slideshow extends GObject.Object {
     static [GObject.properties] = {
         'slide-index': GObject.ParamSpec.int('slide-index', 'slide-index', 'slide-index',
@@ -113,7 +103,6 @@ export class Slideshow extends GObject.Object {
         this._initiated = false;
         this._folderMonitors = new Map();
         this._onMonitorChanged = null;
-        this._rescanGeneration = 0;
 
         this._settings.bind(
             'slideshow-current-slide-index', this,
@@ -329,13 +318,13 @@ export class Slideshow extends GObject.Object {
         Logger.log('Queue validity check done!');
     }
 
-    async _getWallpapersFromDirectory(monitorFolders = false) {
+    async _getWallpapersFromDirectory(monitorFolders = false, startPath) {
         Logger.log('Get Wallpaper List');
         const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
         const onChanged = this._onMonitorChanged;
 
         // Each folder is monitored before it is read, so no file written during the scan is missed.
-        // Stop once the monitors were cleared or rebuilt for a newer scan.
+        // Stop once the monitors were cleared for a reset, restart or destroy.
         const onFolder = path => {
             if (!onChanged || this._onMonitorChanged !== onChanged || this._folderMonitors.has(path))
                 return;
@@ -350,63 +339,46 @@ export class Slideshow extends GObject.Object {
             includeSubfolders: this._settings.get_boolean('slideshow-include-subfolders'),
             folderFilter: this._settings.get_string('slideshow-folder-filter'),
             onFolder: monitorFolders ? onFolder : null,
+            startPath,
         });
         return images;
     }
 
-    /**
-     * Folders were added, removed or renamed: merge the new folder contents into the queue,
-     * keeping the current slide.
-     */
-    async _rescanFolders() {
-        Logger.log('Slideshow Directory - folders changed. Rescanning.');
+    // A folder appeared: monitor it and its subfolders, and queue their images.
+    async _addFolder(path) {
+        Logger.log(`Slideshow Directory - folder ${path} added.`);
         const onChanged = this._onMonitorChanged;
-        const generation = ++this._rescanGeneration;
-        // Only entries queued before the scan can be missing from it. Ones the monitors
-        // add while it runs stay, and deletions during the scan arrive as DELETED events.
-        const namesBeforeScan = new Set(this._wallpaperQueue.map(fileData => fileData.name));
-        const wallpapers = await this._getWallpapersFromDirectory(true)
-            .catch(e => {
-                console.log(`Failed to load wallpapers from directory: ${e}`);
-                return null;
-            });
+        const wallpapers = await this._getWallpapersFromDirectory(true, path);
 
-        // Destroyed, restarted or reset while scanning, or a newer rescan is running.
-        if (!wallpapers || !onChanged || this._onMonitorChanged !== onChanged || generation !== this._rescanGeneration)
+        // Destroyed, restarted or reset while scanning.
+        if (this._onMonitorChanged !== onChanged)
             return;
 
-        // Merge here rather than in _updateQueue(): its per-file helpers can reset or
-        // initiate the slideshow halfway through the merge.
-        const oldQueue = this._wallpaperQueue;
-        const queuedNames = new Set(oldQueue.map(fileData => fileData.name));
-        const dirNames = new Set(wallpapers.map(fileData => fileData.name));
-        const isGone = name => namesBeforeScan.has(name) && !dirNames.has(name);
-        const keptQueue = oldQueue.filter(fileData => !isGone(fileData.name));
-        const newWallpapers = wallpapers.filter(fileData => !queuedNames.has(fileData.name));
-        if (keptQueue.length === oldQueue.length && newWallpapers.length === 0)
-            return;
+        for (const fileData of wallpapers)
+            this._addToQueue(fileData);
 
-        // The current slide, or the next one still present if it was removed.
-        const slidesFromCurrent = this._isIndexInRange() ? oldQueue.slice(this.slideIndex) : [];
-        const keptSlide = slidesFromCurrent.find(fileData => !isGone(fileData.name))?.name;
+        if (wallpapers.length > 0)
+            this._saveWallpaperQueue();
+    }
 
-        const sortType = this._settings.get_enum('slideshow-queue-sort-type');
-        this._wallpaperQueue = keptQueue;
-        for (const fileData of newWallpapers)
-            insertNewWallpaper(this._wallpaperQueue, fileData, sortType);
+    // A monitored folder is gone: stop monitoring it and its subfolders, and unqueue their images.
+    _removeFolder(path, relativePath) {
+        Logger.log(`Slideshow Directory - folder ${relativePath} removed.`);
+        this._removeFolderMonitors(p => p === path || p.startsWith(`${path}/`));
 
-        if (this._isQueueEmpty()) {
-            await this._reset();
-            return;
+        const goneNames = this._wallpaperQueue
+            .map(fileData => fileData.name)
+            .filter(name => name.startsWith(`${relativePath}/`));
+        for (const name of goneNames) {
+            const index = this._wallpaperQueue.findIndex(q => q.name === name);
+            // The queue was emptied and the slideshow reset.
+            if (index < 0)
+                return;
+            this._removeFromQueue(name, index);
         }
 
-        this.slideIndex = Math.max(this._wallpaperQueue.findIndex(fileData => fileData.name === keptSlide), 0);
-        this._saveWallpaperQueue(true);
-        Logger.log(`Queue updated. Now has ${this._wallpaperQueue.length} items.`);
-
-        // Start the slideshow if it is not running, e.g. because the queue was empty.
-        if (!this._slideshowId && !this.paused)
-            this._initiate();
+        if (goneNames.length > 0)
+            this._saveWallpaperQueue();
     }
 
     async _createNewSlideshowQueue() {
@@ -623,11 +595,6 @@ export class Slideshow extends GObject.Object {
         this._folderMonitors.set(path, {monitor, changedId});
     }
 
-    _forgetFolder(path) {
-        Logger.log(`Slideshow Directory - folder ${path} removed. Stop monitoring it.`);
-        this._removeFolderMonitors(p => p === path || p.startsWith(`${path}/`));
-    }
-
     _monitorDirectory() {
         this._clearMonitorDirectory();
 
@@ -636,6 +603,9 @@ export class Slideshow extends GObject.Object {
         const dir = Gio.file_new_for_path(slideshowDirectoryPath);
         const includeSubfolders = this._settings.get_boolean('slideshow-include-subfolders');
         const folderFilter = includeSubfolders ? this._settings.get_string('slideshow-folder-filter') : '';
+
+        // The monitors were cleared for a reset, restart or destroy while this event was handled.
+        const isStale = () => this._onMonitorChanged !== onChanged;
 
         const onChanged = async (_monitor, file, otherFile, eventType) => {
             const currentWallpaper = this._settings.get_string('slideshow-current-wallpaper');
@@ -650,8 +620,8 @@ export class Slideshow extends GObject.Object {
             case Gio.FileMonitorEvent.CREATED: {
                 Logger.log(`Slideshow Directory - ${fileName} created.`);
                 const fileInfo = includeSubfolders ? await getFileInfo(file) : null;
-                if (fileInfo?.isDirectory)
-                    this._rescanFolders().catch(e => console.log(e));
+                if (fileInfo?.isFolder && !isStale())
+                    this._addFolder(file.get_path()).catch(e => console.log(e));
                 break;
             }
             case Gio.FileMonitorEvent.DELETED:
@@ -663,12 +633,10 @@ export class Slideshow extends GObject.Object {
                 }
 
                 // The slideshow directory was deleted or moved.
-                if (file.get_path() === slideshowDirectoryPath) {
+                if (file.get_path() === slideshowDirectoryPath)
                     this._restart();
-                } else if (includeSubfolders && this._folderMonitors.has(file.get_path())) {
-                    this._forgetFolder(file.get_path());
-                    this._rescanFolders().catch(e => console.log(e));
-                }
+                else if (this._folderMonitors.has(file.get_path()))
+                    this._removeFolder(file.get_path(), fileName);
 
                 break;
             case Gio.FileMonitorEvent.CHANGES_DONE_HINT:
@@ -679,9 +647,12 @@ export class Slideshow extends GObject.Object {
                     Logger.log(`Slideshow Directory - ${fileName} moved in.`);
 
                 const fileInfo = await getFileInfo(file);
+                if (isStale())
+                    break;
+
                 const fileData = {name: fileName, date: fileInfo.date};
-                if (includeSubfolders && fileInfo.isDirectory && eventType === Gio.FileMonitorEvent.MOVED_IN) {
-                    this._rescanFolders().catch(e => console.log(e));
+                if (includeSubfolders && fileInfo.isFolder && eventType === Gio.FileMonitorEvent.MOVED_IN) {
+                    this._addFolder(file.get_path()).catch(e => console.log(e));
                     break;
                 }
 
@@ -703,11 +674,18 @@ export class Slideshow extends GObject.Object {
                 }
 
                 const fileInfo = await getFileInfo(otherFile);
-                if (includeSubfolders && (fileInfo.isDirectory || this._folderMonitors.has(file.get_path()))) {
-                    this._forgetFolder(file.get_path());
-                    this._rescanFolders().catch(e => console.log(e));
+                if (isStale())
                     break;
-                }
+
+                // A folder renamed in place: the old path goes out of the slideshow, the new one comes in.
+                const isNewFolder = includeSubfolders && fileInfo.isFolder;
+                const wasFolder = this._folderMonitors.has(file.get_path());
+                if (wasFolder)
+                    this._removeFolder(file.get_path(), fileName);
+                if (isNewFolder && !isStale())
+                    this._addFolder(otherFile.get_path()).catch(e => console.log(e));
+                if (wasFolder || isNewFolder)
+                    break;
 
                 const fileData = {name: newFileName, date: fileInfo.date};
                 const isImage = fileInfo.isImage && matchesFolderFilter(newFileName, folderFilter);
@@ -800,7 +778,14 @@ export class Slideshow extends GObject.Object {
             return;
         }
 
-        const index = insertNewWallpaper(this._wallpaperQueue, fileData, sortType);
+        let index;
+        if (sortType === SlideshowSortType.RANDOM) {
+            index = Math.floor(Math.random() * (this._wallpaperQueue.length + 1));
+            this._wallpaperQueue.splice(index, 0, fileData);
+        } else {
+            index = insertWallpaper(this._wallpaperQueue, fileData, sortType);
+        }
+
         Logger.log(`Insert "${fileName}" at index:${index}`);
 
         if (index <= this.slideIndex)
