@@ -39,8 +39,8 @@ his users see no change until they switch a feature on.
   One file monitor per folder, each set before that folder is read. A folder
   that appears is scanned on its own and its images go through his
   `_addToQueue`; a folder that goes away has its images removed through his
-  `_removeFromQueue`; a rename does both. The slideshow is not restarted and
-  the current slide stays. New file `src/folderScan.js`; changes in
+  `_removeFromQueue`; a rename does both. The slideshow is not restarted; the
+  current slide stays unless its folder was removed. New file `src/folderScan.js`; changes in
   `src/slideshow.js`; two rows in prefs. Keys `slideshow-include-subfolders`
   and `slideshow-folder-filter`.
 - **Panel icon**:
