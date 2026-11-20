@@ -1,12 +1,12 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the Wallpaper Slideshow package.
+# This file is distributed under the same license as the Wallpaper Rotator package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Wallpaper Slideshow\n"
+"Project-Id-Version: Wallpaper Rotator\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-11-20 12:05-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -57,8 +57,7 @@ msgstr ""
 msgid "Slideshow"
 msgstr ""
 
-#: src/extension.js:284 src/extension.js:321 src/prefs.js:671 src/prefs.js:1035
-#: src/utils.js:11
+#: src/extension.js:284 src/extension.js:321 src/prefs.js:1040
 msgid "Wallpaper Slideshow"
 msgstr ""
 
@@ -361,6 +360,10 @@ msgstr ""
 msgid "About"
 msgstr ""
 
+#: src/prefs.js:671 src/utils.js:11
+msgid "Wallpaper Rotator"
+msgstr ""
+
 #: src/prefs.js:672
 msgid "Optionally downloads BING wallpaper of the day."
 msgstr ""
@@ -406,89 +409,92 @@ msgstr ""
 msgid "Windowing System"
 msgstr ""
 
-#. TRANSLATORS: 'PROJECT_NAME' on GitLab
+#. TRANSLATORS: 'PROJECT_NAME' on GitHub
 #: src/prefs.js:830
 #, javascript-format
-msgid "%s on GitLab"
+msgid "%s on GitHub"
 msgstr ""
 
 #: src/prefs.js:833
 msgid "Report an Issue"
 msgstr ""
 
+#: src/prefs.js:836
+msgid "A fork of Wallpaper Slideshow by Andrew Zaech, with proposed features"
+msgstr ""
+
 #. TRANSLATORS: 'PROJECT_NAME' Settings
-#: src/prefs.js:843
+#: src/prefs.js:847
 #, javascript-format
 msgid "%s Settings"
 msgstr ""
 
-#: src/prefs.js:846
+#: src/prefs.js:850
 msgid "Load"
 msgstr ""
 
-#: src/prefs.js:851
+#: src/prefs.js:855
 msgid "Load Settings"
 msgstr ""
 
-#: src/prefs.js:877
+#: src/prefs.js:881
 msgid "Save"
 msgstr ""
 
-#: src/prefs.js:882
+#: src/prefs.js:886
 msgid "Save Settings"
 msgstr ""
 
-#: src/prefs.js:912
+#: src/prefs.js:916
 msgid "Enable Debug Mode"
 msgstr ""
 
-#: src/prefs.js:913
+#: src/prefs.js:917
 msgid "Show extensive messages in logs for debugging."
 msgstr ""
 
-#: src/prefs.js:919 src/prefs.js:920
+#: src/prefs.js:923 src/prefs.js:924
 msgid "Legal"
 msgstr ""
 
-#: src/prefs.js:926
+#: src/prefs.js:930
 msgid "This program comes with absolutely no warranty."
 msgstr ""
 
-#: src/prefs.js:928
+#: src/prefs.js:932
 msgid "GNU General Public License, version 2 or later"
 msgstr ""
 
 #. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
-#: src/prefs.js:928
+#: src/prefs.js:932
 #, javascript-format
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: src/prefs.js:1030 src/updateNotifier.js:85
+#: src/prefs.js:1034 src/updateNotifier.js:85
 msgid "Donate"
 msgstr ""
 
-#: src/prefs.js:1040
-#, javascript-format
-msgid "Help Support %s"
+#: src/prefs.js:1045
+msgid "Support the Original Author"
 msgstr ""
 
-#: src/prefs.js:1041 src/updateNotifier.js:73
+#: src/prefs.js:1046 src/updateNotifier.js:73
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
 "continued development, please consider making a donation."
 msgstr ""
 
-#: src/prefs.js:1045
+#: src/prefs.js:1050
 msgid "Donate via PayPal"
 msgstr ""
 
-#: src/prefs.js:1048
+#: src/prefs.js:1053
 msgid "Donate via Buy Me a Coffee"
 msgstr ""
 
-#: src/prefs.js:1060
+#: src/prefs.js:1065
 #, javascript-format
 msgid ""
 "A huge thank you to everyone who has supported %s! Your support helps keep "

@@ -1,10 +1,10 @@
 .PHONY: all clean extension potfile install prefs enable disable reset info show updatepo zip-file
 
 GETTEXT_DOMAIN = azwallpaper
-NAME = Wallpaper Slideshow
-RESOURCES_PATH = /org/gnome/shell/extensions/azwallpaper
-SETTINGS_SCHEMA = org.gnome.shell.extensions.azwallpaper
-UUID = azwallpaper@azwallpaper.gitlab.com
+NAME = Wallpaper Rotator
+RESOURCES_PATH = /org/gnome/shell/extensions/gnome-wallpaper-rotator
+SETTINGS_SCHEMA = org.gnome.shell.extensions.gnome-wallpaper-rotator
+UUID = gnome-wallpaper-rotator@gelonezi.github.io
 
 # Files and directories to build into extension.
 # src/* flattens the src directory to root.

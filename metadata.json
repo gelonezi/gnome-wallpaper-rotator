@@ -1,13 +1,13 @@
 {
-  "name": "Wallpaper Slideshow",
-  "description": "Wallpaper slideshow extension for GNOME. Optionally downloads BING wallpaper of the day.\n Automatically changes the wallpaper at a user defined interval.",
-  "uuid": "azwallpaper@azwallpaper.gitlab.com",
+  "name": "Wallpaper Rotator",
+  "description": "Wallpaper slideshow extension for GNOME. Optionally downloads BING wallpaper of the day.\n Automatically changes the wallpaper at a user defined interval.\n\nA fork of Wallpaper Slideshow by Andrew Zaech, with proposed features.",
+  "uuid": "gnome-wallpaper-rotator@gelonezi.github.io",
   "gettext-domain": "azwallpaper",
-  "settings-schema": "org.gnome.shell.extensions.azwallpaper",
-  "version": 20,
-  "version-name": "14.3",
+  "settings-schema": "org.gnome.shell.extensions.gnome-wallpaper-rotator",
+  "version": 1,
+  "version-name": "1.0",
   "shell-version": ["45", "46", "47", "48", "49", "50", "51"],
-  "url": "https://gitlab.com/AndrewZaech/azwallpaper",
+  "url": "https://github.com/gelonezi/gnome-wallpaper-rotator",
   "donations": {
     "paypal": "azaech",
     "buymeacoffee": "azaech"

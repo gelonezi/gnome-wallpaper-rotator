@@ -63,7 +63,7 @@ function createFileChooserButton(parent, settings, setting) {
 export default class AzWallpaperPrefs extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
-        const resourcePath = '/org/gnome/shell/extensions/azwallpaper/icons';
+        const resourcePath = '/org/gnome/shell/extensions/gnome-wallpaper-rotator/icons';
 
         let pageChangedId = settings.connect('changed::prefs-visible-page', () => {
             if (settings.get_string('prefs-visible-page') !== '')
@@ -668,10 +668,10 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
             name: 'AboutPage',
         });
 
-        const PROJECT_NAME = _('Wallpaper Slideshow');
+        const PROJECT_NAME = _('Wallpaper Rotator');
         const PROJECT_DESCRIPTION = _('Optionally downloads BING wallpaper of the day.');
         const PROJECT_IMAGE = 'azwallpaper-logo';
-        const SCHEMA_PATH = '/org/gnome/shell/extensions/azwallpaper/';
+        const SCHEMA_PATH = '/org/gnome/shell/extensions/gnome-wallpaper-rotator/';
 
         const VERSION = metadata['version-name'] ? metadata['version-name'] : metadata.version.toString();
 
@@ -826,12 +826,16 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
         // -----------------------------------------------------------------------
 
         // Links -----------------------------------------------------------------
-        /* TRANSLATORS: 'PROJECT_NAME' on GitLab*/
-        const gitlabRow = this._createLinkRow(_('%s on GitLab').format(PROJECT_NAME), `${metadata.url}`);
-        infoGroup.add(gitlabRow);
+        /* TRANSLATORS: 'PROJECT_NAME' on GitHub*/
+        const githubRow = this._createLinkRow(_('%s on GitHub').format(PROJECT_NAME), `${metadata.url}`);
+        infoGroup.add(githubRow);
 
-        const reportIssueRow = this._createLinkRow(_('Report an Issue'), `${metadata.url}/-/issues`);
+        const reportIssueRow = this._createLinkRow(_('Report an Issue'), `${metadata.url}/issues`);
         infoGroup.add(reportIssueRow);
+
+        const upstreamRow = this._createLinkRow(_('A fork of Wallpaper Slideshow by Andrew Zaech, with proposed features'),
+            'https://gitlab.com/AndrewZaech/azwallpaper');
+        infoGroup.add(upstreamRow);
         // -----------------------------------------------------------------------
 
         // Save/Load Settings----------------------------------------------------------
@@ -1025,19 +1029,20 @@ class AzWallpaperAboutPage extends Adw.PreferencesPage {
 
 const DonatePage = GObject.registerClass(
 class AzWallpaperDonatePage extends Adw.PreferencesPage {
-    _init(metadata) {
+    _init(_metadata) {
         super._init({
             title: _('Donate'),
             icon_name: 'emote-love-symbolic',
             name: 'DonatePage',
         });
 
+        // Donations go to the original author, so this page names his extension.
         const PROJECT_NAME = _('Wallpaper Slideshow');
-        const PAYPAL_LINK = `https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+${metadata.name}&source=url`;
+        const PAYPAL_LINK = 'https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=53CWA7NR743WC&item_name=Support+Wallpaper+Slideshow&source=url';
         const BUYMEACOFFEE_LINK = 'https://buymeacoffee.com/azaech';
 
         const donateGroup = new Adw.PreferencesGroup({
-            title: _('Help Support %s').format(_(PROJECT_NAME)),
+            title: _('Support the Original Author'),
             description: _('Thank you for using %s! If you enjoy it and would like to help support its continued development, please consider making a donation.').format(_(PROJECT_NAME)),
         });
         this.add(donateGroup);

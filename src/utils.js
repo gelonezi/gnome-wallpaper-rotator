@@ -8,7 +8,7 @@ import {domain} from 'gettext';
 const {gettext: _} = domain('azwallpaper');
 
 const [ShellVersion] = Config.PACKAGE_VERSION.split('.').map(s => Number(s));
-const PROJECT_NAME = _('Wallpaper Slideshow');
+const PROJECT_NAME = _('Wallpaper Rotator');
 
 /**
  * @param {string} filename
@@ -59,7 +59,7 @@ export function showImageInFiles(path) {
  * @param {Function} actionCallback the callback for the action
  */
 export function notify(title, body, actionLabel = null, actionCallback = null) {
-    const gicon = Gio.icon_new_for_string('resource:///org/gnome/shell/extensions/azwallpaper/icons/azwallpaper-logo.svg');
+    const gicon = Gio.icon_new_for_string('resource:///org/gnome/shell/extensions/gnome-wallpaper-rotator/icons/azwallpaper-logo.svg');
 
     const source = getSource(PROJECT_NAME, 'application-x-addon-symbolic');
     Main.messageTray.add(source);

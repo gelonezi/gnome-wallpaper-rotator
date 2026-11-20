@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
-    <enum id='org.gnome.shell.extensions.azwallpaper.slideshow-queue-sort-type'>
+    <enum id='org.gnome.shell.extensions.gnome-wallpaper-rotator.slideshow-queue-sort-type'>
         <value value='0' nick='Random'/>
         <value value='1' nick='A-Z'/>
         <value value='2' nick='Z-A'/>
         <value value='3' nick='Newest'/>
         <value value='4' nick='Oldest'/>
     </enum>
-    <schema id="org.gnome.shell.extensions.azwallpaper" path="/org/gnome/shell/extensions/azwallpaper/">
+    <schema id="org.gnome.shell.extensions.gnome-wallpaper-rotator" path="/org/gnome/shell/extensions/gnome-wallpaper-rotator/">
         <key type="i" name="update-notifier-project-version">
             <default>0</default>
             <summary>The project version of when an update notification was shown</summary>
@@ -70,7 +70,7 @@
             <default>''</default>
             <summary>When subfolders are included, only show images whose folder has this name, ignoring case. Empty shows all.</summary>
         </key>
-        <key enum="org.gnome.shell.extensions.azwallpaper.slideshow-queue-sort-type" name="slideshow-queue-sort-type">
+        <key enum="org.gnome.shell.extensions.gnome-wallpaper-rotator.slideshow-queue-sort-type" name="slideshow-queue-sort-type">
             <default>'Random'</default>
             <summary>How to order the slideshow queue.</summary>
         </key>
