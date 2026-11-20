@@ -102,8 +102,8 @@ export class Slideshow extends GObject.Object {
         this._queueSaveTimeout = null;
         this._queueDirty = false;
         this._initiated = false;
-        this._folders = [];
         this._folderMonitors = new Map();
+        this._onMonitorChanged = null;
 
         this._settings.bind(
             'slideshow-current-slide-index', this,
@@ -233,18 +233,21 @@ export class Slideshow extends GObject.Object {
         if (!isValidDirectory)
             return;
 
-        const wallpapers = await this._getWallpapersFromDirectory()
-            .catch(e => {
-                console.log(`Failed to load wallpapers from directory: ${e}`);
-                return [];
-            });
-
-        // Monitor after scanning, so that every folder found is watched.
         if (initiate) {
             const monitorSuccess = this._monitorDirectory();
             if (!monitorSuccess)
                 return;
         }
+
+        const wallpapers = await this._getWallpapersFromDirectory(initiate)
+            .catch(e => {
+                console.log(`Failed to load wallpapers from directory: ${e}`);
+                return [];
+            });
+
+        // The slideshow was destroyed while scanning.
+        if (!this._settings)
+            return;
 
         this._updateQueue(wallpapers);
 
@@ -316,16 +319,57 @@ export class Slideshow extends GObject.Object {
         Logger.log('Queue validity check done!');
     }
 
-    async _getWallpapersFromDirectory() {
+    async _getWallpapersFromDirectory(monitorFolders = false) {
         Logger.log('Get Wallpaper List');
         const slideshowDirectoryPath = this._settings.get_string('slideshow-directory');
-        const {images, folders} = await scanImages(slideshowDirectoryPath, {
+        const onChanged = this._onMonitorChanged;
+
+        // Each folder is monitored before it is read, so no file written during the scan is missed.
+        // Stop once the monitors were cleared or rebuilt for a newer scan.
+        const onFolder = path => {
+            if (this._onMonitorChanged !== onChanged || this._folderMonitors.has(path))
+                return;
+            try {
+                this._addFolderMonitor(path);
+            } catch (e) {
+                console.log(`Failed to monitor slideshow folder ${path}: ${e}`);
+            }
+        };
+
+        const {images} = await scanImages(slideshowDirectoryPath, {
             includeSubfolders: this._settings.get_boolean('slideshow-include-subfolders'),
             folderFilter: this._settings.get_string('slideshow-folder-filter'),
+            onFolder: monitorFolders ? onFolder : null,
         });
-
-        this._folders = folders;
         return images;
+    }
+
+    /**
+     * Folders were added, removed or renamed: merge the new folder contents into the queue,
+     * keeping the current slide.
+     */
+    async _rescanFolders() {
+        Logger.log('Slideshow Directory - folders changed. Rescanning.');
+        const onChanged = this._onMonitorChanged;
+        const wallpapers = await this._getWallpapersFromDirectory(true)
+            .catch(e => {
+                console.log(`Failed to load wallpapers from directory: ${e}`);
+                return null;
+            });
+
+        // Destroyed, restarted or reset while scanning.
+        if (!wallpapers || this._onMonitorChanged !== onChanged)
+            return;
+
+        this._updateQueue(wallpapers);
+        if (this._isQueueEmpty())
+            return;
+
+        if (!this._isIndexInRange())
+            this.slideIndex = 0;
+
+        if (!this._initiated)
+            this._initiate();
     }
 
     async _createNewSlideshowQueue() {
@@ -520,12 +564,31 @@ export class Slideshow extends GObject.Object {
     }
 
     _clearMonitorDirectory() {
-        for (const {monitor, changedId} of this._folderMonitors.values()) {
-            Logger.log('Clear FileMonitor');
+        this._removeFolderMonitors(() => true);
+        this._onMonitorChanged = null;
+    }
+
+    _removeFolderMonitors(shouldRemove) {
+        for (const [path, {monitor, changedId}] of this._folderMonitors) {
+            if (!shouldRemove(path))
+                continue;
+            Logger.log(`Clear FileMonitor ${path}`);
             monitor.disconnect(changedId);
             monitor.cancel();
+            this._folderMonitors.delete(path);
         }
-        this._folderMonitors.clear();
+    }
+
+    _addFolderMonitor(path) {
+        const monitor = Gio.file_new_for_path(path).monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
+        monitor.set_rate_limit(5000);
+        const changedId = monitor.connect('changed', this._onMonitorChanged);
+        this._folderMonitors.set(path, {monitor, changedId});
+    }
+
+    _forgetFolder(path) {
+        Logger.log(`Slideshow Directory - folder ${path} removed. Stop monitoring it.`);
+        this._removeFolderMonitors(p => p === path || p.startsWith(`${path}/`));
     }
 
     _monitorDirectory() {
@@ -551,7 +614,7 @@ export class Slideshow extends GObject.Object {
                 Logger.log(`Slideshow Directory - ${fileName} created.`);
                 const fileInfo = includeSubfolders ? await getFileInfo(file) : null;
                 if (fileInfo?.isDirectory)
-                    this._restart();
+                    this._rescanFolders();
                 break;
             }
             case Gio.FileMonitorEvent.DELETED:
@@ -562,9 +625,13 @@ export class Slideshow extends GObject.Object {
                     this._saveWallpaperQueue();
                 }
 
-                // The slideshow directory, or one of its monitored subfolders, was deleted or moved.
-                if (this._folderMonitors.has(file.get_path()))
+                // The slideshow directory was deleted or moved.
+                if (file.get_path() === slideshowDirectoryPath) {
                     this._restart();
+                } else if (includeSubfolders && this._folderMonitors.has(file.get_path())) {
+                    this._forgetFolder(file.get_path());
+                    this._rescanFolders();
+                }
 
                 break;
             case Gio.FileMonitorEvent.CHANGES_DONE_HINT:
@@ -577,7 +644,7 @@ export class Slideshow extends GObject.Object {
                 const fileInfo = await getFileInfo(file);
                 const fileData = {name: fileName, date: fileInfo.date};
                 if (includeSubfolders && fileInfo.isDirectory && eventType === Gio.FileMonitorEvent.MOVED_IN) {
-                    this._restart();
+                    this._rescanFolders();
                     break;
                 }
 
@@ -593,12 +660,13 @@ export class Slideshow extends GObject.Object {
             }
             case Gio.FileMonitorEvent.RENAMED: {
                 Logger.log(`Slideshow Directory - ${fileName} renamed.`);
-                if (this._folderMonitors.has(file.get_path())) {
-                    this._restart();
+                const fileInfo = await getFileInfo(otherFile);
+                if (includeSubfolders && (fileInfo.isDirectory || this._folderMonitors.has(file.get_path()))) {
+                    this._forgetFolder(file.get_path());
+                    this._rescanFolders();
                     break;
                 }
 
-                const fileInfo = await getFileInfo(otherFile);
                 const fileData = {name: newFileName, date: fileInfo.date};
                 const isImage = fileInfo.isImage && matchesFolderFilter(newFileName, folderFilter);
 
@@ -642,21 +710,15 @@ export class Slideshow extends GObject.Object {
                 break;
             }
         };
+        this._onMonitorChanged = onChanged;
 
-        for (const folder of this._folders) {
-            let monitor;
-            // monitor_directory() can throw if 'slideshow-directory' is malformed
-            try {
-                monitor = Gio.file_new_for_path(folder).monitor_directory(Gio.FileMonitorFlags.WATCH_MOUNTS | Gio.FileMonitorFlags.WATCH_MOVES, null);
-            } catch (e) {
-                this._clearMonitorDirectory();
-                notify(_('Failed to monitor slideshow directory!'), _('Error: %s').format(e));
-                return false;
-            }
-
-            monitor.set_rate_limit(5000);
-            const changedId = monitor.connect('changed', onChanged);
-            this._folderMonitors.set(folder, {monitor, changedId});
+        // monitor_directory() can throw if 'slideshow-directory' is malformed
+        try {
+            this._addFolderMonitor(slideshowDirectoryPath);
+        } catch (e) {
+            this._clearMonitorDirectory();
+            notify(_('Failed to monitor slideshow directory!'), _('Error: %s').format(e));
+            return false;
         }
 
         return true;

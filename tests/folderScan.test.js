@@ -62,10 +62,14 @@ try {
     assertEqual(names(r), ['Game One/Backgrounds/b1.png', 'Game One/Trading Cards/c1.png', 'Game Two/trading cards/c2.png', 'a.png'],
         'tree scan skips hidden, unreadable and linked folders (Review Focus 3)');
 
-    r = await scanImages(root, {includeSubfolders: true, folderFilter: 'Trading Cards'});
+    const seen = [];
+    r = await scanImages(root, {includeSubfolders: true, folderFilter: 'Trading Cards', onFolder: path => seen.push(path)});
     assertEqual(names(r), ['Game One/Trading Cards/c1.png', 'Game Two/trading cards/c2.png'], 'filter keeps matching folders only');
     assertEqual(r.folders[0], root, 'root is listed first');
     assertEqual(r.folders.includes(`${root}/Game One/Trading Cards`), true, 'scanned folders are reported');
+    assertEqual(seen[0], root, 'onFolder sees the root first');
+    assertEqual(seen.slice(1).sort(), ['Game One', 'Game One/Backgrounds', 'Game One/Trading Cards', 'Game Two', 'Game Two/trading cards', 'locked'].map(f => `${root}/${f}`),
+        'onFolder sees every folder it tries to read, unreadable ones included');
 } finally {
     GLib.chmod(`${root}/locked`, 0o755);
     deleteTree(Gio.File.new_for_path(root));

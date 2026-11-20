@@ -29,13 +29,16 @@ async function listFolder(dir) {
         GLib.PRIORITY_DEFAULT, null);
 
     const fileInfos = [];
-    let infos;
-    do {
-        // eslint-disable-next-line no-await-in-loop
-        infos = await fileEnum.next_files_async(100, GLib.PRIORITY_DEFAULT, null);
-        fileInfos.push(...infos);
-    } while (infos.length > 0);
-    fileEnum.close(null);
+    try {
+        let infos;
+        do {
+            // eslint-disable-next-line no-await-in-loop
+            infos = await fileEnum.next_files_async(100, GLib.PRIORITY_DEFAULT, null);
+            fileInfos.push(...infos);
+        } while (infos.length > 0);
+    } finally {
+        fileEnum.close(null);
+    }
 
     return fileInfos;
 }
@@ -48,10 +51,11 @@ async function listFolder(dir) {
  * @param {object} options scan options
  * @param {boolean} options.includeSubfolders whether to scan subfolders
  * @param {string} options.folderFilter only keep images whose folder has this name (subfolders only)
+ * @param {Function} [options.onFolder] called with each folder's absolute path just before it is read
  * @returns {Promise<{images: Array<{name: string, date: string}>, folders: string[]}>}
  * images with paths relative to rootPath, and the absolute path of every folder scanned, root first
  */
-export async function scanImages(rootPath, {includeSubfolders, folderFilter}) {
+export async function scanImages(rootPath, {includeSubfolders, folderFilter, onFolder}) {
     const root = Gio.file_new_for_path(rootPath);
     const filter = includeSubfolders ? folderFilter : '';
     const images = [];
@@ -60,6 +64,7 @@ export async function scanImages(rootPath, {includeSubfolders, folderFilter}) {
 
     while (pending.length > 0) {
         const dir = pending.shift();
+        onFolder?.(dir === root ? rootPath : dir.get_path());
 
         let fileInfos;
         try {
