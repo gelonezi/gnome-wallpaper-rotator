@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wallpaper Slideshow\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-14 09:38-0400\n"
+"POT-Creation-Date: 2026-11-20 11:43-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,23 +44,25 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#: src/extension.js:170
+#: src/extension.js:178 src/extension.js:335
 msgid "Show Image in Files"
 msgstr ""
 
-#: src/extension.js:177 src/extension.js:267 src/prefs.js:249
+#: src/extension.js:185 src/extension.js:289 src/extension.js:342
+#: src/prefs.js:249
 msgid "Slideshow Settings"
 msgstr ""
 
-#: src/extension.js:241 src/extension.js:365 src/prefs.js:123
+#: src/extension.js:263 src/extension.js:436 src/prefs.js:123
 msgid "Slideshow"
 msgstr ""
 
-#: src/extension.js:254 src/prefs.js:615 src/prefs.js:979 src/utils.js:11
+#: src/extension.js:276 src/extension.js:313 src/prefs.js:624 src/prefs.js:988
+#: src/utils.js:11
 msgid "Wallpaper Slideshow"
 msgstr ""
 
-#: src/extension.js:302
+#: src/extension.js:373
 msgid "Current Slide"
 msgstr ""
 
@@ -172,289 +174,293 @@ msgid "Show Slide Controls in Quick Settings Menu"
 msgstr ""
 
 #: src/prefs.js:326
-msgid "Wallpaper Options"
-msgstr ""
-
-#: src/prefs.js:331 src/utils.js:19
-msgid "None"
-msgstr ""
-
-#: src/prefs.js:332
-msgid "Wallpaper"
-msgstr ""
-
-#: src/prefs.js:333
-msgid "Centered"
-msgstr ""
-
-#: src/prefs.js:334
-msgid "Scaled"
+msgid "Show Slide Controls in the Top Panel"
 msgstr ""
 
 #: src/prefs.js:335
+msgid "Wallpaper Options"
+msgstr ""
+
+#: src/prefs.js:340 src/utils.js:19
+msgid "None"
+msgstr ""
+
+#: src/prefs.js:341
+msgid "Wallpaper"
+msgstr ""
+
+#: src/prefs.js:342
+msgid "Centered"
+msgstr ""
+
+#: src/prefs.js:343
+msgid "Scaled"
+msgstr ""
+
+#: src/prefs.js:344
 msgid "Stretched"
 msgstr ""
 
-#: src/prefs.js:336
+#: src/prefs.js:345
 msgid "Zoom"
 msgstr ""
 
-#: src/prefs.js:337
+#: src/prefs.js:346
 msgid "Spanned"
 msgstr ""
 
-#: src/prefs.js:340
+#: src/prefs.js:349
 msgid "Image Adjustment"
 msgstr ""
 
-#: src/prefs.js:350
+#: src/prefs.js:359
 msgid "Background Color Options"
 msgstr ""
 
-#: src/prefs.js:351
+#: src/prefs.js:360
 msgid ""
 "The background fill type and colors to be shown when the wallpaper does not "
 "fill the screen"
 msgstr ""
 
-#: src/prefs.js:356
+#: src/prefs.js:365
 msgid "Solid"
 msgstr ""
 
-#: src/prefs.js:357
+#: src/prefs.js:366
 msgid "Vertical Gradient"
 msgstr ""
 
-#: src/prefs.js:358
+#: src/prefs.js:367
 msgid "Horizontal Gradient"
 msgstr ""
 
-#: src/prefs.js:361
+#: src/prefs.js:370
 msgid "Fill Type"
 msgstr ""
 
-#: src/prefs.js:382
+#: src/prefs.js:391
 msgid "Primary Color"
 msgstr ""
 
-#: src/prefs.js:400
+#: src/prefs.js:409
 msgid "Secondary Color"
 msgstr ""
 
-#: src/prefs.js:401
+#: src/prefs.js:410
 msgid "Only shown if 'Fill Type' is a gradient."
 msgstr ""
 
-#: src/prefs.js:429
+#: src/prefs.js:438
 msgid "Bing Wallpapers"
 msgstr ""
 
-#: src/prefs.js:444
+#: src/prefs.js:453
 msgid "Download BING wallpaper of the day"
 msgstr ""
 
-#: src/prefs.js:450
+#: src/prefs.js:459
 msgid "Download Directory"
 msgstr ""
 
-#: src/prefs.js:463
+#: src/prefs.js:472
 msgid "Notify on Download Error"
 msgstr ""
 
-#: src/prefs.js:464
+#: src/prefs.js:473
 msgid ""
 "Displays a notification with error message and option to retry download."
 msgstr ""
 
-#: src/prefs.js:480
+#: src/prefs.js:489
 msgid "Image Resolution"
 msgstr ""
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
-#: src/prefs.js:507
+#: src/prefs.js:516
 msgid "Market Location"
 msgstr ""
 
 #. TRANSLATORS: Markets are specific regions, defined by their language codes.
 #. See https://learn.microsoft.com/en-us/bing/search-apis/bing-image-search/reference/market-codes
-#: src/prefs.js:510
+#: src/prefs.js:519
 msgid ""
 "The market where the BING wallpaper comes from.\n"
 "Wallpapers may vary in different markets."
 msgstr ""
 
-#: src/prefs.js:541
+#: src/prefs.js:550
 msgid "Images to Download"
 msgstr ""
 
-#: src/prefs.js:542
+#: src/prefs.js:551
 msgid ""
 "You can download up to 7 previous wallpapers plus the current wallpaper of "
 "the day."
 msgstr ""
 
-#: src/prefs.js:549
+#: src/prefs.js:558
 msgid "Delete Previously Downloaded Wallpapers"
 msgstr ""
 
-#: src/prefs.js:550
+#: src/prefs.js:559
 msgid ""
 "Stores a download history of wallpapers and limits how many wallpapers to "
 "keep."
 msgstr ""
 
-#: src/prefs.js:551
+#: src/prefs.js:560
 msgid "Only works for wallpapers downloaded when this setting is enabled."
 msgstr ""
 
-#: src/prefs.js:552
+#: src/prefs.js:561
 msgid "Previous download history is cleared when this setting is disabled."
 msgstr ""
 
-#: src/prefs.js:564 src/prefs.js:582
+#: src/prefs.js:573 src/prefs.js:591
 #, javascript-format
 msgid "Keep %s most recent wallpaper"
 msgid_plural "Keep %s most recent wallpapers"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/prefs.js:594
+#: src/prefs.js:603
 msgid "Apply"
 msgstr ""
 
-#: src/prefs.js:610
+#: src/prefs.js:619
 msgid "About"
 msgstr ""
 
-#: src/prefs.js:616
+#: src/prefs.js:625
 msgid "Optionally downloads BING wallpaper of the day."
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' Version
-#: src/prefs.js:662
+#: src/prefs.js:671
 #, javascript-format
 msgid "%s Version"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' - Release Notes
-#: src/prefs.js:671
+#: src/prefs.js:680
 #, javascript-format
 msgid "%s - Release Notes"
 msgstr ""
 
-#: src/prefs.js:673
+#: src/prefs.js:682
 msgid "What's New"
 msgstr ""
 
-#: src/prefs.js:722
+#: src/prefs.js:731
 msgid "Message Tray Update Notification"
 msgstr ""
 
-#: src/prefs.js:723
+#: src/prefs.js:732
 #, javascript-format
 msgid "Show a notification when %s receives an update."
 msgstr ""
 
-#: src/prefs.js:731
+#: src/prefs.js:740
 msgid "Git Commit"
 msgstr ""
 
-#: src/prefs.js:741
+#: src/prefs.js:750
 msgid "GNOME Version"
 msgstr ""
 
-#: src/prefs.js:750
+#: src/prefs.js:759
 msgid "OS Name"
 msgstr ""
 
-#: src/prefs.js:763
+#: src/prefs.js:772
 msgid "Windowing System"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' on GitLab
-#: src/prefs.js:774
+#: src/prefs.js:783
 #, javascript-format
 msgid "%s on GitLab"
 msgstr ""
 
-#: src/prefs.js:777
+#: src/prefs.js:786
 msgid "Report an Issue"
 msgstr ""
 
 #. TRANSLATORS: 'PROJECT_NAME' Settings
-#: src/prefs.js:787
+#: src/prefs.js:796
 #, javascript-format
 msgid "%s Settings"
 msgstr ""
 
-#: src/prefs.js:790
+#: src/prefs.js:799
 msgid "Load"
 msgstr ""
 
-#: src/prefs.js:795
+#: src/prefs.js:804
 msgid "Load Settings"
 msgstr ""
 
-#: src/prefs.js:821
+#: src/prefs.js:830
 msgid "Save"
 msgstr ""
 
-#: src/prefs.js:826
+#: src/prefs.js:835
 msgid "Save Settings"
 msgstr ""
 
-#: src/prefs.js:856
+#: src/prefs.js:865
 msgid "Enable Debug Mode"
 msgstr ""
 
-#: src/prefs.js:857
+#: src/prefs.js:866
 msgid "Show extensive messages in logs for debugging."
 msgstr ""
 
-#: src/prefs.js:863 src/prefs.js:864
+#: src/prefs.js:872 src/prefs.js:873
 msgid "Legal"
 msgstr ""
 
-#: src/prefs.js:870
+#: src/prefs.js:879
 msgid "This program comes with absolutely no warranty."
 msgstr ""
 
-#: src/prefs.js:872
+#: src/prefs.js:881
 msgid "GNU General Public License, version 2 or later"
 msgstr ""
 
 #. TRANSLATORS: this is the program license url; the string contains the name of the license as link text.
-#: src/prefs.js:872
+#: src/prefs.js:881
 #, javascript-format
 msgid "See the <a href=\"%s\">%s</a> for details."
 msgstr ""
 
-#: src/prefs.js:974 src/updateNotifier.js:85
+#: src/prefs.js:983 src/updateNotifier.js:85
 msgid "Donate"
 msgstr ""
 
-#: src/prefs.js:984
+#: src/prefs.js:993
 #, javascript-format
 msgid "Help Support %s"
 msgstr ""
 
-#: src/prefs.js:985 src/updateNotifier.js:73
+#: src/prefs.js:994 src/updateNotifier.js:73
 #, javascript-format
 msgid ""
 "Thank you for using %s! If you enjoy it and would like to help support its "
 "continued development, please consider making a donation."
 msgstr ""
 
-#: src/prefs.js:989
+#: src/prefs.js:998
 msgid "Donate via PayPal"
 msgstr ""
 
-#: src/prefs.js:992
+#: src/prefs.js:1001
 msgid "Donate via Buy Me a Coffee"
 msgstr ""
 
-#: src/prefs.js:1004
+#: src/prefs.js:1013
 #, javascript-format
 msgid ""
 "A huge thank you to everyone who has supported %s! Your support helps keep "

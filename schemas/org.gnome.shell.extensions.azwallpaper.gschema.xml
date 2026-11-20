@@ -106,6 +106,10 @@
             <default>true</default>
             <summary>Adds an entry to the quick settings menu to control current slide and open settings.</summary>
         </key>
+        <key type="b" name="slideshow-show-panel-indicator">
+            <default>false</default>
+            <summary>Adds an icon to the top panel to control the current slide and open settings.</summary>
+        </key>
         <key type="b" name="slideshow-pause">
             <default>false</default>
             <summary>Pause the slideshow.</summary>
