@@ -77,6 +77,15 @@ function insertWallpaper(wallpaperQueue, newWallpaper, sortType) {
     return low;
 }
 
+function insertNewWallpaper(wallpaperQueue, newWallpaper, sortType) {
+    if (sortType !== SlideshowSortType.RANDOM)
+        return insertWallpaper(wallpaperQueue, newWallpaper, sortType);
+
+    const index = Math.floor(Math.random() * (wallpaperQueue.length + 1));
+    wallpaperQueue.splice(index, 0, newWallpaper);
+    return index;
+}
+
 export class Slideshow extends GObject.Object {
     static [GObject.properties] = {
         'slide-index': GObject.ParamSpec.int('slide-index', 'slide-index', 'slide-index',
@@ -353,6 +362,9 @@ export class Slideshow extends GObject.Object {
         Logger.log('Slideshow Directory - folders changed. Rescanning.');
         const onChanged = this._onMonitorChanged;
         const generation = ++this._rescanGeneration;
+        // Only entries queued before the scan can be missing from it. Ones the monitors
+        // add while it runs stay, and deletions during the scan arrive as DELETED events.
+        const namesBeforeScan = new Set(this._wallpaperQueue.map(fileData => fileData.name));
         const wallpapers = await this._getWallpapersFromDirectory(true)
             .catch(e => {
                 console.log(`Failed to load wallpapers from directory: ${e}`);
@@ -368,20 +380,20 @@ export class Slideshow extends GObject.Object {
         const oldQueue = this._wallpaperQueue;
         const queuedNames = new Set(oldQueue.map(fileData => fileData.name));
         const dirNames = new Set(wallpapers.map(fileData => fileData.name));
+        const isGone = name => namesBeforeScan.has(name) && !dirNames.has(name);
+        const keptQueue = oldQueue.filter(fileData => !isGone(fileData.name));
+        const newWallpapers = wallpapers.filter(fileData => !queuedNames.has(fileData.name));
+        if (keptQueue.length === oldQueue.length && newWallpapers.length === 0)
+            return;
+
         // The current slide, or the next one still present if it was removed.
         const slidesFromCurrent = this._isIndexInRange() ? oldQueue.slice(this.slideIndex) : [];
-        const keptSlide = slidesFromCurrent.find(fileData => dirNames.has(fileData.name))?.name;
+        const keptSlide = slidesFromCurrent.find(fileData => !isGone(fileData.name))?.name;
 
         const sortType = this._settings.get_enum('slideshow-queue-sort-type');
-        this._wallpaperQueue = oldQueue.filter(fileData => dirNames.has(fileData.name));
-        for (const fileData of wallpapers) {
-            if (queuedNames.has(fileData.name))
-                continue;
-            if (sortType === SlideshowSortType.RANDOM)
-                this._wallpaperQueue.splice(Math.floor(Math.random() * (this._wallpaperQueue.length + 1)), 0, fileData);
-            else
-                insertWallpaper(this._wallpaperQueue, fileData, sortType);
-        }
+        this._wallpaperQueue = keptQueue;
+        for (const fileData of newWallpapers)
+            insertNewWallpaper(this._wallpaperQueue, fileData, sortType);
 
         if (this._isQueueEmpty()) {
             await this._reset();
@@ -788,14 +800,7 @@ export class Slideshow extends GObject.Object {
             return;
         }
 
-        let index;
-        if (sortType === SlideshowSortType.RANDOM) {
-            index = Math.floor(Math.random() * (this._wallpaperQueue.length + 1));
-            this._wallpaperQueue.splice(index, 0, fileData);
-        } else {
-            index = insertWallpaper(this._wallpaperQueue, fileData, sortType);
-        }
-
+        const index = insertNewWallpaper(this._wallpaperQueue, fileData, sortType);
         Logger.log(`Insert "${fileName}" at index:${index}`);
 
         if (index <= this.slideIndex)
