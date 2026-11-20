@@ -35,6 +35,9 @@ export class ImageAdjustmentKeeper {
             }
             this._restore();
         }, this);
+
+        // Undo a change made while the extension was disabled, e.g. during a screen lock.
+        this._restore();
     }
 
     _restore() {
